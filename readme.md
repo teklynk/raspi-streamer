@@ -1,7 +1,9 @@
 
 
 # Project Overview: Raspberry Pi Streaming and Recording Setup
-This project aims to transform a Raspberry Pi into a powerful streaming and recording device using a USB capture card, physical buttons, and LEDs. It allows for seamless streaming to platforms like Twitch and recording high-quality video and audio. Perfect for live streaming enthusiasts, content creators, and anyone interested in leveraging open-source tools to build custom media solutions. With this setup, you can easily capture, stream, and record gameplay from your video game consoles with the press of a button, making it an ideal addition to your living room gaming setup.
+This project aims to transform a Raspberry Pi into a powerful yet simple and convenient streaming and recording device using a USB capture card, push buttons, and LEDs. The compact setup allows for seamless streaming to platforms like Twitch, Owncast, Peertube, YouTube, and recording high-quality video and audio, making it perfect for live streaming enthusiasts, content creators, and anyone interested in leveraging open-source tools to build custom media solutions.
+
+It's a box that will stream or record whatever is connected to it via HDMI. All you have to do is connect it to the internet, plug in your HDMI source from a console, Steam Deck, TV, or any device that can be captured via HDMI. When you are ready to stream, just press the button on the box. A LED turns on to let you know you are streaming or recording. Press the button again when you are done. It can also record whatever is being captured with a different button. 
 
 ## Key Features
 - __Hardware Integration:__ Utilize the GPIO pins on the Raspberry Pi to connect push buttons and LEDs, providing a physical interface to start/stop streaming and recording with visual feedback.
@@ -9,6 +11,8 @@ This project aims to transform a Raspberry Pi into a powerful streaming and reco
 - __Audio Synchronization:__ Achieve perfect sync between audio and video using ALSA for audio input, making sure your streams and recordings maintain professional quality.
 - __Automated Control:__ A Python script runs as a system service, enabling the device to handle streaming and recording commands autonomously and recover gracefully from errors.
 - __Network Accessibility:__ With Samba configured, easily access and manage your recordings over the network from any device.
+- __Versatile Use Cases:__ Ideal for streaming and recording gameplay, live events, concerts, GoPro cameras, and any other HDMI output devices.
+- __Compact and Convenient:__ The small form factor of the Raspberry Pi makes it easy to integrate into any setup, offering a simple and portable solution for high-quality streaming and recording.
 
 ## Components Used
 - __Raspberry Pi 4:__ The core of the setup, handling all processing and control logic.
