@@ -1,16 +1,57 @@
-sudo apt install ffmpeg python3-rpi-lgpio samba samba-common-bin pulseaudio
 
-pulseaudio --start
 
-pactl list short sources
+# Project Overview: Raspberry Pi Streaming and Recording Setup
+This project aims to transform a Raspberry Pi into a powerful streaming and recording device using a USB capture card, physical buttons, and LEDs. It allows for seamless streaming to platforms like Twitch and recording high-quality video and audio. Perfect for live streaming enthusiasts, content creators, and anyone interested in leveraging open-source tools to build custom media solutions. With this setup, you can easily capture, stream, and record gameplay from your video game consoles with the press of a button, making it an ideal addition to your living room gaming setup.
 
-# PulseAudio source
-PULSE_AUDIO_SOURCE = "alsa_input.usb-EVGA_EVGA_XR1_Lite_Capture_Box_Video_385203099807-02.analog-stereo"
+## Key Features
+- __Hardware Integration:__ Utilize the GPIO pins on the Raspberry Pi to connect push buttons and LEDs, providing a physical interface to start/stop streaming and recording with visual feedback.
+- __High-Quality Streaming:__ Capture video via a USB capture device and stream it in real-time to an RTMP server, ensuring smooth and reliable video output.
+- __Audio Synchronization:__ Achieve perfect sync between audio and video using ALSA for audio input, making sure your streams and recordings maintain professional quality.
+- __Automated Control:__ A Python script runs as a system service, enabling the device to handle streaming and recording commands autonomously and recover gracefully from errors.
+- __Network Accessibility:__ With Samba configured, easily access and manage your recordings over the network from any device.
 
+## Components Used
+- __Raspberry Pi 4:__ The core of the setup, handling all processing and control logic.
+- __USB Capture Device:__ Captures high-definition video from an external source.
+Push Buttons and LEDs: Provide a user-friendly interface for controlling the streaming and recording processes.
+- __ALSA (Advanced Linux Sound Architecture):__ Handles audio input, ensuring low-latency and high-quality audio capture.
+
+# Assumptions
+- You have already installed the Lite version of Raspberry Pi OS.
+- A user has been created and you have enabled Remote GPIO from `raspi-config`.
+
+# Install necessary packages
+```bash
+sudo apt install ffmpeg python3-rpi-lgpio v4l-utils samba samba-common-bin
+```
+
+# Identify the audio source
+```bash
+arecord -l
+```
+
+```bash
+**** List of CAPTURE Hardware Devices ****
+card 1: Device [USB Audio Device], device 0: USB Audio [USB Audio]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+```
+
+This will list the available capture hardware devices. Note the device identifier (e.g., "hw:1,0" for card 1, device 0).
+
+# Create project directory
+```bash
 mkdir -p /home/teklynk/raspi-streamer
+```
 
+# Setup Samba share
+
+Edit Samba configuration file
+```bash
 sudo nano /etc/samba/smb.conf
+```
 
+```bash
 [raspi-streamer]
 path = /home/teklynk/raspi-streamer
 browseable = yes
@@ -19,16 +60,27 @@ only guest = no
 create mask = 0777
 directory mask = 0777
 public = yes
+```
 
+## Set Samba password for the user
+```bash
 sudo smbpasswd -a teklynk
+```
 
+## Restart Samba service
+```bash
 sudo systemctl restart smbd
+```
 
-id -u teklynk
 
 # Install as a system service 
-sudo nano /etc/systemd/system/stream_control.service
 
+## Create systemd service file
+```bash
+sudo nano /etc/systemd/system/stream_control.service
+```
+
+```bash
 [Unit]
 Description=Stream Control Service
 After=network.target sound.target
@@ -42,13 +94,26 @@ Restart=always
 User=teklynk
 Group=teklynk
 Environment="PYTHONUNBUFFERED=1"
-Environment="PULSE_RUNTIME_PATH=/run/user/1000/pulse/"  # Ensure the correct user ID is here
 
 [Install]
 WantedBy=multi-user.target
+```
 
+## Reload systemd daemon and enable/start the service
+
+```bash
 sudo systemctl daemon-reload
+
 sudo systemctl enable stream_control.service
+
 sudo systemctl restart stream_control.service
 
 sudo systemctl status stream_control.service
+```
+
+# Additional Notes
+- Ensure the correct audio device (hw:1,0 in the example) is configured in your Python script (stream_control.py) for ALSA.
+- Customize the Samba configuration (smb.conf) according to your security and network requirements.
+- Adjust permissions (create mask, directory mask) in the Samba share configuration as necessary for your use case.
+- Audio latency may need to be adjusted depending on your capture device. Experiment with different -itsoffset values in stream_control.py. Try starting with: "-itsoffset", "0.1".
+- If you make a change to the stream_control.py script, you will need to restart the stream_control service.
