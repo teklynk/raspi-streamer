@@ -38,9 +38,6 @@ AUDIO_OFFSET = "-0.7" # String
 # Calculate buffer size
 BUFFER_SIZE = BITRATE * 2  # in kbps
 
-# Calculate Keyframes
-KEYFRAME = FRAME_RATE * 2
-
 # Initialize variables
 streaming = False
 recording = False
