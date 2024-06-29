@@ -23,11 +23,23 @@ GPIO.setup(RECORD_LED_PIN, GPIO.OUT)
 
 # RTMP stream settings
 STREAM_KEY = "abc123"  # Replace with your actual stream key
-RTMP_SERVER = "192.168.0.40"
-RTMP_PORT = "1935"
+RTMP_SERVER = "192.168.0.40:1935/live/" # Twitch: iad05.contribute.live-video.net/app/ (https://help.twitch.tv/s/twitch-ingest-recommendation?language=en_US)
 
 # ALSA audio source
 ALSA_AUDIO_SOURCE = "hw:1,0"  # Replace with your actual ALSA capture device
+
+# Stream Settings
+VIDEO_SIZE = "1920x1080"
+FRAME_RATE = 60
+BITRATE = 4500  # in kbps
+KEYFRAME = 30 # 30 fps = 60 keyframe interval
+AUDIO_OFFSET = "-0.7" # String
+
+# Calculate buffer size
+BUFFER_SIZE = BITRATE * 2  # in kbps
+
+# Calculate Keyframes
+KEYFRAME = FRAME_RATE * 2
 
 # Initialize variables
 streaming = False
@@ -38,6 +50,14 @@ last_shutdown_button_state = GPIO.input(SHUTDOWN_BUTTON_PIN)
 stream_process = None
 record_process = None
 
+# Timestamp variables for debouncing
+last_stream_action_time = 0
+last_record_action_time = 0
+last_shutdown_action_time = 0
+
+# Minimum delay between actions in seconds
+ACTION_DELAY = 3
+
 def ensure_recordings_directory():
     if not os.path.exists('recordings'):
         os.makedirs('recordings')
@@ -47,21 +67,21 @@ def start_stream():
     logging.debug("Starting stream...")
     stream_command = [
         "ffmpeg",
-        "-itsoffset", "-0.7",  # Adjust the offset value for audio sync
-        "-f", "alsa", "-ac", "2", "-i", ALSA_AUDIO_SOURCE, # Input from ALSA
+        "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
+        "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE), # Input from ALSA
         "-thread_queue_size", "64",
         "-fflags", "nobuffer", "-flags", "low_delay", "-strict", "experimental", # Flags for low latency
-        "-f", "v4l2", "-framerate", "30", "-video_size", "1280x720", "-input_format", "yuyv422", "-i", "/dev/video0", # Video input settings
+        "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0", # Video input settings
         "-probesize", "32", "-analyzeduration", "0", # Lower probing size and analysis duration for reduced latency
-        "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", "3000k", "-maxrate", "3000k", "-bufsize", "6000k", # Video encoding settings
-        "-vf", "format=yuv420p", "-g", "60",  # 30 fps * 2 seconds = 60 keyframe interval
+        "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k", # Video encoding settings
+        "-vf", "format=yuv420p", "-g", str(KEYFRAME),  # 30 fps = 60 keyframe interval
         "-profile:v", "main",
         "-c:a", "aac", "-b:a", "96k", "-ar", "44100", # Audio encoding settings
         "-max_delay", "0", # Max delay set to 0 for low latency
         "-use_wallclock_as_timestamps", "1", # Use wallclock timestamps
         "-flush_packets", "1", # Flush packets
         "-async", "1", # Sync audio with video
-        "-f", "flv", f"rtmp://{RTMP_SERVER}:{RTMP_PORT}/live/{STREAM_KEY}"  # Output to RTMP server
+        "-f", "flv", f"rtmp://{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
     ]
     stream_process = subprocess.Popen(stream_command)
     GPIO.output(STREAM_LED_PIN, GPIO.HIGH)
@@ -84,14 +104,14 @@ def start_recording():
     logging.debug("Starting recording...")
     record_command = [
         "ffmpeg",
-        "-itsoffset", "-0.7",  # Adjust the offset value for audio sync
-        "-f", "alsa", "-ac", "2", "-i", ALSA_AUDIO_SOURCE, # Input from ALSA
+        "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
+        "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE), # Input from ALSA
         "-thread_queue_size", "64",
         "-fflags", "nobuffer", "-flags", "low_delay", "-strict", "experimental", # Flags for low latency
-        "-f", "v4l2", "-framerate", "30", "-video_size", "1280x720", "-input_format", "yuyv422", "-i", "/dev/video0", # Video input settings
+        "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0", # Video input settings
         "-probesize", "32", "-analyzeduration", "0", # Lower probing size and analysis duration for reduced latency
-        "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", "3000k", "-maxrate", "3000k", "-bufsize", "6000k", # Video encoding settings
-        "-vf", "format=yuv420p", "-g", "60",  # 30 fps * 2 seconds = 60 keyframe interval
+        "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k", # Video encoding settings
+        "-vf", "format=yuv420p", "-g", str(KEYFRAME),  # 30 fps = 60 keyframe interval
         "-profile:v", "main",
         "-c:a", "aac", "-b:a", "96k", "-ar", "44100", # Audio encoding settings
         "-max_delay", "0", # Max delay set to 0 for low latency
@@ -126,34 +146,42 @@ def shutdown_pi():
 
 try:
     while True:
+        current_time = time.time()
+
         current_stream_button_state = GPIO.input(STREAM_BUTTON_PIN)
         current_record_button_state = GPIO.input(RECORD_BUTTON_PIN)
         current_shutdown_button_state = GPIO.input(SHUTDOWN_BUTTON_PIN)
         
         if current_stream_button_state == GPIO.LOW and last_stream_button_state == GPIO.HIGH:
-            if recording:
-                stop_recording()
-                recording = False
-            if not streaming:
-                start_stream()
-                streaming = True
-            else:
-                stop_stream()
-                streaming = False
+            if current_time - last_stream_action_time >= ACTION_DELAY:
+                last_stream_action_time = current_time
+                if recording:
+                    stop_recording()
+                    recording = False
+                if not streaming:
+                    start_stream()
+                    streaming = True
+                else:
+                    stop_stream()
+                    streaming = False
 
         if current_record_button_state == GPIO.LOW and last_record_button_state == GPIO.HIGH:
-            if streaming:
-                stop_stream()
-                streaming = False
-            if not recording:
-                start_recording()
-                recording = True
-            else:
-                stop_recording()
-                recording = False
+            if current_time - last_record_action_time >= ACTION_DELAY:
+                last_record_action_time = current_time
+                if streaming:
+                    stop_stream()
+                    streaming = False
+                if not recording:
+                    start_recording()
+                    recording = True
+                else:
+                    stop_recording()
+                    recording = False
 
         if current_shutdown_button_state == GPIO.LOW and last_shutdown_button_state == GPIO.HIGH:
-            shutdown_pi()
+            if current_time - last_shutdown_action_time >= ACTION_DELAY:
+                last_shutdown_action_time = current_time
+                shutdown_pi()
         
         last_stream_button_state = current_stream_button_state
         last_record_button_state = current_record_button_state
