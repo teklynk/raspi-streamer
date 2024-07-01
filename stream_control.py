@@ -4,6 +4,13 @@ import subprocess
 import os
 import logging
 
+# Load the environment variables from the .env file
+with open('.env', 'r') as f:
+    env_vars = f.read().splitlines()
+    for line in env_vars:
+        key, value = line.split('=')
+        os.environ[key] = value
+
 # Configure logging
 #logging.basicConfig(filename='/home/teklynk/raspi-streamer/stream_control.log', level=logging.DEBUG)
 
@@ -22,18 +29,18 @@ GPIO.setup(STREAM_LED_PIN, GPIO.OUT)
 GPIO.setup(RECORD_LED_PIN, GPIO.OUT)
 
 # RTMP stream settings
-STREAM_KEY = "abc123"  # Replace with your actual stream key
-RTMP_SERVER = "192.168.0.40:1935/live/" # Twitch: iad05.contribute.live-video.net/app/ (https://help.twitch.tv/s/twitch-ingest-recommendation?language=en_US)
+STREAM_KEY = os.environ['STREAM_KEY']  # Replace with your actual stream key
+RTMP_SERVER = os.environ['RTMP_SERVER_ADDRESS'] # Twitch: iad05.contribute.live-video.net/app/ (https://help.twitch.tv/s/twitch-ingest-recommendation?language=en_US)
 
 # ALSA audio source
-ALSA_AUDIO_SOURCE = "hw:1,0"  # Replace with your actual ALSA capture device
+ALSA_AUDIO_SOURCE = os.environ['ALSA_AUDIO_SOURCE']  # Replace with your actual ALSA capture device
 
 # Stream Settings
-VIDEO_SIZE = "1920x1080"
-FRAME_RATE = 60
-BITRATE = 4500  # in kbps
-KEYFRAME = 30 # 30 fps = 60 keyframe interval
-AUDIO_OFFSET = "-0.7" # String
+VIDEO_SIZE = os.environ['VIDEO_SIZE']
+FRAME_RATE = os.environ['FRAME_RATE']
+BITRATE = os.environ['BITRATE']  # in kbps
+KEYFRAME = os.environ['KEYFRAME'] # 30 fps = 60 keyframe interval
+AUDIO_OFFSET = os.environ['AUDIO_OFFSET'] # String
 
 # Calculate buffer size
 BUFFER_SIZE = BITRATE * 2  # in kbps
