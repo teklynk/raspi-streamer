@@ -26,7 +26,7 @@ Push Buttons and LEDs: Provide a user-friendly interface for controlling the str
 
 # Install necessary packages
 ```bash
-sudo apt install ffmpeg python3-rpi-lgpio v4l-utils samba samba-common-bin
+sudo apt install ffmpeg python3-rpi-lgpio python3-dotenv v4l-utils samba samba-common-bin
 ```
 
 # Identify the audio source
@@ -116,6 +116,7 @@ sudo systemctl status stream_control.service
 ```
 
 # Additional Notes
+- Rename sample.env to .env and update the file with your settings.
 - Ensure the correct audio device (hw:1,0 in the example) is configured in your Python script (stream_control.py) for ALSA.
 - Customize the Samba configuration (smb.conf) according to your security and network requirements.
 - Adjust permissions (create mask, directory mask) in the Samba share configuration as necessary for your use case.

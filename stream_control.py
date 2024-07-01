@@ -3,16 +3,31 @@ import time
 import subprocess
 import os
 import logging
+from dotenv import load_dotenv
 
-# Load the environment variables from the .env file
-with open('.env', 'r') as f:
-    env_vars = f.read().splitlines()
-    for line in env_vars:
-        key, value = line.split('=')
-        os.environ[key] = value
+# Load environment variables from .env file
+load_dotenv()
+
+# RTMP stream settings
+STREAM_KEY = os.getenv('STREAM_KEY')
+RTMP_SERVER = os.getenv('RTMP_SERVER')
+
+# ALSA audio source
+ALSA_AUDIO_SOURCE = os.getenv('ALSA_AUDIO_SOURCE')
+
+# Stream Settings
+VIDEO_SIZE = os.getenv('VIDEO_SIZE')
+FRAME_RATE = int(os.getenv('FRAME_RATE'))
+BITRATE = int(os.getenv('BITRATE'))
+KEYFRAME_INTERVAL_SEC = int(os.getenv('KEYFRAME_INTERVAL_SEC'))
+AUDIO_OFFSET = os.getenv('AUDIO_OFFSET')
+
+# Calculate buffer size and keyframe interval
+BUFFER_SIZE = BITRATE * 2  # in kbps
+KEYFRAME = FRAME_RATE * KEYFRAME_INTERVAL_SEC  # Keyframe interval in frames
 
 # Configure logging
-#logging.basicConfig(filename='/home/teklynk/raspi-streamer/stream_control.log', level=logging.DEBUG)
+logging.basicConfig(filename='/home/teklynk/raspi-streamer/stream_control.log', level=logging.DEBUG)
 
 # Set up GPIO pins for buttons and LEDs
 GPIO.setmode(GPIO.BCM)
@@ -27,23 +42,6 @@ GPIO.setup(RECORD_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(SHUTDOWN_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(STREAM_LED_PIN, GPIO.OUT)
 GPIO.setup(RECORD_LED_PIN, GPIO.OUT)
-
-# RTMP stream settings
-STREAM_KEY = os.environ['STREAM_KEY']  # Replace with your actual stream key
-RTMP_SERVER = os.environ['RTMP_SERVER_ADDRESS'] # Twitch: iad05.contribute.live-video.net/app/ (https://help.twitch.tv/s/twitch-ingest-recommendation?language=en_US)
-
-# ALSA audio source
-ALSA_AUDIO_SOURCE = os.environ['ALSA_AUDIO_SOURCE']  # Replace with your actual ALSA capture device
-
-# Stream Settings
-VIDEO_SIZE = os.environ['VIDEO_SIZE']
-FRAME_RATE = os.environ['FRAME_RATE']
-BITRATE = os.environ['BITRATE']  # in kbps
-KEYFRAME = os.environ['KEYFRAME'] # 30 fps = 60 keyframe interval
-AUDIO_OFFSET = os.environ['AUDIO_OFFSET'] # String
-
-# Calculate buffer size
-BUFFER_SIZE = BITRATE * 2  # in kbps
 
 # Initialize variables
 streaming = False
@@ -78,14 +76,14 @@ def start_stream():
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0", # Video input settings
         "-probesize", "32", "-analyzeduration", "0", # Lower probing size and analysis duration for reduced latency
         "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k", # Video encoding settings
-        "-vf", "format=yuv420p", "-g", str(KEYFRAME),  # 30 fps = 60 keyframe interval
+        "-vf", "format=yuv420p", "-g", str(KEYFRAME),  # Keyframe interval
         "-profile:v", "main",
         "-c:a", "aac", "-b:a", "96k", "-ar", "44100", # Audio encoding settings
         "-max_delay", "0", # Max delay set to 0 for low latency
         "-use_wallclock_as_timestamps", "1", # Use wallclock timestamps
         "-flush_packets", "1", # Flush packets
         "-async", "1", # Sync audio with video
-        "-f", "flv", f"rtmp://{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
+        "-f", "flv", f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
     ]
     stream_process = subprocess.Popen(stream_command)
     GPIO.output(STREAM_LED_PIN, GPIO.HIGH)
@@ -115,7 +113,7 @@ def start_recording():
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0", # Video input settings
         "-probesize", "32", "-analyzeduration", "0", # Lower probing size and analysis duration for reduced latency
         "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k", # Video encoding settings
-        "-vf", "format=yuv420p", "-g", str(KEYFRAME),  # 30 fps = 60 keyframe interval
+        "-vf", "format=yuv420p", "-g", str(KEYFRAME),  # Keyframe interval
         "-profile:v", "main",
         "-c:a", "aac", "-b:a", "96k", "-ar", "44100", # Audio encoding settings
         "-max_delay", "0", # Max delay set to 0 for low latency
