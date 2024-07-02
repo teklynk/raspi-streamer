@@ -122,3 +122,5 @@ sudo systemctl status stream_control.service
 - Adjust permissions (create mask, directory mask) in the Samba share configuration as necessary for your use case.
 - Audio latency may need to be adjusted depending on your capture device. Experiment with different -itsoffset values in stream_control.py. Try starting with: "-itsoffset", "0.1".
 - If you make a change to the stream_control.py script, you will need to restart the stream_control service.
+- The values in the sample.env are what worked best for me with a Raspberry Pi 4 8GB. These values were tested with Twitch and Owncast. Your experience may vary. 
+- KEYFRAME_INTERVAL=60 is the equivalent to a 2 second keyframe. This is based on your framerate * 2 (30 fps x 2 = 60 keyframe interval). 
