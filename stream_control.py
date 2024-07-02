@@ -70,8 +70,8 @@ def start_stream():
     stream_command = [
         "ffmpeg",
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
-        "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE), # Input from ALSA
         "-thread_queue_size", "64",
+        "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE), # Input from ALSA
         "-fflags", "nobuffer", "-flags", "low_delay", "-strict", "experimental", # Flags for low latency
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0", # Video input settings
         "-probesize", "32", "-analyzeduration", "0", # Lower probing size and analysis duration for reduced latency
@@ -107,8 +107,8 @@ def start_recording():
     record_command = [
         "ffmpeg",
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
-        "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE), # Input from ALSA
         "-thread_queue_size", "64",
+        "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE), # Input from ALSA
         "-fflags", "nobuffer", "-flags", "low_delay", "-strict", "experimental", # Flags for low latency
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0", # Video input settings
         "-probesize", "32", "-analyzeduration", "0", # Lower probing size and analysis duration for reduced latency
