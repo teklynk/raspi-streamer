@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raspi-Streamer</title>
+    <title>Raspberry Pi Streamer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <style>
         .tab {
@@ -41,7 +41,7 @@
     </style>
 </head>
 <body>
-    <h1>Raspi-Streamer</h1>
+    <h1>Raspberry Pi Streamer Control Panel</h1>
 
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'ControlPanel')" id="defaultTab">Control Panel</button>
@@ -83,6 +83,7 @@
             
             <button type="submit">Update Config</button>
         </form>
+        <button onclick="sendRequest('/reboot')">Reboot</button>
     </div>
 
     <script>

@@ -222,6 +222,11 @@ def stop_record_route():
     stop_recording()
     return jsonify({"message": "Recording stopped"}), 200
 
+@app.route('/reboot', methods=['POST'])
+def shutdown_route():
+    shutdown_pi()
+    return jsonify({"message": "Rebooting"}), 200
+
 # Function to run the Flask app in a separate thread
 def run_flask_app():
     app.run(host='0.0.0.0', port=5000)
