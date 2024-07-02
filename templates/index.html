@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raspberry Pi Streamer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Raspberry Pi Streamer Control Panel</h1>
+    <form id="configForm">
+        <label for="STREAM_KEY">Stream Key:</label>
+        <input type="text" id="STREAM_KEY" name="STREAM_KEY" value="{{ config['STREAM_KEY'] }}"><br>
+        
+        <label for="RTMP_SERVER">RTMP Server:</label>
+        <input type="text" id="RTMP_SERVER" name="RTMP_SERVER" value="{{ config['RTMP_SERVER'] }}"><br>
+        
+        <label for="ALSA_AUDIO_SOURCE">ALSA Audio Source:</label>
+        <input type="text" id="ALSA_AUDIO_SOURCE" name="ALSA_AUDIO_SOURCE" value="{{ config['ALSA_AUDIO_SOURCE'] }}"><br>
+        
+        <label for="VIDEO_SIZE">Video Size:</label>
+        <input type="text" id="VIDEO_SIZE" name="VIDEO_SIZE" value="{{ config['VIDEO_SIZE'] }}"><br>
+        
+        <label for="FRAME_RATE">Frame Rate:</label>
+        <input type="text" id="FRAME_RATE" name="FRAME_RATE" value="{{ config['FRAME_RATE'] }}"><br>
+        
+        <label for="BITRATE">Bitrate:</label>
+        <input type="text" id="BITRATE" name="BITRATE" value="{{ config['BITRATE'] }}"><br>
+        
+        <label for="KEYFRAME_INTERVAL">Keyframe Interval:</label>
+        <input type="text" id="KEYFRAME_INTERVAL" name="KEYFRAME_INTERVAL" value="{{ config['KEYFRAME_INTERVAL'] }}"><br>
+        
+        <label for="AUDIO_OFFSET">Audio Offset:</label>
+        <input type="text" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}"><br>
+        
+        <button type="submit">Update Config</button>
+    </form>
+
+    <button onclick="sendRequest('/start_stream')">Start Stream</button>
+    <button onclick="sendRequest('/stop_stream')">Stop Stream</button>
+    <button onclick="sendRequest('/start_record')">Start Record</button>
+    <button onclick="sendRequest('/stop_record')">Stop Record</button>
+
+    <script>
+        document.getElementById('configForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+            fetch('/update_config', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: new URLSearchParams(data)
+            }).then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error('Error:', error));
+        });
+
+        function sendRequest(endpoint) {
+            fetch(endpoint, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => alert(data.message))
+                .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

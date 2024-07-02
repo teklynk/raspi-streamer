@@ -24,7 +24,7 @@ Push Buttons and LEDs: Provide a user-friendly interface for controlling the str
 
 # Install necessary packages
 ```bash
-sudo apt install ffmpeg python3-rpi-lgpio python3-dotenv v4l-utils samba samba-common-bin
+sudo apt install ffmpeg python3-rpi-lgpio python3-dotenv python3-flask v4l-utils samba samba-common-bin nodejs npm
 ```
 
 # Identify the audio source

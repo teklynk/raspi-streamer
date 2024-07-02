@@ -4,7 +4,8 @@ import subprocess
 import os
 import logging
 from dotenv import load_dotenv
-from flask import Flask, request, jsonify
+from flask import Flask, request, render_template, jsonify
+from threading import Thread
 
 # Load environment variables from .env file
 load_dotenv()
@@ -46,17 +47,28 @@ GPIO.setup(RECORD_LED_PIN, GPIO.OUT)
 # Initialize variables
 streaming = False
 recording = False
+last_stream_button_state = GPIO.input(STREAM_BUTTON_PIN)
+last_record_button_state = GPIO.input(RECORD_BUTTON_PIN)
+last_shutdown_button_state = GPIO.input(SHUTDOWN_BUTTON_PIN)
 stream_process = None
 record_process = None
 
-app = Flask(__name__)
+# Timestamp variables for debouncing
+last_stream_action_time = 0
+last_record_action_time = 0
+last_shutdown_action_time = 0
+
+# Minimum delay between actions in seconds
+ACTION_DELAY = 3
 
 def ensure_recordings_directory():
     if not os.path.exists('recordings'):
         os.makedirs('recordings')
 
 def start_stream():
-    global stream_process
+    global stream_process, streaming
+    if streaming:
+        return
     logging.debug("Starting stream...")
     stream_command = [
         "ffmpeg",
@@ -80,9 +92,12 @@ def start_stream():
     GPIO.output(STREAM_LED_PIN, GPIO.HIGH)
     logging.debug("Stream started!")
     logging.debug(stream_command)
+    streaming = True
 
 def stop_stream():
-    global stream_process
+    global stream_process, streaming
+    if not streaming:
+        return
     if stream_process:
         logging.debug("Stopping stream...")
         stream_process.terminate()
@@ -91,9 +106,12 @@ def stop_stream():
         GPIO.output(STREAM_LED_PIN, GPIO.LOW)
         logging.debug("Stream stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
+    streaming = False
 
 def start_recording():
-    global record_process
+    global record_process, recording
+    if recording:
+        return
     ensure_recordings_directory()
     logging.debug("Starting recording...")
     record_command = [
@@ -118,9 +136,12 @@ def start_recording():
     GPIO.output(RECORD_LED_PIN, GPIO.HIGH)
     logging.debug("Recording started!")
     logging.debug(record_command)
+    recording = True
 
 def stop_recording():
-    global record_process
+    global record_process, recording
+    if not recording:
+        return
     if record_process:
         logging.debug("Stopping recording...")
         record_process.terminate()
@@ -129,39 +150,118 @@ def stop_recording():
         GPIO.output(RECORD_LED_PIN, GPIO.LOW)
         logging.debug("Recording stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
+    recording = False
 
-@app.route('/start_stream', methods=['POST'])
-def api_start_stream():
-    if not streaming:
-        start_stream()
-    return jsonify({"status": "streaming_started"})
-
-@app.route('/stop_stream', methods=['POST'])
-def api_stop_stream():
+def shutdown_pi():
+    logging.debug("Rebooting...")
     if streaming:
         stop_stream()
-    return jsonify({"status": "streaming_stopped"})
-
-@app.route('/start_recording', methods=['POST'])
-def api_start_recording():
-    if not recording:
-        start_recording()
-    return jsonify({"status": "recording_started"})
-
-@app.route('/stop_recording', methods=['POST'])
-def api_stop_recording():
     if recording:
         stop_recording()
-    return jsonify({"status": "recording_stopped"})
+    GPIO.cleanup()
+    subprocess.call(['sudo', 'shutdown', '-r', 'now'])
+
+# Flask application
+app = Flask(__name__)
+
+# Function to update the .env file
+def update_env_file(data):
+    with open('.env', 'w') as env_file:
+        for key, value in data.items():
+            env_file.write(f"{key}={value}\n")
+    load_dotenv()  # Reload the .env file to update the environment variables
+    # Update global variables with new values
+    global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE
+    STREAM_KEY = os.getenv('STREAM_KEY')
+    RTMP_SERVER = os.getenv('RTMP_SERVER')
+    ALSA_AUDIO_SOURCE = os.getenv('ALSA_AUDIO_SOURCE')
+    VIDEO_SIZE = os.getenv('VIDEO_SIZE')
+    FRAME_RATE = int(os.getenv('FRAME_RATE'))
+    BITRATE = int(os.getenv('BITRATE'))
+    KEYFRAME_INTERVAL = int(os.getenv('KEYFRAME_INTERVAL'))
+    AUDIO_OFFSET = os.getenv('AUDIO_OFFSET')
+    BUFFER_SIZE = BITRATE * 2
+
+@app.route('/')
+def index():
+    config = {
+        'STREAM_KEY': os.getenv('STREAM_KEY'),
+        'RTMP_SERVER': os.getenv('RTMP_SERVER'),
+        'ALSA_AUDIO_SOURCE': os.getenv('ALSA_AUDIO_SOURCE'),
+        'VIDEO_SIZE': os.getenv('VIDEO_SIZE'),
+        'FRAME_RATE': os.getenv('FRAME_RATE'),
+        'BITRATE': os.getenv('BITRATE'),
+        'KEYFRAME_INTERVAL': os.getenv('KEYFRAME_INTERVAL'),
+        'AUDIO_OFFSET': os.getenv('AUDIO_OFFSET')
+    }
+    return render_template('index.html', config=config)
 
 @app.route('/update_config', methods=['POST'])
-def api_update_config():
-    config = request.json
-    with open('.env', 'w') as f:
-        for key, value in config.items():
-            f.write(f"{key}={value}\n")
-    load_dotenv()  # Reload environment variables
-    return jsonify({"status": "config_updated"})
+def update_config():
+    data = request.form.to_dict()
+    update_env_file(data)
+    return jsonify({"message": "Config updated successfully"}), 200
 
-if __name__ == '__main__':
+@app.route('/start_stream', methods=['POST'])
+def start_stream_route():
+    start_stream()
+    return jsonify({"message": "Stream started"}), 200
+
+@app.route('/stop_stream', methods=['POST'])
+def stop_stream_route():
+    stop_stream()
+    return jsonify({"message": "Stream stopped"}), 200
+
+@app.route('/start_record', methods=['POST'])
+def start_record_route():
+    start_recording()
+    return jsonify({"message": "Recording started"}), 200
+
+@app.route('/stop_record', methods=['POST'])
+def stop_record_route():
+    stop_recording()
+    return jsonify({"message": "Recording stopped"}), 200
+
+# Function to run the Flask app in a separate thread
+def run_flask_app():
     app.run(host='0.0.0.0', port=5000)
+
+# Start the Flask app in a separate thread
+flask_thread = Thread(target=run_flask_app)
+flask_thread.start()
+
+# Main loop to handle button presses
+try:
+    while True:
+        stream_button_state = GPIO.input(STREAM_BUTTON_PIN)
+        record_button_state = GPIO.input(RECORD_BUTTON_PIN)
+        shutdown_button_state = GPIO.input(SHUTDOWN_BUTTON_PIN)
+        
+        current_time = time.time()
+
+        if stream_button_state == GPIO.LOW and last_stream_button_state == GPIO.HIGH and (current_time - last_stream_action_time) > ACTION_DELAY:
+            if streaming:
+                stop_stream()
+            else:
+                start_stream()
+            last_stream_action_time = current_time
+
+        if record_button_state == GPIO.LOW and last_record_button_state == GPIO.HIGH and (current_time - last_record_action_time) > ACTION_DELAY:
+            if recording:
+                stop_recording()
+            else:
+                start_recording()
+            last_record_action_time = current_time
+
+        if shutdown_button_state == GPIO.LOW and last_shutdown_button_state == GPIO.HIGH and (current_time - last_shutdown_action_time) > ACTION_DELAY:
+            shutdown_pi()
+            last_shutdown_action_time = current_time
+
+        last_stream_button_state = stream_button_state
+        last_record_button_state = record_button_state
+        last_shutdown_button_state = shutdown_button_state
+
+        time.sleep(0.1)
+
+except KeyboardInterrupt:
+    GPIO.cleanup()
