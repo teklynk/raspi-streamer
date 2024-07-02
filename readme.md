@@ -1,5 +1,3 @@
-
-
 # Project Overview: Raspberry Pi Streaming and Recording Setup
 This project aims to transform a Raspberry Pi into a powerful yet simple and convenient streaming and recording device using a USB capture card, push buttons, and LEDs. The compact setup allows for seamless streaming to platforms like Twitch, Owncast, Peertube, YouTube, and recording high-quality video and audio, making it perfect for live streaming enthusiasts, content creators, and anyone interested in leveraging open-source tools to build custom media solutions.
 
@@ -76,7 +74,6 @@ sudo smbpasswd -a teklynk
 sudo systemctl restart smbd
 ```
 
-
 # Install as a system service 
 
 ## Create systemd service file
@@ -116,11 +113,23 @@ sudo systemctl status stream_control.service
 ```
 
 # Additional Notes
-- Rename sample.env to .env and update the file with your settings.
-- Ensure the correct audio device (hw:1,0 in the example) is configured in your Python script (stream_control.py) for ALSA.
-- Customize the Samba configuration (smb.conf) according to your security and network requirements.
-- Adjust permissions (create mask, directory mask) in the Samba share configuration as necessary for your use case.
-- Audio latency may need to be adjusted depending on your capture device. Experiment with different -itsoffset values in stream_control.py. Try starting with: "-itsoffset", "0.1".
-- If you make a change to the stream_control.py script, you will need to restart the stream_control service.
-- The values in the sample.env are what worked best for me with a Raspberry Pi 4 8GB. These values were tested with Twitch and Owncast. Your experience may vary. 
-- KEYFRAME_INTERVAL=60 is the equivalent to a 2 second keyframe. This is based on your framerate * 2 (30 fps x 2 = 60 keyframe interval). 
+- Rename sample.env to .env and update it with your specific settings.
+- __Samba Setup:__
+  - Customize the Samba configuration (smb.conf) according to your security and network requirements.
+  - Adjust permissions (create mask, directory mask) in the Samba share configuration as necessary for your use case.
+- __Audio Latency:__
+  - Audio latency may need adjustment depending on your capture device. Experiment with different -itsoffset values in stream_control.py. Start with: "-itsoffset", "0.1".
+- __Service Management:__
+  - If you make changes to the stream_control.py script, restart the stream_control service to apply the updates.
+- __Performance Tips:__
+  - The values in sample.env worked best for testing on a Raspberry Pi 4 8GB with Twitch and Owncast. Your experience may vary.
+  - KEYFRAME_INTERVAL=60 corresponds to a 2-second keyframe interval, calculated as framerate * 2 (e.g., 30 fps * 2 = 60).
+- __Troubleshooting:__
+  - If something doesn't seem to be working, try turning it off and on again.
+
+# Future Plans
+This project is ongoing, with exciting future enhancements in the pipeline:
+- __Hardware Upgrade:__
+  - We plan to incorporate the [Geekworm Raspberry Pi X630 V1.5 Hdmi to CSI-2 Module](https://geekworm.com/products/x630) to replace the current USB capture device. This module will be integrated onto a custom circuit board along with LEDs, buttons, and GPIO headers, creating a "hat" for the Raspberry Pi. This will streamline the setup, making it almost a plug-and-play solution.
+- __Web UI:__
+  - A web-based user interface will be developed to configure settings, start/stop streaming and recording, and review logs. This interface will be accessible from mobile devices, allowing you to manage your streaming setup conveniently from your couch.
