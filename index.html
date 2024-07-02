@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stream Control</title>
+    <script>
+        function sendCommand(url) {
+            fetch(url, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(err => console.error(err));
+        }
+
+        function updateConfig() {
+            const config = {
+                STREAM_KEY: document.getElementById('stream_key').value,
+                RTMP_SERVER: document.getElementById('rtmp_server').value,
+                ALSA_AUDIO_SOURCE: document.getElementById('alsa_audio_source').value,
+                VIDEO_SIZE: document.getElementById('video_size').value,
+                FRAME_RATE: document.getElementById('frame_rate').value,
+                BITRATE: document.getElementById('bitrate').value,
+                KEYFRAME_INTERVAL: document.getElementById('keyframe_interval').value,
+                AUDIO_OFFSET: document.getElementById('audio_offset').value
+            };
+            fetch('/update_config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(err => console.error(err));
+        }
+    </script>
+</head>
+<body>
+    <h1>Stream Control</h1>
+    <button onclick="sendCommand('/start_stream')">Start Stream</button>
+    <button onclick="sendCommand('/stop_stream')">Stop Stream</button>
+    <button onclick="sendCommand('/start_recording')">Start Recording</button>
+    <button onclick="sendCommand('/stop_recording')">Stop Recording</button>
+    <h2>Update Config</h2>
+    <label for="stream_key">Stream Key:</label>
+    <input type="text" id="stream_key" name="stream_key"><br>
+    <label for="rtmp_server">RTMP Server:</label>
+    <input type="text" id="rtmp_server" name="rtmp_server"><br>
+    <label for="alsa_audio_source">ALSA Audio Source:</label>
+    <input type="text" id="alsa_audio_source" name="alsa_audio_source"><br>
+    <label for="video_size">Video Size:</label>
+    <input type="text" id="video_size" name="video_size"><br>
+    <label for="frame_rate">Frame Rate:</label>
+    <input type="number" id="frame_rate" name="frame_rate"><br>
+    <label for="bitrate">Bitrate:</label>
+    <input type="number" id="bitrate" name="bitrate"><br>
+    <label for="keyframe_interval">Keyframe Interval:</label>
+    <input type="number" id="keyframe_interval" name="keyframe_interval"><br>
+    <label for="audio_offset">Audio Offset:</label>
+    <input type="text" id="audio_offset" name="audio_offset"><br>
+    <button onclick="updateConfig()">Update Config</button>
+</body>
+</html>

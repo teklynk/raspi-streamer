@@ -4,6 +4,7 @@ import subprocess
 import os
 import logging
 from dotenv import load_dotenv
+from flask import Flask, request, jsonify
 
 # Load environment variables from .env file
 load_dotenv()
@@ -45,19 +46,10 @@ GPIO.setup(RECORD_LED_PIN, GPIO.OUT)
 # Initialize variables
 streaming = False
 recording = False
-last_stream_button_state = GPIO.input(STREAM_BUTTON_PIN)
-last_record_button_state = GPIO.input(RECORD_BUTTON_PIN)
-last_shutdown_button_state = GPIO.input(SHUTDOWN_BUTTON_PIN)
 stream_process = None
 record_process = None
 
-# Timestamp variables for debouncing
-last_stream_action_time = 0
-last_record_action_time = 0
-last_shutdown_action_time = 0
-
-# Minimum delay between actions in seconds
-ACTION_DELAY = 3
+app = Flask(__name__)
 
 def ensure_recordings_directory():
     if not os.path.exists('recordings'):
@@ -138,65 +130,38 @@ def stop_recording():
         logging.debug("Recording stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
 
-def shutdown_pi():
-    logging.debug("Rebooting...")
+@app.route('/start_stream', methods=['POST'])
+def api_start_stream():
+    if not streaming:
+        start_stream()
+    return jsonify({"status": "streaming_started"})
+
+@app.route('/stop_stream', methods=['POST'])
+def api_stop_stream():
     if streaming:
         stop_stream()
+    return jsonify({"status": "streaming_stopped"})
+
+@app.route('/start_recording', methods=['POST'])
+def api_start_recording():
+    if not recording:
+        start_recording()
+    return jsonify({"status": "recording_started"})
+
+@app.route('/stop_recording', methods=['POST'])
+def api_stop_recording():
     if recording:
         stop_recording()
-    GPIO.cleanup()
-    subprocess.call(['sudo', 'shutdown', '-r', 'now'])
+    return jsonify({"status": "recording_stopped"})
 
-try:
-    while True:
-        current_time = time.time()
+@app.route('/update_config', methods=['POST'])
+def api_update_config():
+    config = request.json
+    with open('.env', 'w') as f:
+        for key, value in config.items():
+            f.write(f"{key}={value}\n")
+    load_dotenv()  # Reload environment variables
+    return jsonify({"status": "config_updated"})
 
-        current_stream_button_state = GPIO.input(STREAM_BUTTON_PIN)
-        current_record_button_state = GPIO.input(RECORD_BUTTON_PIN)
-        current_shutdown_button_state = GPIO.input(SHUTDOWN_BUTTON_PIN)
-        
-        if current_stream_button_state == GPIO.LOW and last_stream_button_state == GPIO.HIGH:
-            if current_time - last_stream_action_time >= ACTION_DELAY:
-                last_stream_action_time = current_time
-                if recording:
-                    stop_recording()
-                    recording = False
-                if not streaming:
-                    start_stream()
-                    streaming = True
-                else:
-                    stop_stream()
-                    streaming = False
-
-        if current_record_button_state == GPIO.LOW and last_record_button_state == GPIO.HIGH:
-            if current_time - last_record_action_time >= ACTION_DELAY:
-                last_record_action_time = current_time
-                if streaming:
-                    stop_stream()
-                    streaming = False
-                if not recording:
-                    start_recording()
-                    recording = True
-                else:
-                    stop_recording()
-                    recording = False
-
-        if current_shutdown_button_state == GPIO.LOW and last_shutdown_button_state == GPIO.HIGH:
-            if current_time - last_shutdown_action_time >= ACTION_DELAY:
-                last_shutdown_action_time = current_time
-                shutdown_pi()
-        
-        last_stream_button_state = current_stream_button_state
-        last_record_button_state = current_record_button_state
-        last_shutdown_button_state = current_shutdown_button_state
-        time.sleep(0.1)  # adjust this value to suit your needs
-
-except KeyboardInterrupt:
-    logging.debug("Script interrupted by user")
-
-finally:
-    if streaming:
-        stop_stream()
-    if recording:
-        stop_recording()
-    GPIO.cleanup()
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
