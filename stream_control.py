@@ -24,7 +24,7 @@ AUDIO_OFFSET = os.getenv('AUDIO_OFFSET')
 
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
-KEYFRAME = FRAME_RATE * KEYFRAME_INTERVAL_SEC  # Keyframe interval in frames
+#KEYFRAME = FRAME_RATE * KEYFRAME_INTERVAL_SEC  # Keyframe interval in frames
 
 # Configure logging
 logging.basicConfig(filename='/home/teklynk/raspi-streamer/stream_control.log', level=logging.DEBUG)
@@ -76,7 +76,7 @@ def start_stream():
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0", # Video input settings
         "-probesize", "32", "-analyzeduration", "0", # Lower probing size and analysis duration for reduced latency
         "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k", # Video encoding settings
-        "-vf", "format=yuv420p", "-g", str(KEYFRAME),  # Keyframe interval
+        "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL_SEC),  # Keyframe interval
         "-profile:v", "main",
         "-c:a", "aac", "-b:a", "96k", "-ar", "44100", # Audio encoding settings
         "-max_delay", "0", # Max delay set to 0 for low latency
@@ -88,6 +88,7 @@ def start_stream():
     stream_process = subprocess.Popen(stream_command)
     GPIO.output(STREAM_LED_PIN, GPIO.HIGH)
     logging.debug("Stream started!")
+    logging.debug(stream_command)
 
 def stop_stream():
     global stream_process
@@ -125,6 +126,7 @@ def start_recording():
     record_process = subprocess.Popen(record_command)
     GPIO.output(RECORD_LED_PIN, GPIO.HIGH)
     logging.debug("Recording started!")
+    logging.debug(record_command)
 
 def stop_recording():
     global record_process
