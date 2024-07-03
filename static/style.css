@@ -7,29 +7,51 @@ body {
 
 h1 {
     text-align: center;
-    color: #eee;
-}
-
-form {
-    margin-bottom: 20px;
+    color: #fff;
 }
 
 label {
-    display: block;
-    margin-top: 10px;
-    color: #eee;
+    display: inline-block;
+    margin-bottom: .5rem;
+    color: #fff;
 }
 
 input {
     width: 100%;
-    padding: 8px;
-    margin-top: 5px;
-    box-sizing: border-box;
+    padding: .375rem .75rem;
+    line-height: 1.5;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    margin-top: .5rem;
 }
 
 button {
-    padding: 10px 20px;
+    padding: .375rem .75rem;
     cursor: pointer;
+    border: none;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    display: inline-block;
+    line-height: 1.5;
+    border-radius: .25rem;
+    border: 1px solid transparent;
+    font-weight: 400;
+}
+
+button.red {
+    color: #fff;
+    background-color:#dc3545;
+}
+
+button.green {
+    color: #fff;
+    background-color:#28a745;
+}
+
+button.default {
+    color: #fff;
+    background-color: #007bff;
 }
 
 #ControlPanel {
@@ -37,7 +59,7 @@ button {
 }
 
 #ControlPanel button {
-    color: white;
+    color: #fff;
     margin-top: 20px;
     font-size: 2.5rem;
     margin-left: 20px;

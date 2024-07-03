@@ -15,10 +15,10 @@
     </div>
 
     <div id="ControlPanel" class="tabcontent active">
-        <button style="background-color:#009900;" onclick="sendRequest('/start_stream')">Start Stream</button>
-        <button style="background-color:#990000;" onclick="sendRequest('/stop_stream')">Stop Stream</button>
-        <button style="background-color:#009900;" onclick="sendRequest('/start_record')">Start Record</button>
-        <button style="background-color:#990000;" onclick="sendRequest('/stop_record')">Stop Record</button>
+        <button class="green" onclick="sendRequest('/start_stream')">Start Stream</button>
+        <button class="red" onclick="sendRequest('/stop_stream')">Stop Stream</button>
+        <button class="green" white;" onclick="sendRequest('/start_record')">Start Record</button>
+        <button class="red" onclick="sendRequest('/stop_record')">Stop Record</button>
     </div>
 
     <div id="ConfigSettings" class="tabcontent">
@@ -47,9 +47,9 @@
             <label for="AUDIO_OFFSET">Audio Offset:</label>
             <input type="text" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}" placeholder="-0.8"><br>
             
-            <div style="text-align:center;"><button type="submit">Update</button></div>
+            <div style="text-align:center;"><button class="default" type="submit">Update</button></div>
         </form>
-        <div style="text-align:center;"><button style="background-color:#990000;color: white;" onclick="sendRequest('/reboot')">Reboot</button></div>
+        <div style="text-align:center;"><button class="red" onclick="sendRequest('/reboot')">Reboot</button></div>
     </div>
 
     <script>
