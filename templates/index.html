@@ -3,45 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Raspberry Pi Streamer</title>
+    <title>Raspi-Streamer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <style>
-        .tab {
-            overflow: hidden;
-            border: 1px solid #ccc;
-            background-color: #f1f1f1;
-        }
-
-        .tab button {
-            background-color: inherit;
-            border: none;
-            outline: none;
-            cursor: pointer;
-            padding: 14px 16px;
-            transition: 0.3s;
-        }
-
-        .tab button:hover {
-            background-color: #ddd;
-        }
-
-        .tab button.active {
-            background-color: #ccc;
-        }
-
-        .tabcontent {
-            display: none;
-            padding: 6px 12px;
-            border-top: none;
-        }
-
-        .tabcontent.active {
-            display: block;
-        }
-    </style>
 </head>
 <body>
-    <h1>Raspberry Pi Streamer Control Panel</h1>
+    <h1>Raspi-Streamer</h1>
 
     <div class="tab">
         <button class="tablinks" onclick="openTab(event, 'ControlPanel')" id="defaultTab">Control Panel</button>
@@ -58,28 +24,28 @@
     <div id="ConfigSettings" class="tabcontent">
         <form id="configForm">
             <label for="STREAM_KEY">Stream Key:</label>
-            <input type="text" id="STREAM_KEY" name="STREAM_KEY" value="{{ config['STREAM_KEY'] }}"><br>
+            <input type="text" id="STREAM_KEY" name="STREAM_KEY" value="{{ config['STREAM_KEY'] }}" placeholder="abc123"><br>
             
             <label for="RTMP_SERVER">RTMP Server:</label>
-            <input type="text" id="RTMP_SERVER" name="RTMP_SERVER" value="{{ config['RTMP_SERVER'] }}"><br>
+            <input type="text" id="RTMP_SERVER" name="RTMP_SERVER" value="{{ config['RTMP_SERVER'] }}" placeholder="rtmp://192.168.0.40:1935/live/"><br>
             
             <label for="ALSA_AUDIO_SOURCE">ALSA Audio Source:</label>
-            <input type="text" id="ALSA_AUDIO_SOURCE" name="ALSA_AUDIO_SOURCE" value="{{ config['ALSA_AUDIO_SOURCE'] }}"><br>
+            <input type="text" id="ALSA_AUDIO_SOURCE" name="ALSA_AUDIO_SOURCE" value="{{ config['ALSA_AUDIO_SOURCE'] }}" placeholder="hw:1,0"><br>
             
             <label for="VIDEO_SIZE">Video Size:</label>
-            <input type="text" id="VIDEO_SIZE" name="VIDEO_SIZE" value="{{ config['VIDEO_SIZE'] }}"><br>
+            <input type="text" id="VIDEO_SIZE" name="VIDEO_SIZE" value="{{ config['VIDEO_SIZE'] }}" placeholder="1280x720"><br>
             
             <label for="FRAME_RATE">Frame Rate:</label>
-            <input type="text" id="FRAME_RATE" name="FRAME_RATE" value="{{ config['FRAME_RATE'] }}"><br>
+            <input type="text" id="FRAME_RATE" name="FRAME_RATE" value="{{ config['FRAME_RATE'] }}" placeholder="30"><br>
             
             <label for="BITRATE">Bitrate:</label>
-            <input type="text" id="BITRATE" name="BITRATE" value="{{ config['BITRATE'] }}"><br>
+            <input type="text" id="BITRATE" name="BITRATE" value="{{ config['BITRATE'] }}" placeholder="3000"><br>
             
             <label for="KEYFRAME_INTERVAL">Keyframe Interval:</label>
-            <input type="text" id="KEYFRAME_INTERVAL" name="KEYFRAME_INTERVAL" value="{{ config['KEYFRAME_INTERVAL'] }}"><br>
+            <input type="text" id="KEYFRAME_INTERVAL" name="KEYFRAME_INTERVAL" value="{{ config['KEYFRAME_INTERVAL'] }}" placeholder="60"><br>
             
             <label for="AUDIO_OFFSET">Audio Offset:</label>
-            <input type="text" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}"><br>
+            <input type="text" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}" placeholder="-0.8"><br>
             
             <button type="submit">Update Config</button>
         </form>
