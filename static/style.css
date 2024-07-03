@@ -17,12 +17,15 @@ label {
 }
 
 input {
+    display: block;
     width: 100%;
-    padding: .375rem .75rem;
+    font-size: 1.2rem;
+    padding: .75rem;
     line-height: 1.5;
     border: 1px solid #ced4da;
     border-radius: .25rem;
     margin-top: .5rem;
+    margin-bottom: .5rem;
 }
 
 button {
@@ -64,6 +67,10 @@ button.default {
     font-size: 2.5rem;
     margin-left: 20px;
     margin-right: 20px;
+}
+
+#ControlPanel, #ConfigSettings {
+    padding: 2.5rem;
 }
 
 #ConfigSettings button {
