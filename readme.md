@@ -27,6 +27,12 @@ Push Buttons and LEDs: Provide a user-friendly interface for controlling the str
 sudo apt install ffmpeg python3-rpi-lgpio python3-dotenv python3-flask v4l-utils samba samba-common-bin nodejs npm
 ```
 
+# The Web UI uses node and express
+```bash
+npm init -y
+npm install express dotenv
+```
+
 # Identify the audio source
 ```bash
 arecord -l

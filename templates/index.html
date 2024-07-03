@@ -15,10 +15,10 @@
     </div>
 
     <div id="ControlPanel" class="tabcontent active">
-        <button onclick="sendRequest('/start_stream')">Start Stream</button>
-        <button onclick="sendRequest('/stop_stream')">Stop Stream</button>
-        <button onclick="sendRequest('/start_record')">Start Record</button>
-        <button onclick="sendRequest('/stop_record')">Stop Record</button>
+        <button style="background-color:#009900;" onclick="sendRequest('/start_stream')">Start Stream</button>
+        <button style="background-color:#990000;" onclick="sendRequest('/stop_stream')">Stop Stream</button>
+        <button style="background-color:#009900;" onclick="sendRequest('/start_record')">Start Record</button>
+        <button style="background-color:#990000;" onclick="sendRequest('/stop_record')">Stop Record</button>
     </div>
 
     <div id="ConfigSettings" class="tabcontent">
@@ -49,7 +49,7 @@
             
             <div style="text-align:center;"><button type="submit">Update</button></div>
         </form>
-        <div style="text-align:center;"><button onclick="sendRequest('/reboot')">Reboot</button></div>
+        <div style="text-align:center;"><button style="background-color:#990000;color: white;" onclick="sendRequest('/reboot')">Reboot</button></div>
     </div>
 
     <script>
