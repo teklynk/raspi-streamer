@@ -27,7 +27,7 @@ Push Buttons and LEDs: Provide a user-friendly interface for controlling the str
 sudo apt install ffmpeg python3-rpi-lgpio python3-dotenv python3-flask v4l-utils samba samba-common-bin nodejs npm
 ```
 
-# The Web UI uses node and express
+## The Web UI uses node and express
 ```bash
 npm init -y
 npm install express dotenv
@@ -46,6 +46,15 @@ card 1: Device [USB Audio Device], device 0: USB Audio [USB Audio]
 ```
 
 This will list the available capture hardware devices. Note the device identifier (e.g., "hw:1,0" for card 1, device 0).
+
+You can use the update_audio_device.sh script to automatically set your capture card audio. Review and modify the script for your specific device. Run: `arecord -l` to get details about the connected audio/video devices. The update_audio_device.sh script can be set as a crontab job to run after reboots.
+
+```bash
+crontab -e
+```
+```bash
+@reboot sleep 60 && cd /home/teklynk/raspi-streamer && /home/teklynk/raspi-streamer/update_audio_device.sh >> /home/teklynk/raspi-streamer/update_audio_device.log 2>&1
+```
 
 # Create project directory
 ```bash
