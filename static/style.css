@@ -31,6 +31,17 @@ button {
     cursor: pointer;
 }
 
+#ControlPanel {
+    text-align: center;
+}
+
+#ControlPanel button {
+    margin-top: 20px;
+    font-size: 2.5rem;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
 .tab {
     overflow: hidden;
     border: 1px solid #ccc;
