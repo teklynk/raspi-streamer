@@ -47,9 +47,9 @@
             <label for="AUDIO_OFFSET">Audio Offset:</label>
             <input type="text" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}" placeholder="-0.8"><br>
             
-            <button type="submit">Update Config</button>
+            <div style="text-align:center;"><button type="submit">Update</button></div>
         </form>
-        <button onclick="sendRequest('/reboot')">Reboot</button>
+        <div style="text-align:center;"><button onclick="sendRequest('/reboot')">Reboot</button></div>
     </div>
 
     <script>

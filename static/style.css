@@ -1,10 +1,12 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 20px;
+    margin: 0;
+    padding: 0;
     background-color: #171717;
 }
 
 h1 {
+    text-align: center;
     color: #eee;
 }
 
@@ -27,7 +29,6 @@ input {
 
 button {
     padding: 10px 20px;
-    margin-top: 10px;
     cursor: pointer;
 }
 
@@ -42,10 +43,18 @@ button {
     margin-right: 20px;
 }
 
+#ConfigSettings button {
+    margin-top: 20px;
+    font-size: 2.5rem;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
 .tab {
+    text-align: center;
     overflow: hidden;
     border: 1px solid #ccc;
-    background-color: #f1f1f1;
+    background-color: #eee;
 }
 
 .tab button {
@@ -55,6 +64,7 @@ button {
     cursor: pointer;
     padding: 14px 16px;
     transition: 0.3s;
+    font-size: 1.0rem;
 }
 
 .tab button:hover {
