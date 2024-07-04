@@ -81,7 +81,7 @@ def start_stream():
         "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k", # Video encoding settings
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
         "-profile:v", "main",
-        "-c:a", "aac", "-b:a", "96k", "-ar", "44100", # Audio encoding settings
+        "-c:a", "aac", "-b:a", "128k", "-ar", "44100", # Audio encoding settings
         "-max_delay", "0", # Max delay set to 0 for low latency
         "-use_wallclock_as_timestamps", "1", # Use wallclock timestamps
         "-flush_packets", "1", # Flush packets
@@ -125,7 +125,7 @@ def start_recording():
         "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k", # Video encoding settings
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
         "-profile:v", "main",
-        "-c:a", "aac", "-b:a", "96k", "-ar", "44100", # Audio encoding settings
+        "-c:a", "aac", "-b:a", "128k", "-ar", "44100", # Audio encoding settings
         "-max_delay", "0", # Max delay set to 0 for low latency
         "-use_wallclock_as_timestamps", "1", # Use wallclock timestamps
         "-flush_packets", "1", # Flush packets
