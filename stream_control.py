@@ -211,7 +211,7 @@ def index():
 def update_config():
     data = request.form.to_dict()
     update_env_file(data)
-    return jsonify({"message": "Config updated successfully"}), 200
+    return jsonify({"message": "Config updated successfully. You will need to restart the service or reboot for these settings to take affect."}), 200
 
 @app.route('/start_stream', methods=['POST'])
 def start_stream_route():
