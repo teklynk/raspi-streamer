@@ -161,6 +161,15 @@ def shutdown_pi():
     GPIO.cleanup()
     subprocess.call(['sudo', 'shutdown', '-r', 'now'])
 
+def restart_service():
+    logging.debug("Restarting stream_control service...")
+    if streaming:
+        stop_stream()
+    if recording:
+        stop_recording()
+    GPIO.cleanup()
+    subprocess.call(['sudo', 'systemctl', 'restart', 'stream_control.service'])
+
 # Flask application
 app = Flask(__name__)
 
@@ -226,6 +235,11 @@ def stop_record_route():
 def shutdown_route():
     shutdown_pi()
     return jsonify({"message": "Rebooting"}), 200
+
+@app.route('/restart', methods=['POST'])
+def restart_route():
+    restart_service()
+    return jsonify({"message": "Restarting service"}), 200
 
 # Function to run the Flask app in a separate thread
 def run_flask_app():

@@ -49,7 +49,10 @@
             
             <div style="text-align:center;"><button class="default" type="submit">Update</button></div>
         </form>
-        <div style="text-align:center;"><button class="red" onclick="sendRequest('/reboot')">Reboot</button></div>
+        <div style="text-align:center;">
+            <button class="red" onclick="sendRequest('/restart')">Restart Service</button>
+            <button class="red" onclick="sendRequest('/reboot')">Reboot System</button>
+        </div>
     </div>
 
     <script>
