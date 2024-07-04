@@ -159,6 +159,7 @@ def shutdown_pi():
     if recording:
         stop_recording()
     GPIO.cleanup()
+    time.sleep(3)
     subprocess.call(['sudo', 'shutdown', '-r', 'now'])
 
 def restart_service():
@@ -168,6 +169,7 @@ def restart_service():
     if recording:
         stop_recording()
     GPIO.cleanup()
+    time.sleep(3)
     subprocess.call(['sudo', 'systemctl', 'restart', 'stream_control.service'])
 
 # Flask application
