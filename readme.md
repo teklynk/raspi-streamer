@@ -47,14 +47,8 @@ card 1: Device [USB Audio Device], device 0: USB Audio [USB Audio]
 
 This will list the available capture hardware devices. Note the device identifier (e.g., "hw:1,0" for card 1, device 0).
 
-You can use the update_audio_device.sh script to automatically set your capture card audio. Review and modify the script for your specific device. Run: `arecord -l` to get details about the connected audio/video devices. The update_audio_device.sh script can be set as a crontab job to run after reboots.
+You can use the `update_audio_device.sh` script to automatically set your capture card audio. Review and modify the script for your specific device. Run: `arecord -l` to get details about the connected audio/video devices. The `update_audio_device.sh` script can be set as a crontab job to run after reboots.
 
-```bash
-crontab -e
-```
-```bash
-@reboot sleep 60 && cd /home/teklynk/raspi-streamer && /home/teklynk/raspi-streamer/update_audio_device.sh >> /home/teklynk/raspi-streamer/update_audio_device.log 2>&1
-```
 
 # Create project directory
 ```bash
@@ -115,6 +109,32 @@ Environment="PYTHONUNBUFFERED=1"
 WantedBy=multi-user.target
 ```
 
+If using the `update_audio_device.sh` script you can add the script to the service like this:
+
+```bash
+[Unit]
+Description=Stream Control Service
+After=network.target sound.target
+
+[Service]
+ExecStartPre=/bin/sleep 10
+ExecStartPre=/home/teklynk/raspi-streamer/update_audio_device.sh
+ExecStartPre=/bin/sleep 1
+ExecStart=/usr/bin/sudo -E /usr/bin/python3 /home/teklynk/raspi-streamer/stream_control.py
+WorkingDirectory=/home/teklynk/raspi-streamer
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=teklynk
+Group=teklynk
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target
+```
+
+This will ensure that the `update_audio_device.sh` script runs before the `stream_control.py` script starts
+
 ## Reload systemd daemon and enable/start the service
 
 ```bash
@@ -146,5 +166,3 @@ sudo systemctl status stream_control.service
 This project is ongoing, with exciting future enhancements in the pipeline:
 - __Hardware Upgrade:__
   - We plan to incorporate the [Geekworm Raspberry Pi X630 V1.5 Hdmi to CSI-2 Module](https://geekworm.com/products/x630) to replace the current USB capture device. This module will be integrated onto a custom circuit board along with LEDs, buttons, and GPIO headers, creating a "hat" for the Raspberry Pi. This will streamline the setup, making it almost a plug-and-play solution.
-- __Web UI:__
-  - A web-based user interface will be developed to configure settings, start/stop streaming and recording, and review logs. This interface will be accessible from mobile devices, allowing you to manage your streaming setup conveniently from your couch.
