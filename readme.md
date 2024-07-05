@@ -32,8 +32,6 @@ Push Buttons and LEDs: Provide a user-friendly interface for controlling the str
 - `cd raspi-streamer`
 - `./install.sh`
 
-
-
 # Manual install
 
 # Install necessary packages
@@ -158,3 +156,11 @@ This project is ongoing, with exciting future enhancements in the pipeline:
   - Ability to create multiple config files for various platforms and/or stream settings and choose a config to use for streaming or recording. A way to manage config files (create, edit, delete).
 - __Installer:__
   - Install script that will install everything needed to get up and running. 
+
+# Screenshots
+
+<div style="text-align:center;margin:4px;display:block;"><img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_webui_1.png?raw=true" style=" width:400px;" />
+</div>
+<div style="text-align:center;margin:4px;display:block;">
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_webui_2.png?raw=true" style=" width:400px;" />
+</div>
