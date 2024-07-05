@@ -172,6 +172,16 @@ def restart_service():
     time.sleep(3)
     subprocess.call(['sudo', 'systemctl', 'restart', 'stream_control.service'])
 
+def poweroff_pi():
+    logging.debug("Shutting down...")
+    if streaming:
+        stop_stream()
+    if recording:
+        stop_recording()
+    GPIO.cleanup()
+    time.sleep(3)
+    subprocess.call(['sudo', 'shutdown', '-h', 'now'])
+
 # Flask application
 app = Flask(__name__)
 
@@ -237,6 +247,11 @@ def stop_record_route():
 def shutdown_route():
     shutdown_pi()
     return jsonify({"message": "Rebooting"}), 200
+
+@app.route('/poweroff', methods=['POST'])
+def poweroff_route():
+    poweroff_pi()
+    return jsonify({"message": "Shutting down..."}), 200
 
 @app.route('/restart', methods=['POST'])
 def restart_route():
