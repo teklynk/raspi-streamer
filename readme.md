@@ -26,6 +26,16 @@ Push Buttons and LEDs: Provide a user-friendly interface for controlling the str
 - You have already installed the Lite version of Raspberry Pi OS.
 - A user has been created and you have enabled Remote GPIO from `raspi-config`.
 
+# Installer script
+- Clone this repo to your Raspberry Pi. 
+- `git clone https://github.com/teklynk/raspi-streamer`
+- `cd raspi-streamer`
+- `./install.sh`
+
+
+
+# Manual install
+
 # Install necessary packages
 ```bash
 sudo apt install ffmpeg python3-rpi-lgpio python3-dotenv python3-flask v4l-utils samba samba-common-bin nodejs npm
@@ -90,30 +100,6 @@ sudo systemctl restart smbd
 # Install as a system service 
 
 ## Create systemd service file
-```bash
-sudo nano /etc/systemd/system/stream_control.service
-```
-
-```bash
-[Unit]
-Description=Stream Control Service
-After=network.target sound.target
-
-[Service]
-ExecStart=/usr/bin/sudo -E /usr/bin/python3 /home/teklynk/raspi-streamer/stream_control.py
-WorkingDirectory=/home/teklynk/raspi-streamer
-StandardOutput=inherit
-StandardError=inherit
-Restart=always
-User=teklynk
-Group=teklynk
-Environment="PYTHONUNBUFFERED=1"
-
-[Install]
-WantedBy=multi-user.target
-```
-
-If using the `update_audio_device.sh` script you can add the script to the service like this:
 
 ```bash
 [Unit]

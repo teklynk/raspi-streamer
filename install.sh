@@ -13,6 +13,9 @@ sudo apt install -y ffmpeg python3-rpi-lgpio python3-dotenv python3-flask v4l-ut
 # Change to the working directory
 cd "$WORK_DIR"
 
+# Update the code base
+git pull
+
 # Initialize npm and install node packages
 npm init -y
 npm install express dotenv
