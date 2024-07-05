@@ -1,3 +1,4 @@
 /recordings
 *.log
 .env
+/node_modules
