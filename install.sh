@@ -31,22 +31,22 @@ fi
 # Setup Samba share configuration
 SAMBA_CONF="/etc/samba/smb.conf"
 SHARE_CONF="[raspi-streamer]
-path = $WORK_DIR
-browseable = yes
-writable = yes
-only guest = no
-create mask = 0777
-directory mask = 0777
-public = yes"
+   path = $WORK_DIR
+   browseable = yes
+   writable = yes
+   only guest = no
+   create mask = 0777
+   directory mask = 0777
+   public = yes"
 
-if ! grep -q "[raspi-streamer]" "$SAMBA_CONF"; then
-    echo "$SHARE_CONF" | sudo tee -a "$SAMBA_CONF"
-    sudo smbpasswd -a $CURRENT_USER
-    sudo systemctl restart smbd
-    echo "Samba share configured"
-else
-    echo "Samba share already configured"
-fi
+# Remove any existing raspi-streamer configuration
+sudo sed -i '/\[raspi-streamer\]/,/^$/d' "$SAMBA_CONF"
+
+# Add the new configuration
+echo "$SHARE_CONF" | sudo tee -a "$SAMBA_CONF"
+sudo smbpasswd -a $CURRENT_USER
+sudo systemctl restart smbd
+echo "Samba share configured"
 
 # Create stream_control service file
 SERVICE_FILE="/etc/systemd/system/stream_control.service"
