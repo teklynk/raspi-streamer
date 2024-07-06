@@ -78,7 +78,7 @@ def start_stream():
         "-fflags", "nobuffer", "-flags", "low_delay", "-strict", "experimental",  # Flags for low latency
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0",  # Video input settings
         "-probesize", "32", "-analyzeduration", "0",  # Lower probing size and analysis duration for reduced latency
-        "-map", "0:a?", "-map", "1:v?",  # Map all audio streams from ALSA and the video stream from V4L2
+        "-map", "0",  # Map all audio streams from ALSA
         "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k",  # Video encoding settings
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
         "-profile:v", "main",
@@ -123,7 +123,7 @@ def start_recording():
         "-fflags", "nobuffer", "-flags", "low_delay", "-strict", "experimental",  # Flags for low latency
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0",  # Video input settings
         "-probesize", "32", "-analyzeduration", "0",  # Lower probing size and analysis duration for reduced latency
-        "-map", "0:a?", "-map", "1:v?",  # Map all audio streams from ALSA and the video stream from V4L2
+        "-map", "0",  # Map all audio streams from ALSA
         "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k",  # Video encoding settings
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
         "-profile:v", "main",
