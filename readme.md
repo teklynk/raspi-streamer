@@ -151,20 +151,21 @@ sudo systemctl status stream_control.service
 # Future Plans
 This project is ongoing, with exciting future enhancements in the pipeline:
 - __Hardware Upgrade:__
-  - We plan to incorporate the [Geekworm Raspberry Pi X630 V1.5 Hdmi to CSI-2 Module](https://geekworm.com/products/x630) to replace the current USB capture device. This module will be integrated onto a custom circuit board along with LEDs, buttons, and GPIO headers, creating a "hat" for the Raspberry Pi. This will streamline the setup, making it almost a plug-and-play solution.
+  - We plan to incorporate the [Geekworm Raspberry Pi Hdmi to CSI-2 Module C790](https://geekworm.com/products/c790) to replace the current USB capture device. This module will be integrated onto a custom circuit board along with LEDs, buttons, and GPIO headers, creating a "hat" for the Raspberry Pi. This will streamline the setup, making it almost a plug-and-play solution.
 - __Web UI:__
   - Ability to create multiple config files for various platforms and/or stream settings and choose a config to use for streaming or recording. A way to manage config files (create, edit, delete).
+  - Ability to stream a video file or a directory of files with loop option.
 - __Installer:__
   - Install script that will install everything needed to get up and running. 
 
 # Screenshots
 
-Here is my setup:
+## Here is my setup:
 - Raspberry Pi 4 8gb
 - Argon One case
 - EVGA XR1 USB Capture card
 
-This is all stored under my entertainment center. I use the Web UI from my phone to control Raspi-Streamer.
+This is all stored under my entertainment center and powered on when I want to stream from my game consoles. I use the Web UI from my phone to control Raspi-Streamer.
 
 <div style="text-align:center;margin:4px;display:block;">
 <img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_rpi_1.png?raw=true" style=" width:400px;" />
