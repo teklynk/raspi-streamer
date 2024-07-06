@@ -159,7 +159,20 @@ This project is ongoing, with exciting future enhancements in the pipeline:
 
 # Screenshots
 
-<div style="text-align:center;margin:4px;display:block;"><img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_webui_1.png?raw=true" style=" width:400px;" />
+Here is my setup:
+- Raspberry Pi 4 8gb
+- Argon One case
+- EVGA XR1 USB Capture card
+
+This is all stored under my entertainment center. I use the Web UI from my phone to control Raspi-Streamer.
+
+<div style="text-align:center;margin:4px;display:block;">
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_rpi_1.png?raw=true" style=" width:400px;" />
+</div>
+
+## Web UI
+<div style="text-align:center;margin:4px;display:block;">
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_webui_1.png?raw=true" style=" width:400px;" />
 </div>
 <div style="text-align:center;margin:4px;display:block;">
 <img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_webui_2.png?raw=true" style=" width:400px;" />
