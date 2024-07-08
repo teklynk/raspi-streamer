@@ -102,47 +102,45 @@
         let stream_button_text = "Start Stream";
         let record_button_text = "Start Record";
 
-        document.addEventListener("DOMContentLoaded", function() {
-            function toggleStream() {
-                if (stream_button_text === "Start Stream") {
-                    sendRequest('/start_stream');
-                    stream_button_text = "Stop Stream";
-                    isStreaming = true;
-                    document.getElementById('start_record').disabled = true; 
-                } else {
-                    sendRequest('/stop_stream');
-                    stream_button_text = "Start Stream";
-                    isStreaming = false;
-                    document.getElementById('start_record').disabled = false; 
-                }
-                
-                // Toggle the class name
-                document.getElementById('stream_button').classList.toggle("green");
-                document.getElementById('stream_button').classList.toggle("red");
-                
-                document.getElementById('stream_button').innerText = stream_button_text;
+        function toggleStream() {
+            if (stream_button_text === "Start Stream") {
+                sendRequest('/start_stream');
+                stream_button_text = "Stop Stream";
+                isStreaming = true;
+                document.getElementById('start_record').disabled = true; 
+            } else {
+                sendRequest('/stop_stream');
+                stream_button_text = "Start Stream";
+                isStreaming = false;
+                document.getElementById('start_record').disabled = false; 
             }
+            
+            // Toggle the class name
+            document.getElementById('stream_button').classList.toggle("green");
+            document.getElementById('stream_button').classList.toggle("red");
+            
+            document.getElementById('stream_button').innerText = stream_button_text;
+        }
 
-            function toggleRecord() {
-                if (record_button_text === "Start Record") {
-                    sendRequest('/start_record');
-                    record_button_text = "Stop Record";
-                    isRecording = true;
-                    document.getElementById('start_stream').disabled = true; 
-                } else {
-                    sendRequest('/stop_record');
-                    record_button_text = "Start Record";
-                    isRecording = false;
-                    document.getElementById('start_stream').disabled = false; 
-                }
-                
-                // Toggle the class name
-                document.getElementById('record_button').classList.toggle("green");
-                document.getElementById('record_button').classList.toggle("red");
-                
-                document.getElementById('record_button').innerText = record_button_text;
+        function toggleRecord() {
+            if (record_button_text === "Start Record") {
+                sendRequest('/start_record');
+                record_button_text = "Stop Record";
+                isRecording = true;
+                document.getElementById('start_stream').disabled = true; 
+            } else {
+                sendRequest('/stop_record');
+                record_button_text = "Start Record";
+                isRecording = false;
+                document.getElementById('start_stream').disabled = false; 
             }
-        });
+            
+            // Toggle the class name
+            document.getElementById('record_button').classList.toggle("green");
+            document.getElementById('record_button').classList.toggle("red");
+            
+            document.getElementById('record_button').innerText = record_button_text;
+        }
     </script>
 </body>
 </html>
