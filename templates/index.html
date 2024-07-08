@@ -112,7 +112,7 @@
                 sendRequest('/stop_stream');
                 stream_button_text = "Start Stream";
                 isStreaming = false;
-                document.getElementById('record_button').disabled = !isStreaming; 
+                document.getElementById('record_button').disabled = isStreaming; 
             }
             
             // Toggle the class name
@@ -132,7 +132,7 @@
                 sendRequest('/stop_record');
                 record_button_text = "Start Record";
                 isRecording = false;
-                document.getElementById('stream_button').disabled = !isRecording; 
+                document.getElementById('stream_button').disabled = isRecording; 
             }
             
             // Toggle the class name
