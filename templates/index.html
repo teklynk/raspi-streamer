@@ -16,8 +16,7 @@
 
     <div id="ControlPanel" class="tabcontent active">
         <button class="green" id="stream_button" onclick="toggleStream()">Start Stream</button>
-        <button class="green" white;" onclick="sendRequest('/start_record')">Start Record</button>
-        <button class="red" onclick="sendRequest('/stop_record')">Stop Record</button>
+        <button class="green" id="record_button" onclick="toggleRecord()">Start Record</button>
     </div>
 
     <div id="ConfigSettings" class="tabcontent">
@@ -108,7 +107,30 @@
                 sendRequest('/stop_stream');
                 stream_button_text = "Start Stream";
             }
+            
+            // Toggle the class name
+            document.getElementById('stream_button').classList.toggle("green");
+            document.getElementById('stream_button').classList.toggle("red");
+            
             document.getElementById('stream_button').innerText = stream_button_text;
+        }
+
+        let record_button_text = "Start Record";
+
+        function toggleRecord() {
+            if (srecord_button_text === "Start Record") {
+                sendRequest('/start_record');
+                record_button_text = "Stop Record";
+            } else {
+                sendRequest('/stop_record');
+                record_button_text = "Start Record";
+            }
+            
+            // Toggle the class name
+            document.getElementById('record_button').classList.toggle("green");
+            document.getElementById('record_button').classList.toggle("red");
+            
+            document.getElementById('record_button').innerText = record_button_text;
         }
     </script>
 </body>

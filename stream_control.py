@@ -278,10 +278,8 @@ try:
         if stream_button_state == GPIO.LOW and last_stream_button_state == GPIO.HIGH and (current_time - last_stream_action_time) > ACTION_DELAY:
             if streaming:
                 stop_stream()
-                stream_button_text = "Start Stream"
             else:
                 start_stream()
-                stream_button_text = "Stop Stream"
             last_stream_action_time = current_time
 
         if record_button_state == GPIO.LOW and last_record_button_state == GPIO.HIGH and (current_time - last_record_action_time) > ACTION_DELAY:
