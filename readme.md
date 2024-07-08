@@ -215,6 +215,9 @@ ffmpeg -list_formats all -f v4l2 -i /dev/video0
 ## Update device firmware
 In my case with the EVGA XR1 Lite usb capture device, I had to update its firmware in order for `v4l2-ctl --list-formats-ext` to show resolutions above 1280x720 30fps. After the firmware update it now shows 1080p and 720p at 60fps. It also allowed me to disable HDCP. Check if your device has a firmware update.
 
+## USB 3.0 Devices
+Make sure that your capture device is connected to the (blue) USB 3.0 port and that you are using a USB 3.0 cable.
+
 # Screenshots
 
 ## Here is my setup:
