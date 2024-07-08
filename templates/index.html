@@ -15,8 +15,8 @@
     </div>
 
     <div id="ControlPanel" class="tabcontent active">
-        <button class="green" id="stream_button" onclick="toggleStream()" disabled="false">Start Stream</button>
-        <button class="green" id="record_button" onclick="toggleRecord()" disabled="false">Start Record</button>
+        <button class="green" id="stream_button" onclick="toggleStream()" disabled>Start Stream</button>
+        <button class="green" id="record_button" onclick="toggleRecord()" disabled>Start Record</button>
     </div>
 
     <div id="ConfigSettings" class="tabcontent">
@@ -101,6 +101,9 @@
         let isRecording = false;
         let stream_button_text = "Start Stream";
         let record_button_text = "Start Record";
+
+        document.getElementById('start_record').disabled = false;
+        document.getElementById('start_stream').disabled = false;
 
         function toggleStream() {
             if (stream_button_text === "Start Stream") {
