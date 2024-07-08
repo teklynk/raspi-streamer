@@ -15,8 +15,7 @@
     </div>
 
     <div id="ControlPanel" class="tabcontent active">
-        <button class="green" onclick="sendRequest('/start_stream')">Start Stream</button>
-        <button class="red" onclick="sendRequest('/stop_stream')">Stop Stream</button>
+        <button class="green" id="stream_button" onclick="toggleStream()">Start Stream</button>
         <button class="green" white;" onclick="sendRequest('/start_record')">Start Record</button>
         <button class="red" onclick="sendRequest('/stop_record')">Stop Record</button>
     </div>
@@ -98,6 +97,19 @@
 
         // Set the default tab to be active
         document.getElementById("defaultTab").click();
+
+        let stream_button_text = "Start Stream";
+
+        function toggleStream() {
+            if (stream_button_text === "Start Stream") {
+                sendRequest('/start_stream');
+                stream_button_text = "Stop Stream";
+            } else {
+                sendRequest('/stop_stream');
+                stream_button_text = "Start Stream";
+            }
+            document.getElementById('stream_button').innerText = stream_button_text;
+        }
     </script>
 </body>
 </html>

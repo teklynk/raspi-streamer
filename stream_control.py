@@ -150,7 +150,7 @@ def stop_recording():
         GPIO.output(RECORD_LED_PIN, GPIO.LOW)
         logging.debug("Recording stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
-    recording = False
+        recording = False
 
 def shutdown_pi():
     logging.debug("Rebooting...")
@@ -190,18 +190,18 @@ def update_env_file(data):
     with open('.env', 'w') as env_file:
         for key, value in data.items():
             env_file.write(f"{key}={value}\n")
-    load_dotenv()  # Reload the .env file to update the environment variables
-    # Update global variables with new values
-    global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE
-    STREAM_KEY = os.getenv('STREAM_KEY')
-    RTMP_SERVER = os.getenv('RTMP_SERVER')
-    ALSA_AUDIO_SOURCE = os.getenv('ALSA_AUDIO_SOURCE')
-    VIDEO_SIZE = os.getenv('VIDEO_SIZE')
-    FRAME_RATE = int(os.getenv('FRAME_RATE'))
-    BITRATE = int(os.getenv('BITRATE'))
-    KEYFRAME_INTERVAL = int(os.getenv('KEYFRAME_INTERVAL'))
-    AUDIO_OFFSET = os.getenv('AUDIO_OFFSET')
-    BUFFER_SIZE = BITRATE * 2
+        load_dotenv()  # Reload the .env file to update the environment variables
+        # Update global variables with new values
+        global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE
+        STREAM_KEY = os.getenv('STREAM_KEY')
+        RTMP_SERVER = os.getenv('RTMP_SERVER')
+        ALSA_AUDIO_SOURCE = os.getenv('ALSA_AUDIO_SOURCE')
+        VIDEO_SIZE = os.getenv('VIDEO_SIZE')
+        FRAME_RATE = int(os.getenv('FRAME_RATE'))
+        BITRATE = int(os.getenv('BITRATE'))
+        KEYFRAME_INTERVAL = int(os.getenv('KEYFRAME_INTERVAL'))
+        AUDIO_OFFSET = os.getenv('AUDIO_OFFSET')
+        BUFFER_SIZE = BITRATE * 2
 
 @app.route('/')
 def index():
@@ -278,8 +278,10 @@ try:
         if stream_button_state == GPIO.LOW and last_stream_button_state == GPIO.HIGH and (current_time - last_stream_action_time) > ACTION_DELAY:
             if streaming:
                 stop_stream()
+                stream_button_text = "Start Stream"
             else:
                 start_stream()
+                stream_button_text = "Stop Stream"
             last_stream_action_time = current_time
 
         if record_button_state == GPIO.LOW and last_record_button_state == GPIO.HIGH and (current_time - last_record_action_time) > ACTION_DELAY:
