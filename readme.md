@@ -201,6 +201,17 @@ This project is ongoing, with exciting future enhancements in the pipeline:
   - Ability to create multiple config files for various platforms and/or stream settings and choose a config to use for streaming or recording. A way to manage config files (create, edit, delete).
   - Ability to stream a video file or a directory of files.
 
+# Troubleshooting
+Find out what resolutions your capture device is capable of:
+
+```bash
+v4l2-ctl --list-formats-ext
+```
+
+```bash
+ffmpeg -list_formats all -f v4l2 -i /dev/video0
+```
+
 # Screenshots
 
 ## Here is my setup:
