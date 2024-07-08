@@ -15,8 +15,8 @@
     </div>
 
     <div id="ControlPanel" class="tabcontent active">
-        <button class="green" id="stream_button" onclick="toggleStream()" disabled="">Start Stream</button>
-        <button class="green" id="record_button" onclick="toggleRecord()" disabled="">Start Record</button>
+        <button class="green" id="stream_button" onclick="toggleStream()">Start Stream</button>
+        <button class="green" id="record_button" onclick="toggleRecord()">Start Record</button>
     </div>
 
     <div id="ConfigSettings" class="tabcontent">
@@ -107,12 +107,12 @@
                 sendRequest('/start_stream');
                 stream_button_text = "Stop Stream";
                 isStreaming = true;
-                document.getElementById('start_record').disabled = true; 
+                document.getElementById('start_record').disabled = isRecording; 
             } else {
                 sendRequest('/stop_stream');
                 stream_button_text = "Start Stream";
                 isStreaming = false;
-                document.getElementById('start_record').disabled = false; 
+                document.getElementById('start_record').disabled = !isStreaming; 
             }
             
             // Toggle the class name
@@ -127,12 +127,12 @@
                 sendRequest('/start_record');
                 record_button_text = "Stop Record";
                 isRecording = true;
-                document.getElementById('start_stream').disabled = true; 
+                document.getElementById('start_stream').disabled = isStreaming; 
             } else {
                 sendRequest('/stop_record');
                 record_button_text = "Start Record";
                 isRecording = false;
-                document.getElementById('start_stream').disabled = false; 
+                document.getElementById('start_stream').disabled = !isRecording; 
             }
             
             // Toggle the class name
