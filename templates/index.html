@@ -4,71 +4,79 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raspi-Streamer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Raspi-Streamer</h1>
+    <div class="container">
+        <h1 class="mt-4 mb-4">Raspi-Streamer</h1>
 
-    <div class="tab">
-        <button class="tablinks" onclick="openTab(event, 'ControlPanel')" id="defaultTab">Control Panel</button>
-        <button class="tablinks" onclick="openTab(event, 'ConfigSettings')">Config Settings</button>
-    </div>
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="control-panel-tab" data-toggle="tab" href="#ControlPanel" role="tab" aria-controls="ControlPanel" aria-selected="true">Control Panel</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="config-settings-tab" data-toggle="tab" href="#ConfigSettings" role="tab" aria-controls="ConfigSettings" aria-selected="false">Config Settings</a>
+            </li>
+        </ul>
 
-    <div id="ControlPanel" class="tabcontent active">
-        <button class="green" id="stream_button" onclick="toggle('stream')">Start Stream</button>
-        <button class="green" id="record_button" onclick="toggle('record')">Start Record</button>
-    </div>
-
-    <div id="ConfigSettings" class="tabcontent">
-        <form id="configForm">
-            <label for="STREAM_KEY">Stream Key:</label>
-            <input type="text" id="STREAM_KEY" name="STREAM_KEY" value="{{ config['STREAM_KEY'] }}" placeholder="abc123"><br>
-            
-            <label for="RTMP_SERVER">RTMP Server:</label>
-            <input type="text" id="RTMP_SERVER" name="RTMP_SERVER" value="{{ config['RTMP_SERVER'] }}" placeholder="rtmp://192.168.0.40:1935/live/"><br>
-            
-            <label for="ALSA_AUDIO_SOURCE">ALSA Audio Source:</label>
-            <input type="text" id="ALSA_AUDIO_SOURCE" name="ALSA_AUDIO_SOURCE" value="{{ config['ALSA_AUDIO_SOURCE'] }}" placeholder="hw:1,0"><br>
-            
-            <label for="VIDEO_SIZE">Video Size:</label>
-            <input type="text" id="VIDEO_SIZE" name="VIDEO_SIZE" value="{{ config['VIDEO_SIZE'] }}" placeholder="1280x720"><br>
-            
-            <label for="FRAME_RATE">Frame Rate:</label>
-            <input type="text" id="FRAME_RATE" name="FRAME_RATE" value="{{ config['FRAME_RATE'] }}" placeholder="30"><br>
-            
-            <label for="BITRATE">Bitrate:</label>
-            <input type="text" id="BITRATE" name="BITRATE" value="{{ config['BITRATE'] }}" placeholder="3000"><br>
-            
-            <label for="KEYFRAME_INTERVAL">Keyframe Interval:</label>
-            <input type="text" id="KEYFRAME_INTERVAL" name="KEYFRAME_INTERVAL" value="{{ config['KEYFRAME_INTERVAL'] }}" placeholder="60"><br>
-            
-            <label for="AUDIO_OFFSET">Audio Offset:</label>
-            <input type="text" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}" placeholder="-0.8"><br>
-            
-            <div style="text-align:center;"><button class="default" type="submit">Update</button></div>
-        </form>
-        <div style="text-align:center;">
-            <button class="red" onclick="sendRequest('/restart')">Restart Service</button>
-            <button class="red" onclick="sendRequest('/reboot')">Reboot System</button>
-            <button class="red" onclick="sendRequest('/poweroff')">Power Off</button>
+        <div class="tab-content mt-4">
+            <div class="tab-pane fade show active" id="ControlPanel" role="tabpanel" aria-labelledby="control-panel-tab">
+                <button class="btn btn-success mb-2" id="stream_button" onclick="toggle('stream')">Start Stream</button>
+                <button class="btn btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
+            </div>
+            <div class="tab-pane fade" id="ConfigSettings" role="tabpanel" aria-labelledby="config-settings-tab">
+                <form id="configForm">
+                    <div class="form-group">
+                        <label for="STREAM_KEY">Stream Key:</label>
+                        <input type="text" class="form-control" id="STREAM_KEY" name="STREAM_KEY" value="{{ config['STREAM_KEY'] }}" placeholder="abc123">
+                    </div>
+                    <div class="form-group">
+                        <label for="RTMP_SERVER">RTMP Server:</label>
+                        <input type="text" class="form-control" id="RTMP_SERVER" name="RTMP_SERVER" value="{{ config['RTMP_SERVER'] }}" placeholder="rtmp://192.168.0.40:1935/live/">
+                    </div>
+                    <div class="form-group">
+                        <label for="ALSA_AUDIO_SOURCE">ALSA Audio Source:</label>
+                        <input type="text" class="form-control" id="ALSA_AUDIO_SOURCE" name="ALSA_AUDIO_SOURCE" value="{{ config['ALSA_AUDIO_SOURCE'] }}" placeholder="hw:1,0">
+                    </div>
+                    <div class="form-group">
+                        <label for="VIDEO_SIZE">Video Size:</label>
+                        <input type="text" class="form-control" id="VIDEO_SIZE" name="VIDEO_SIZE" value="{{ config['VIDEO_SIZE'] }}" placeholder="1280x720">
+                    </div>
+                    <div class="form-group">
+                        <label for="FRAME_RATE">Frame Rate:</label>
+                        <input type="text" class="form-control" id="FRAME_RATE" name="FRAME_RATE" value="{{ config['FRAME_RATE'] }}" placeholder="30">
+                    </div>
+                    <div class="form-group">
+                        <label for="BITRATE">Bitrate:</label>
+                        <input type="text" class="form-control" id="BITRATE" name="BITRATE" value="{{ config['BITRATE'] }}" placeholder="3000">
+                    </div>
+                    <div class="form-group">
+                        <label for="KEYFRAME_INTERVAL">Keyframe Interval:</label>
+                        <input type="text" class="form-control" id="KEYFRAME_INTERVAL" name="KEYFRAME_INTERVAL" value="{{ config['KEYFRAME_INTERVAL'] }}" placeholder="60">
+                    </div>
+                    <div class="form-group">
+                        <label for="AUDIO_OFFSET">Audio Offset:</label>
+                        <input type="text" class="form-control" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}" placeholder="-0.8">
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary" type="submit">Update</button>
+                    </div>
+                </form>
+                <div class="text-center mt-4">
+                    <button class="btn btn-danger mr-2" onclick="sendRequest('/restart')">Restart Service</button>
+                    <button class="btn btn-danger mr-2" onclick="sendRequest('/reboot')">Reboot System</button>
+                    <button class="btn btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
+                </div>
+            </div>
         </div>
     </div>
 
-    <script>
-        function openTab(evt, tabName) {
-            var i, tabcontent, tablinks;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            for (i = 0; i < tabcontent.length; i++) {
-                tabcontent[i].classList.remove("active");
-            }
-            tablinks = document.getElementsByClassName("tablinks");
-            for (i = 0; i < tablinks.length; i++) {
-                tablinks[i].className = tablinks[i].className.replace(" active", "");
-            }
-            document.getElementById(tabName).classList.add("active");
-            evt.currentTarget.className += " active";
-        }
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+    <script>
         document.getElementById('configForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const formData = new FormData(event.target);
@@ -94,9 +102,6 @@
                 .catch(error => console.error('Error:', error));
         }
 
-        // Set the default tab to be active
-        document.getElementById("defaultTab").click();
-
         function toggle(type) {
             let button = document.getElementById(`${type}_button`);
             let otherButton = document.getElementById(type === 'stream' ? 'record_button' : 'stream_button');
@@ -113,13 +118,16 @@
                 otherButton.disabled = false;
             }
 
-            button.classList.toggle("green");
-            button.classList.toggle("red");
+            button.classList.toggle("btn-success");
+            button.classList.toggle("btn-danger");
         }
 
         function capitalizeFirstLetter(string) {
             return string.charAt(0).toUpperCase() + string.slice(1);
         }
+
+        // Activate the default tab
+        $('#defaultTab').tab('show');
     </script>
 </body>
 </html>
