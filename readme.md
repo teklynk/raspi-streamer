@@ -192,6 +192,8 @@ sudo reboot
 - __Performance Tips:__
   - The values in `sample.env` worked best for testing on a Raspberry Pi 4 8GB with Twitch and Owncast. Your experience may vary.
   - KEYFRAME_INTERVAL=60 corresponds to a 2-second keyframe interval, calculated as framerate * 2 (e.g., 30 fps * 2 = 60).
+- __Stream & Record:__
+  - If you would like to record while you stream you will need to set the m3u8 URL. The Stream & Record feature will not work if this is not set. Recordings are saved in the recordings directory.
 
 # Future Plans
 This project is ongoing, with exciting future enhancements in the pipeline:
