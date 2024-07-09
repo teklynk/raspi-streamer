@@ -8,9 +8,9 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-4 mb-4">Raspi-Streamer</h1>
+        <h1 class="mt-4 mb-4 text-center">Raspi-Streamer</h1>
 
-        <ul class="nav nav-tabs" role="tablist">
+        <ul class="nav nav-pills nav-fill" role="tablist">
             <li class="nav-item">
                 <a class="nav-link active" id="control-panel-tab" data-toggle="tab" href="#ControlPanel" role="tab" aria-controls="ControlPanel" aria-selected="true">Control Panel</a>
             </li>
@@ -20,11 +20,15 @@
         </ul>
 
         <div class="tab-content mt-4">
-            <div class="tab-pane fade show active" id="ControlPanel" role="tabpanel" aria-labelledby="control-panel-tab">
-                <button class="btn btn-success mb-2" id="stream_button" onclick="toggle('stream')">Start Stream</button>
-                <button class="btn btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
+            <div class="tab-pane mb-4 fade show active" id="ControlPanel" role="tabpanel" aria-labelledby="control-panel-tab">
+                <div class="text-center mt-4">
+                    <button class="btn btn-lg btn-success mb-2" id="stream_button" onclick="toggle('stream')">Start Stream</button>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-lg btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
+                </div>
             </div>
-            <div class="tab-pane fade" id="ConfigSettings" role="tabpanel" aria-labelledby="config-settings-tab">
+            <div class="tab-pane fade mb-4" id="ConfigSettings" role="tabpanel" aria-labelledby="config-settings-tab">
                 <form id="configForm">
                     <div class="form-group">
                         <label for="STREAM_KEY">Stream Key:</label>
@@ -36,36 +40,40 @@
                     </div>
                     <div class="form-group">
                         <label for="ALSA_AUDIO_SOURCE">ALSA Audio Source:</label>
-                        <input type="text" class="form-control" id="ALSA_AUDIO_SOURCE" name="ALSA_AUDIO_SOURCE" value="{{ config['ALSA_AUDIO_SOURCE'] }}" placeholder="hw:1,0">
+                        <input type="text" class="form-control form-control-lg" id="ALSA_AUDIO_SOURCE" name="ALSA_AUDIO_SOURCE" value="{{ config['ALSA_AUDIO_SOURCE'] }}" placeholder="hw:1,0">
                     </div>
                     <div class="form-group">
                         <label for="VIDEO_SIZE">Video Size:</label>
-                        <input type="text" class="form-control" id="VIDEO_SIZE" name="VIDEO_SIZE" value="{{ config['VIDEO_SIZE'] }}" placeholder="1280x720">
+                        <input type="text" class="form-control form-control-lg" id="VIDEO_SIZE" name="VIDEO_SIZE" value="{{ config['VIDEO_SIZE'] }}" placeholder="1280x720">
                     </div>
                     <div class="form-group">
                         <label for="FRAME_RATE">Frame Rate:</label>
-                        <input type="text" class="form-control" id="FRAME_RATE" name="FRAME_RATE" value="{{ config['FRAME_RATE'] }}" placeholder="30">
+                        <input type="text" class="form-control form-control-lg" id="FRAME_RATE" name="FRAME_RATE" value="{{ config['FRAME_RATE'] }}" placeholder="30">
                     </div>
                     <div class="form-group">
                         <label for="BITRATE">Bitrate:</label>
-                        <input type="text" class="form-control" id="BITRATE" name="BITRATE" value="{{ config['BITRATE'] }}" placeholder="3000">
+                        <input type="text" class="form-control form-control-lg" id="BITRATE" name="BITRATE" value="{{ config['BITRATE'] }}" placeholder="3000">
                     </div>
                     <div class="form-group">
                         <label for="KEYFRAME_INTERVAL">Keyframe Interval:</label>
-                        <input type="text" class="form-control" id="KEYFRAME_INTERVAL" name="KEYFRAME_INTERVAL" value="{{ config['KEYFRAME_INTERVAL'] }}" placeholder="60">
+                        <input type="text" class="form-control form-control-lg" id="KEYFRAME_INTERVAL" name="KEYFRAME_INTERVAL" value="{{ config['KEYFRAME_INTERVAL'] }}" placeholder="60">
                     </div>
                     <div class="form-group">
                         <label for="AUDIO_OFFSET">Audio Offset:</label>
-                        <input type="text" class="form-control" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}" placeholder="-0.8">
+                        <input type="text" class="form-control form-control-lg" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}" placeholder="-0.8">
                     </div>
-                    <div class="text-center">
-                        <button class="btn btn-primary" type="submit">Update</button>
+                    <div class="text-center mt-4">
+                        <button class="btn btn-lg btn-primary" type="submit">Update</button>
                     </div>
                 </form>
                 <div class="text-center mt-4">
-                    <button class="btn btn-danger mr-2" onclick="sendRequest('/restart')">Restart Service</button>
-                    <button class="btn btn-danger mr-2" onclick="sendRequest('/reboot')">Reboot System</button>
-                    <button class="btn btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
+                    <button class="btn btn-lg btn-danger" onclick="sendRequest('/restart')">Restart Service</button>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-lg btn-danger" onclick="sendRequest('/reboot')">Reboot System</button>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-lg btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
                 </div>
             </div>
         </div>
