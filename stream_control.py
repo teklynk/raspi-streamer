@@ -23,6 +23,7 @@ FRAME_RATE = int(os.getenv('FRAME_RATE'))
 BITRATE = int(os.getenv('BITRATE'))
 KEYFRAME_INTERVAL = int(os.getenv('KEYFRAME_INTERVAL'))
 AUDIO_OFFSET = os.getenv('AUDIO_OFFSET')
+STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
 
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
