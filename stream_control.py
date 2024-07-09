@@ -117,7 +117,6 @@ def start_recording():
     logging.debug("Starting recording...")
     record_command = [
         "ffmpeg",
-        "-retries", "3",  # specify the number of retries
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
         "-thread_queue_size", "64",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
@@ -156,20 +155,46 @@ def stop_recording():
 
 def start_stream_recording():
     global stream_record_process, recording
+
     if recording:
         return
+
+    if not STREAM_M3U8_URL:
+        logging.error("STREAM_M3U8_URL is not set or is empty. Cannot start recording.")
+        return
+
     ensure_recordings_directory()
     logging.debug("Starting stream recording...")
+
     stream_record_command = [
         "ffmpeg",
-        "-retries", "3",  # specify the number of retries
-        "-i", str(STREAM_M3U8_URL),
+        "-re", "-i", str(STREAM_M3U8_URL),
         "-c", "copy", f"recordings/stream_{int(time.time())}.mp4"
     ]
+
     stream_record_process = subprocess.Popen(stream_record_command)
     logging.debug("Recording stream started!")
     logging.debug(stream_record_command)
     recording = True
+
+def stop_stream_recording():
+    global stream_record_process, recording
+
+    if not recording:
+        return
+
+    if not STREAM_M3U8_URL:
+        logging.error("STREAM_M3U8_URL is not set or is empty. Cannot stop recording.")
+        return
+
+    if stream_record_process:
+        logging.debug("Stopping recording...")
+        stream_record_process.terminate()
+        stream_record_process.wait()
+        stream_record_process = None
+        logging.debug("Recording stopped!")
+        time.sleep(3)  # Wait for 3 seconds to ensure the device is released
+        recording = False
 
 def shutdown_pi():
     logging.debug("Rebooting...")
@@ -211,7 +236,7 @@ def update_env_file(data):
             env_file.write(f"{key}={value}\n")
         load_dotenv()  # Reload the .env file to update the environment variables
         # Update global variables with new values
-        global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE
+        global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL
         STREAM_KEY = os.getenv('STREAM_KEY')
         RTMP_SERVER = os.getenv('RTMP_SERVER')
         ALSA_AUDIO_SOURCE = os.getenv('ALSA_AUDIO_SOURCE')
@@ -220,6 +245,7 @@ def update_env_file(data):
         BITRATE = int(os.getenv('BITRATE'))
         KEYFRAME_INTERVAL = int(os.getenv('KEYFRAME_INTERVAL'))
         AUDIO_OFFSET = os.getenv('AUDIO_OFFSET')
+        STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
         BUFFER_SIZE = BITRATE * 2
 
 @app.route('/')
@@ -232,7 +258,8 @@ def index():
         'FRAME_RATE': os.getenv('FRAME_RATE'),
         'BITRATE': os.getenv('BITRATE'),
         'KEYFRAME_INTERVAL': os.getenv('KEYFRAME_INTERVAL'),
-        'AUDIO_OFFSET': os.getenv('AUDIO_OFFSET')
+        'AUDIO_OFFSET': os.getenv('AUDIO_OFFSET'),
+        'STREAM_M3U8_URL': os.getenv('STREAM_M3U8_URL')
     }
     return render_template('index.html', config=config)
 
@@ -240,15 +267,19 @@ def index():
 def update_config():
     data = request.form.to_dict()
     update_env_file(data)
-    time.sleep(1)
     shutdown_pi()
     return jsonify({"message": "Config updated successfully. Rebooting"}), 200
 
 @app.route('/start_stream', methods=['POST'])
 def start_stream_route():
     start_stream()
-    start_stream_recording()
     return jsonify({"message": "Stream started"}), 200
+
+@app.route('/start_record_stream', methods=['POST'])
+def start_record_stream_route():
+    start_stream()
+    start_stream_recording()
+    return jsonify({"message": "Stream and record started"}), 200
 
 @app.route('/stop_stream', methods=['POST'])
 def stop_stream_route():

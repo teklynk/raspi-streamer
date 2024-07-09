@@ -25,6 +25,9 @@
                     <button class="btn btn-lg btn-success mb-2" id="stream_button" onclick="toggle('stream')">Start Stream</button>
                 </div>
                 <div class="text-center mt-4">
+                    <button class="btn btn-lg btn-success mb-2" id="stream_record_button" onclick="toggle('record_stream')">Start Stream & Record</button>
+                </div>
+                <div class="text-center mt-4">
                     <button class="btn btn-lg btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
                 </div>
             </div>
@@ -61,6 +64,10 @@
                     <div class="form-group">
                         <label for="AUDIO_OFFSET">Audio Offset:</label>
                         <input type="text" class="form-control form-control-lg" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}" placeholder="-0.8">
+                    </div>
+                    <div class="form-group">
+                        <label for="STREAM_M3U8_URL">M3U8 URL:</label>
+                        <input type="text" class="form-control form-control-lg" id="STREAM_M3U8_URL" name="STREAM_M3U8_URL" value="{{ config['STREAM_M3U8_URL'] }}" placeholder="https://stream.example.com/hls/1/stream.m3u8">
                     </div>
                     <div class="text-center mt-4">
                         <button class="btn btn-lg btn-primary" type="submit">Update</button>
@@ -111,26 +118,31 @@
 
         function toggle(type) {
             let button = document.getElementById(`${type}_button`);
-            let otherButton = document.getElementById(type === 'stream' ? 'record_button' : 'stream_button');
-            let startText = `Start ${capitalizeFirstLetter(type)}`;
-            let stopText = `Stop ${capitalizeFirstLetter(type)}`;
+            let otherButtons = ['stream_button', 'stream_record_button', 'record_button'].filter(id => id !== `${type}_button`);
+            let startText = `Start ${getButtonLabel(type)}`;
+            let stopText = `Stop ${getButtonLabel(type)}`;
 
             if (button.innerText === startText) {
                 sendRequest(`/start_${type}`);
                 button.innerText = stopText;
-                otherButton.disabled = true;
+                otherButtons.forEach(id => document.getElementById(id).disabled = true);
             } else {
                 sendRequest(`/stop_${type}`);
                 button.innerText = startText;
-                otherButton.disabled = false;
+                otherButtons.forEach(id => document.getElementById(id).disabled = false);
             }
 
             button.classList.toggle("btn-success");
             button.classList.toggle("btn-danger");
         }
 
-        function capitalizeFirstLetter(string) {
-            return string.charAt(0).toUpperCase() + string.slice(1);
+        function getButtonLabel(type) {
+            switch (type) {
+                case 'stream': return 'Stream';
+                case 'record_stream': return 'Stream & Record';
+                case 'record': return 'Record';
+                default: return '';
+            }
         }
 
         // Activate the default tab
