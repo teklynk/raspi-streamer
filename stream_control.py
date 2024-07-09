@@ -145,6 +145,7 @@ def start_stream_recording():
         return
     ensure_recordings_directory()
     logging.debug("Starting stream recording...")
+    time.sleep(60)  # wait for 1 minute
     stream_record_command = [
         "ffmpeg",
         "-re", "-i", str(STREAM_M3U8_URL),
