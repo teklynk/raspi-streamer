@@ -26,7 +26,7 @@
                     <button class="btn btn-lg btn-success mb-2" id="stream_button" onclick="toggle('stream')">Start Stream</button>
                 </div>
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-success mb-2" id="stream_record_button" onclick="toggle('record_stream')">Start Stream & Record</button>
+                    <button class="btn btn-lg btn-success mb-2" id="stream_record_button" onclick="toggle('stream_record')">Start Stream & Record</button>
                 </div>
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
@@ -145,7 +145,7 @@
         function getButtonLabel(type) {
             switch (type) {
                 case 'stream': return 'Stream';
-                case 'record_stream': return 'Stream & Record';
+                case 'stream_record': return 'Stream & Record';
                 case 'record': return 'Record';
                 default: return '';
             }
