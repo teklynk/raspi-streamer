@@ -145,7 +145,6 @@ def start_stream_recording():
         return
     ensure_recordings_directory()
     logging.debug("Starting stream recording...")
-    time.sleep(60)  # wait for 1 minute
     stream_record_command = [
         "ffmpeg",
         "-re", "-i", str(STREAM_M3U8_URL),
@@ -240,12 +239,14 @@ def index():
 def update_config():
     data = request.form.to_dict()
     update_env_file(data)
+    time.sleep(1)
     shutdown_pi()
     return jsonify({"message": "Config updated successfully. Rebooting"}), 200
 
 @app.route('/start_stream', methods=['POST'])
 def start_stream_route():
     start_stream()
+    time.sleep(15)  # wait for 15 seconds
     start_stream_recording()
     return jsonify({"message": "Stream started"}), 200
 
