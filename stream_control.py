@@ -288,6 +288,7 @@ def start_stream_record_route():
 
 @app.route('/stop_stream_record', methods=['POST'])
 def stop_stream_record_route():
+    stop_stream()
     stop_stream_recording()
     return jsonify({"message": "Stream and record stopped"}), 200
 
