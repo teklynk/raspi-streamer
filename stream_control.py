@@ -117,6 +117,7 @@ def start_recording():
     logging.debug("Starting recording...")
     record_command = [
         "ffmpeg",
+        "-retries", "3",  # specify the number of retries
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
         "-thread_queue_size", "64",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
@@ -139,23 +140,6 @@ def start_recording():
     logging.debug(record_command)
     recording = True
 
-def start_stream_recording():
-    global stream_record_process, recording
-    if recording:
-        return
-    ensure_recordings_directory()
-    logging.debug("Starting stream recording...")
-    stream_record_command = [
-        "ffmpeg",
-        "-re", "-i", str(STREAM_M3U8_URL),
-        "-c", "copy", f"recordings/stream_{int(time.time())}.mp4"
-    ]
-    stream_record_process = subprocess.Popen(stream_record_command)
-    #GPIO.output(RECORD_LED_PIN, GPIO.HIGH)
-    logging.debug("Recording stream started!")
-    logging.debug(stream_record_command)
-    #recording = True
-
 def stop_recording():
     global record_process, recording
     if not recording:
@@ -169,6 +153,23 @@ def stop_recording():
         logging.debug("Recording stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
         recording = False
+
+def start_stream_recording():
+    global stream_record_process, recording
+    if recording:
+        return
+    ensure_recordings_directory()
+    logging.debug("Starting stream recording...")
+    stream_record_command = [
+        "ffmpeg",
+        "-retries", "3",  # specify the number of retries
+        "-i", str(STREAM_M3U8_URL),
+        "-c", "copy", f"recordings/stream_{int(time.time())}.mp4"
+    ]
+    stream_record_process = subprocess.Popen(stream_record_command)
+    logging.debug("Recording stream started!")
+    logging.debug(stream_record_command)
+    recording = True
 
 def shutdown_pi():
     logging.debug("Rebooting...")
@@ -246,7 +247,6 @@ def update_config():
 @app.route('/start_stream', methods=['POST'])
 def start_stream_route():
     start_stream()
-    time.sleep(15)  # wait for 15 seconds
     start_stream_recording()
     return jsonify({"message": "Stream started"}), 200
 
