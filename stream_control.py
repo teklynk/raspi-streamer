@@ -138,6 +138,23 @@ def start_recording():
     logging.debug(record_command)
     recording = True
 
+def start_stream_recording():
+    global stream_record_process, recording
+    if recording:
+        return
+    ensure_recordings_directory()
+    logging.debug("Starting stream recording...")
+    stream_record_command = [
+        "ffmpeg",
+        "-re", "-i", str(STREAM_M3U8_URL),
+        "-c", "copy", f"recordings/stream_{int(time.time())}.mp4"
+    ]
+    stream_record_process = subprocess.Popen(stream_record_command)
+    #GPIO.output(RECORD_LED_PIN, GPIO.HIGH)
+    logging.debug("Recording stream started!")
+    logging.debug(stream_record_command)
+    #recording = True
+
 def stop_recording():
     global record_process, recording
     if not recording:
@@ -227,6 +244,7 @@ def update_config():
 @app.route('/start_stream', methods=['POST'])
 def start_stream_route():
     start_stream()
+    start_stream_recording()
     return jsonify({"message": "Stream started"}), 200
 
 @app.route('/stop_stream', methods=['POST'])
