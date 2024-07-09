@@ -270,39 +270,39 @@ def update_config():
     data = request.form.to_dict()
     update_env_file(data)
     shutdown_pi()
-    return jsonify({"message": "Config updated successfully. Rebooting"}), 200
+    return jsonify({"message": "Config updated successfully. Rebooting..."}), 200
 
 @app.route('/start_stream', methods=['POST'])
 def start_stream_route():
     start_stream()
-    return jsonify({"message": "Stream started"}), 200
+    return
 
 @app.route('/stop_stream', methods=['POST'])
 def stop_stream_route():
     stop_stream()
-    return jsonify({"message": "Stream stopped"}), 200   
+    return  
 
 @app.route('/start_stream_record', methods=['POST'])
 def start_stream_record_route():
     start_stream()
     start_stream_recording()
-    return jsonify({"message": "Stream and record started"}), 200
+    return
 
 @app.route('/stop_stream_record', methods=['POST'])
 def stop_stream_record_route():
     stop_stream()
     stop_stream_recording()
-    return jsonify({"message": "Stream and record stopped"}), 200
+    return
 
 @app.route('/start_record', methods=['POST'])
 def start_record_route():
     start_recording()
-    return jsonify({"message": "Recording started"}), 200
+    return
 
 @app.route('/stop_record', methods=['POST'])
 def stop_record_route():
     stop_recording()
-    return jsonify({"message": "Recording stopped"}), 200
+    return
 
 @app.route('/reboot', methods=['POST'])
 def shutdown_route():
@@ -317,7 +317,7 @@ def poweroff_route():
 @app.route('/restart', methods=['POST'])
 def restart_route():
     restart_service()
-    return jsonify({"message": "Restarting service"}), 200
+    return jsonify({"message": "Restarting service..."}), 200
 
 # Function to run the Flask app in a separate thread
 def run_flask_app():
