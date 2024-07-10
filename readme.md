@@ -236,8 +236,8 @@ This is all stored under my entertainment center and powered on when I want to s
 
 ## Web UI
 <div style="text-align:center;margin:4px;display:block;">
-<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_webui_1.png?raw=true" style=" width:400px;" />
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/screenshot_webui_1.png?raw=true" style=" width:400px;" />
 </div>
 <div style="text-align:center;margin:4px;display:block;">
-<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_webui_2.png?raw=true" style=" width:400px;" />
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/screenshot_webui_2.png?raw=true" style=" width:400px;" />
 </div>
