@@ -25,9 +25,11 @@
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-success mb-2" id="stream_button" onclick="toggle('stream')">Start Stream</button>
                 </div>
+                {% if config['STREAM_M3U8_URL'] %}
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-success mb-2" id="stream_record_button" onclick="toggle('stream_record')">Start Stream & Record</button>
                 </div>
+                {% endif %}
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
                 </div>
