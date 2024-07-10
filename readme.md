@@ -194,6 +194,8 @@ sudo reboot
   - KEYFRAME_INTERVAL=60 corresponds to a 2-second keyframe interval, calculated as framerate * 2 (e.g., 30 fps * 2 = 60).
 - __Stream & Record:__
   - If you would like to record while you stream you will need to set the m3u8 URL. The Stream & Record feature will not work if this is not set. Recordings are saved in the recordings directory.
+- __Twitch Streaming:__
+  - Visit [Twitch list of ingest servers](https://help.twitch.tv/s/twitch-ingest-recommendation?language=en_US) to find the rtmp url needed to stream to Twitch.
 
 # Future Plans
 This project is ongoing, with exciting future enhancements in the pipeline:
