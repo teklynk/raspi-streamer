@@ -29,7 +29,7 @@ STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
 BUFFER_SIZE = BITRATE * 2  # in kbps
 
 # Configure logging
-logging.basicConfig(filename='/home/teklynk/raspi-streamer/stream_control.log', level=logging.DEBUG)
+#logging.basicConfig(filename='/home/teklynk/raspi-streamer/stream_control.log', level=logging.DEBUG)
 
 # Set up GPIO pins for buttons and LEDs
 GPIO.setmode(GPIO.BCM)
