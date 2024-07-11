@@ -217,19 +217,20 @@ def start_file_stream():
             "-c:v", "copy", "-c:a", "aac", "-strict", "-2", "-ac", "2", "-b:a", "128k", "-ar", "44100", "-f", "flv",
             f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
         ]
-    elif os.path.isfile(STREAM_FILE + '.txt'):
-        logging.debug(f"Streaming playlist file: {STREAM_FILE}.txt")
+    elif STREAM_FILE.endswith('.txt') and os.path.isfile(STREAM_FILE):
+        logging.debug(f"Streaming playlist file: {STREAM_FILE}")
         file_stream_command = [
             "ffmpeg",
-            "-re", "-f", "concat", "-safe", "0", "-stream_loop", "-1", "-i", f"{STREAM_FILE}.txt",
+            "-re", "-f", "concat", "-safe", "0", "-stream_loop", "-1", "-i", str(STREAM_FILE),
             "-c:v", "copy", "-c:a", "aac", "-strict", "-2", "-ac", "2", "-b:a", "128k", "-ar", "44100", "-f", "flv",
             f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
         ]
     else:
-        logging.error(f"{STREAM_FILE} or {STREAM_FILE}.txt not found. Cannot start file streaming.")
+        logging.error(f"{STREAM_FILE} not found or invalid format. Cannot start file streaming.")
         return
 
     stream_process = subprocess.Popen(file_stream_command)
+    # Ensure GPIO library is imported and configured if using
     GPIO.output(STREAM_LED_PIN, GPIO.HIGH)
     logging.debug("File stream started!")
     logging.debug(file_stream_command)
