@@ -214,7 +214,7 @@ def start_file_stream():
         file_stream_command = [
             "ffmpeg",
             "-re", "-stream_loop", "-1", "-i", str(STREAM_FILE),
-            "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-f", "flv",
+            "-c:v", "copy", "-c:a", "aac", "-strict", "-2", "-ac", "2", "-b:a", "128k", "-ar", "44100", "-f", "flv",
             f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
         ]
     elif os.path.isfile(STREAM_FILE + '.txt'):
@@ -222,7 +222,7 @@ def start_file_stream():
         file_stream_command = [
             "ffmpeg",
             "-re", "-f", "concat", "-safe", "0", "-stream_loop", "-1", "-i", f"{STREAM_FILE}.txt",
-            "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-f", "flv",
+            "-c:v", "copy", "-c:a", "aac", "-strict", "-2", "-ac", "2", "-b:a", "128k", "-ar", "44100", "-f", "flv",
             f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
         ]
     else:
