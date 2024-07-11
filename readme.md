@@ -196,7 +196,7 @@ sudo reboot
   - If you would like to record while you stream you will need to set the m3u8 URL. The Stream & Record feature will not work if this is not set. Recordings are saved in the recordings directory.
 - __Twitch Streaming:__
   - Visit [Twitch list of ingest servers](https://help.twitch.tv/s/twitch-ingest-recommendation?language=en_US) to find the rtmp url needed to stream to Twitch.
--__File Stream:__
+- __File Stream:__
   - File streaming can stream a mp4 or playlist.txt file. The stream will loop the file or playlist. File streaming does not re-encoded the file (I tried but the Pi could not handle it. CPU=100%). Use files that are properly converted and able to stream. If streaming a playlist.txt of files, be sure that all of the files are a consistent format, bitrate, resolution... Do not try to stream a 4k or Bluray quality file. Convert the file down to 1280x720 with a program like HandBrake.
 
 # Future Plans
