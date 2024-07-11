@@ -24,12 +24,13 @@ BITRATE = int(os.getenv('BITRATE'))
 KEYFRAME_INTERVAL = int(os.getenv('KEYFRAME_INTERVAL'))
 AUDIO_OFFSET = os.getenv('AUDIO_OFFSET')
 STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
+STREAM_FILE = os.getenv('STREAM_FILE')  # Add STREAM_FILE variable
 
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
 
 # Configure logging
-#logging.basicConfig(filename='/home/teklynk/raspi-streamer/stream_control.log', level=logging.DEBUG)
+# logging.basicConfig(filename='/home/teklynk/raspi-streamer/stream_control.log', level=logging.DEBUG)
 
 # Set up GPIO pins for buttons and LEDs
 GPIO.setmode(GPIO.BCM)
@@ -151,7 +152,7 @@ def stop_recording():
         GPIO.output(RECORD_LED_PIN, GPIO.LOW)
         logging.debug("Recording stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
-        recording = False
+    recording = False
 
 def start_stream_recording():
     global stream_record_process, recording
@@ -166,7 +167,7 @@ def start_stream_recording():
     ensure_recordings_directory()
     logging.debug("Starting stream recording...")
 
-    time.sleep(30) # Wait 30 seconds after the stream has started
+    time.sleep(30)  # Wait 30 seconds after the stream has started
 
     stream_record_command = [
         "ffmpeg",
@@ -196,7 +197,43 @@ def stop_stream_recording():
         stream_record_process = None
         logging.debug("Recording stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
-        recording = False
+    recording = False
+
+def start_file_stream():
+    global stream_process, streaming
+
+    if streaming:
+        return
+
+    if not STREAM_FILE:
+        logging.error("STREAM_FILE is not set or is empty. Cannot start file streaming.")
+        return
+
+    if os.path.isfile(STREAM_FILE):
+        logging.debug(f"Streaming single file: {STREAM_FILE}")
+        file_stream_command = [
+            "ffmpeg",
+            "-re", "-stream_loop", "-1", "-i", str(STREAM_FILE),
+            "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-f", "flv",
+            f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
+        ]
+    elif os.path.isfile(STREAM_FILE + '.txt'):
+        logging.debug(f"Streaming playlist file: {STREAM_FILE}.txt")
+        file_stream_command = [
+            "ffmpeg",
+            "-re", "-f", "concat", "-safe", "0", "-stream_loop", "-1", "-i", f"{STREAM_FILE}.txt",
+            "-c:v", "copy", "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-f", "flv",
+            f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
+        ]
+    else:
+        logging.error(f"{STREAM_FILE} or {STREAM_FILE}.txt not found. Cannot start file streaming.")
+        return
+
+    stream_process = subprocess.Popen(file_stream_command)
+    GPIO.output(STREAM_LED_PIN, GPIO.HIGH)
+    logging.debug("File stream started!")
+    logging.debug(file_stream_command)
+    streaming = True
 
 def shutdown_pi():
     logging.debug("Rebooting...")
@@ -238,7 +275,7 @@ def update_env_file(data):
             env_file.write(f"{key}={value}\n")
         load_dotenv()  # Reload the .env file to update the environment variables
         # Update global variables with new values
-        global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL
+        global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL, STREAM_FILE
         STREAM_KEY = os.getenv('STREAM_KEY')
         RTMP_SERVER = os.getenv('RTMP_SERVER')
         ALSA_AUDIO_SOURCE = os.getenv('ALSA_AUDIO_SOURCE')
@@ -248,6 +285,7 @@ def update_env_file(data):
         KEYFRAME_INTERVAL = int(os.getenv('KEYFRAME_INTERVAL'))
         AUDIO_OFFSET = os.getenv('AUDIO_OFFSET')
         STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
+        STREAM_FILE = os.getenv('STREAM_FILE')
         BUFFER_SIZE = BITRATE * 2
 
 @app.route('/')
@@ -261,7 +299,8 @@ def index():
         'BITRATE': os.getenv('BITRATE'),
         'KEYFRAME_INTERVAL': os.getenv('KEYFRAME_INTERVAL'),
         'AUDIO_OFFSET': os.getenv('AUDIO_OFFSET'),
-        'STREAM_M3U8_URL': os.getenv('STREAM_M3U8_URL')
+        'STREAM_M3U8_URL': os.getenv('STREAM_M3U8_URL'),
+        'STREAM_FILE': os.getenv('STREAM_FILE')  # Add STREAM_FILE to config
     }
     return render_template('index.html', config=config)
 
@@ -275,34 +314,44 @@ def update_config():
 @app.route('/start_stream', methods=['POST'])
 def start_stream_route():
     start_stream()
-    return
+    return jsonify({"message": "Stream started."}), 200
 
 @app.route('/stop_stream', methods=['POST'])
 def stop_stream_route():
     stop_stream()
-    return  
+    return jsonify({"message": "Stream stopped."}), 200
 
 @app.route('/start_stream_record', methods=['POST'])
 def start_stream_record_route():
     start_stream()
     start_stream_recording()
-    return
+    return jsonify({"message": "Stream and recording started."}), 200
 
 @app.route('/stop_stream_record', methods=['POST'])
 def stop_stream_record_route():
     stop_stream()
     stop_stream_recording()
-    return
+    return jsonify({"message": "Stream and recording stopped."}), 200
 
 @app.route('/start_record', methods=['POST'])
 def start_record_route():
     start_recording()
-    return
+    return jsonify({"message": "Recording started."}), 200
 
 @app.route('/stop_record', methods=['POST'])
 def stop_record_route():
     stop_recording()
-    return
+    return jsonify({"message": "Recording stopped."}), 200
+
+@app.route('/start_file_stream', methods=['POST'])
+def start_file_stream_route():
+    start_file_stream()
+    return jsonify({"message": "File stream started."}), 200
+
+@app.route('/stop_file_stream', methods=['POST'])
+def stop_file_stream_route():
+    stop_file_stream()
+    return jsonify({"message": "File stream stopped."}), 200
 
 @app.route('/reboot', methods=['POST'])
 def shutdown_route():

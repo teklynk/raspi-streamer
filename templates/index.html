@@ -33,8 +33,11 @@
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
                 </div>
-            </div>
-            <div class="tab-pane fade mb-4" id="ConfigSettings" role="tabpanel" aria-labelledby="config-settings-tab">
+                {% if config['STREAM_FILE'] %}
+                <div class="text-center mt-4">
+                    <button class="btn btn-lg btn-success mb-2" id="file_stream_button" onclick="toggle('file_stream')">Start File Stream</button>
+                </div>
+                {% endif %}
                 <form id="configForm">
                     <div class="form-group">
                         <label for="STREAM_KEY">Stream Key:</label>
@@ -71,6 +74,10 @@
                     <div class="form-group">
                         <label for="STREAM_M3U8_URL">m3u8 URL:</label>
                         <input type="text" class="form-control form-control-lg" id="STREAM_M3U8_URL" name="STREAM_M3U8_URL" value="{{ config['STREAM_M3U8_URL'] }}" placeholder="https://stream.example.com/hls/1/stream.m3u8">
+                    </div>
+                    <div class="form-group">
+                        <label for="STREAM_FILE">File Stream Path:</label>
+                        <input type="text" class="form-control form-control-lg" id="STREAM_FILE" name="STREAM_FILE" value="" placeholder="Enter STREAM_FILE path">
                     </div>
                     <div class="text-center mt-4">
                         <button class="btn btn-lg btn-primary" type="submit">Update</button>
@@ -126,7 +133,7 @@
                 return;
             }
 
-            let otherButtons = ['stream_button', 'stream_record_button', 'record_button'].filter(id => id !== `${type}_button`);
+            let otherButtons = ['stream_button', 'stream_record_button', 'record_button', 'file_stream_button'].filter(id => id !== `${type}_button`);
             let startText = `Start ${getButtonLabel(type)}`;
             let stopText = `Stop ${getButtonLabel(type)}`;
 
@@ -149,6 +156,7 @@
                 case 'stream': return 'Stream';
                 case 'stream_record': return 'Stream & Record';
                 case 'record': return 'Record';
+                case 'file_stream': return 'File Stream';
                 default: return '';
             }
         }
