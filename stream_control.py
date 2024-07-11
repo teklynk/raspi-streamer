@@ -1,5 +1,6 @@
 import RPi.GPIO as GPIO
 import time
+import json
 import subprocess
 import os
 import logging
@@ -55,6 +56,8 @@ last_shutdown_button_state = GPIO.input(SHUTDOWN_BUTTON_PIN)
 stream_process = None
 record_process = None
 
+state_file = 'state.json'
+
 # Timestamp variables for debouncing
 last_stream_action_time = 0
 last_record_action_time = 0
@@ -63,15 +66,33 @@ last_shutdown_action_time = 0
 # Minimum delay between actions in seconds
 ACTION_DELAY = 3
 
+# Save current state to json file
+def load_state():
+    if os.path.exists(state_file):
+        with open(state_file, 'r') as f:
+            return json.load(f)
+    return {"streaming": False, "recording": False, "file_streaming": False, "streaming_and_recording": False}
+
+def save_state(state):
+    with open(state_file, 'w') as f:
+        json.dump(state, f)
+
+state = load_state()
+
 def ensure_recordings_directory():
-    if not os.path.exists('recordings'):
-        os.makedirs('recordings')
+    if not os.path.exists("recordings"):
+        os.makedirs("recordings")
 
 def start_stream():
     global stream_process, streaming
-    if streaming:
+
+    state = load_state()
+
+    if state["streaming"]:
         return
+
     logging.debug("Starting stream...")
+
     stream_command = [
         "ffmpeg",
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
@@ -95,11 +116,17 @@ def start_stream():
     logging.debug("Stream started!")
     logging.debug(stream_command)
     streaming = True
+    state["streaming"] = True
+    save_state(state)
 
 def stop_stream():
     global stream_process, streaming
-    if not streaming:
+
+    state = load_state()
+
+    if not state["streaming"]:
         return
+
     if stream_process:
         logging.debug("Stopping stream...")
         stream_process.terminate()
@@ -109,11 +136,17 @@ def stop_stream():
         logging.debug("Stream stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
     streaming = False
+    state["streaming"] = False
+    save_state(state)
 
 def start_recording():
     global record_process, recording
-    if recording:
+
+    state = load_state()
+
+    if state["recording"]:
         return
+
     ensure_recordings_directory()
     logging.debug("Starting recording...")
     record_command = [
@@ -139,11 +172,17 @@ def start_recording():
     logging.debug("Recording started!")
     logging.debug(record_command)
     recording = True
+    state["recording"] = True
+    save_state(state)
 
 def stop_recording():
     global record_process, recording
-    if not recording:
+
+    state = load_state()
+
+    if not state["recording"]:
         return
+
     if record_process:
         logging.debug("Stopping recording...")
         record_process.terminate()
@@ -153,11 +192,15 @@ def stop_recording():
         logging.debug("Recording stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
     recording = False
+    state["recording"] = False
+    save_state(state)
 
 def start_stream_recording():
     global stream_record_process, recording
 
-    if recording:
+    state = load_state()
+
+    if state["streaming_and_recording"]:
         return
 
     if not STREAM_M3U8_URL:
@@ -179,11 +222,15 @@ def start_stream_recording():
     logging.debug("Recording stream started!")
     logging.debug(stream_record_command)
     recording = True
+    state["streaming_and_recording"] = True
+    save_state(state)
 
 def stop_stream_recording():
     global stream_record_process, recording
 
-    if not recording:
+    state = load_state()
+
+    if not state["streaming_and_recording"]:
         return
 
     if not STREAM_M3U8_URL:
@@ -198,11 +245,15 @@ def stop_stream_recording():
         logging.debug("Recording stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
     recording = False
+    state["streaming_and_recording"] = False
+    save_state(state)
 
 def start_file_stream():
     global stream_process, streaming
 
-    if streaming:
+    state = load_state()
+
+    if state["file_streaming"]:
         return
 
     if not STREAM_FILE:
@@ -235,9 +286,17 @@ def start_file_stream():
     logging.debug("File stream started!")
     logging.debug(file_stream_command)
     streaming = True
+    state["file_streaming"] = True
+    save_state(state)
 
 def stop_file_stream():
     global stream_process
+
+    state = load_state()
+
+    if not state["file_streaming"]:
+        return
+
     if stream_process:
         stream_process.terminate()
         stream_process.wait()
@@ -246,6 +305,8 @@ def stop_file_stream():
         logging.debug("File stream stopped!")
         time.sleep(3)  # Wait for 3 seconds
     streaming = False
+    state["file_streaming"] = False
+    save_state(state)
 
 def shutdown_pi():
     logging.debug("Rebooting...")
@@ -314,7 +375,42 @@ def index():
         'STREAM_M3U8_URL': os.getenv('STREAM_M3U8_URL'),
         'STREAM_FILE': os.getenv('STREAM_FILE')  # Add STREAM_FILE to config
     }
-    return render_template('index.html', config=config)
+    state = load_state()
+    return render_template('index.html', config=config, state=state)
+
+@app.route('/get_state', methods=['GET'])
+def get_state():
+    state = load_state()
+    return jsonify(state)
+
+@app.route('/toggle', methods=['POST'])
+def toggle():
+    action = request.json.get('action')
+    state = load_state()
+
+    if action == 'stream':
+        if state["streaming"]:
+            stop_stream()
+        else:
+            start_stream()
+    elif action == 'record':
+        if state["recording"]:
+            stop_recording()
+        else:
+            start_recording()
+    elif action == 'file_stream':
+        if state["file_streaming"]:
+            stop_file_stream()
+        else:
+            start_file_stream()
+    elif action == 'stream_record':
+        if state["streaming_and_recording"]:
+            stop_stream_recording()
+        else:
+            start_stream_recording()
+
+    state = load_state()  # Reload the state after the action
+    return jsonify(state)
 
 @app.route('/update_config', methods=['POST'])
 def update_config():

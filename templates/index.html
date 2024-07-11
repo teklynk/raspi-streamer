@@ -121,25 +121,25 @@
             .then(data => alert(data.message))
             .catch(error => console.error('Error:', error));
         });
-
+    
         function sendRequest(endpoint) {
             fetch(endpoint, { method: 'POST' })
                 .then(response => response.json())
                 .then(data => alert(data.message))
                 .catch(error => console.error('Error:', error));
         }
-
+    
         function toggle(type) {
             let button = document.getElementById(`${type}_button`);
             if (!button) {
                 console.error(`Button with ID ${type}_button not found`);
                 return;
             }
-
+    
             let otherButtons = ['stream_button', 'stream_record_button', 'record_button', 'file_stream_button'].filter(id => id !== `${type}_button`);
             let startText = `Start ${getButtonLabel(type)}`;
             let stopText = `Stop ${getButtonLabel(type)}`;
-
+    
             if (button.innerText === startText) {
                 sendRequest(`/start_${type}`);
                 button.innerText = stopText;
@@ -149,11 +149,11 @@
                 button.innerText = startText;
                 otherButtons.forEach(id => document.getElementById(id).disabled = false);
             }
-
+    
             button.classList.toggle("btn-success");
             button.classList.toggle("btn-danger");
         }
-
+    
         function getButtonLabel(type) {
             switch (type) {
                 case 'stream': return 'Stream';
@@ -163,9 +163,41 @@
                 default: return '';
             }
         }
-
+    
+        function updateButtonLabels(state) {
+            document.getElementById("stream_button").innerText = state.streaming ? "Stop Stream" : "Start Stream";
+            document.getElementById("record_button").innerText = state.recording ? "Stop Record" : "Start Record";
+            document.getElementById("file_stream_button").innerText = state.file_streaming ? "Stop File Stream" : "Start File Stream";
+            document.getElementById("stream_record_button").innerText = state.streaming_and_recording ? "Stop Stream & Record" : "Start Stream & Record";
+    
+            let buttons = ['stream_button', 'stream_record_button', 'record_button', 'file_stream_button'];
+            buttons.forEach(id => {
+                let button = document.getElementById(id);
+                if (button.innerText.startsWith("Stop")) {
+                    button.classList.add("btn-danger");
+                    button.classList.remove("btn-success");
+                    buttons.filter(bid => bid !== id).forEach(bid => document.getElementById(bid).disabled = true);
+                } else {
+                    button.classList.add("btn-success");
+                    button.classList.remove("btn-danger");
+                    buttons.filter(bid => bid !== id).forEach(bid => document.getElementById(bid).disabled = false);
+                }
+            });
+        }
+    
+        function fetchState() {
+            fetch('/get_state')
+                .then(response => response.json())
+                .then(data => updateButtonLabels(data))
+                .catch(error => console.error('Error fetching state:', error));
+        }
+    
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchState();
+        });
+    
         // Activate the default tab
         $('#defaultTab').tab('show');
-    </script>
+    </script>    
 </body>
 </html>
