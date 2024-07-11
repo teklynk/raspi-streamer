@@ -237,7 +237,7 @@ def start_file_stream():
 
 def stop_file_stream():
     global stream_process
-    if stream_process and file_stream_process.poll() is None:
+    if stream_process
         stream_process.terminate()
         stream_process.wait()
         stream_process = None
