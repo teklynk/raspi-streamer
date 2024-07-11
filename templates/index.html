@@ -38,6 +38,8 @@
                     <button class="btn btn-lg btn-success mb-2" id="file_stream_button" onclick="toggle('file_stream')">Start File Stream</button>
                 </div>
                 {% endif %}
+            </div>
+            <div class="tab-pane fade mb-4" id="ConfigSettings" role="tabpanel" aria-labelledby="config-settings-tab">
                 <form id="configForm">
                     <div class="form-group">
                         <label for="STREAM_KEY">Stream Key:</label>
@@ -77,7 +79,7 @@
                     </div>
                     <div class="form-group">
                         <label for="STREAM_FILE">File Stream Path:</label>
-                        <input type="text" class="form-control form-control-lg" id="STREAM_FILE" name="STREAM_FILE" value="" placeholder="Enter STREAM_FILE path">
+                        <input type="text" class="form-control form-control-lg" id="STREAM_FILE" name="STREAM_FILE" value="{{ config['STREAM_FILE'] }}" placeholder="Enter STREAM_FILE path">
                     </div>
                     <div class="text-center mt-4">
                         <button class="btn btn-lg btn-primary" type="submit">Update</button>
@@ -92,6 +94,7 @@
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
                 </div>
+            </div>
             </div>
         </div>
     </div>
