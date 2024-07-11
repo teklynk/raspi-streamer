@@ -237,10 +237,14 @@ def start_file_stream():
 
 def stop_file_stream():
     global stream_process
-    if stream_process
+    if stream_process:
         stream_process.terminate()
         stream_process.wait()
         stream_process = None
+        GPIO.output(STREAM_LED_PIN, GPIO.LOW)
+        logging.debug("File stream stopped!")
+        time.sleep(3)  # Wait for 3 seconds
+    streaming = Flase
 
 def shutdown_pi():
     logging.debug("Rebooting...")
