@@ -244,7 +244,7 @@ def stop_file_stream():
         GPIO.output(STREAM_LED_PIN, GPIO.LOW)
         logging.debug("File stream stopped!")
         time.sleep(3)  # Wait for 3 seconds
-    streaming = Flase
+    streaming = False
 
 def shutdown_pi():
     logging.debug("Rebooting...")
