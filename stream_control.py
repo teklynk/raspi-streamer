@@ -236,11 +236,11 @@ def start_file_stream():
     streaming = True
 
 def stop_file_stream():
-    global file_stream_process
-    if file_stream_process and file_stream_process.poll() is None:
-        file_stream_process.terminate()
-        file_stream_process.wait()
-        file_stream_process = None
+    global stream_process
+    if stream_process and file_stream_process.poll() is None:
+        stream_process.terminate()
+        stream_process.wait()
+        stream_process = None
 
 def shutdown_pi():
     logging.debug("Rebooting...")
