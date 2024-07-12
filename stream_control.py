@@ -30,8 +30,20 @@ STREAM_FILE = os.getenv('STREAM_FILE')  # Add STREAM_FILE variable
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
 
+# Determine the current working directory
+current_directory = os.path.dirname(os.path.abspath(__file__))
+log_file_path = os.path.join(current_directory, 'stream_control.log')
+
 # Configure logging
-# logging.basicConfig(filename='/home/teklynk/raspi-streamer/stream_control.log', level=logging.DEBUG)
+logging.basicConfig(
+    filename=log_file_path,
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+# Disable werkzeug logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
 
 # Set up GPIO pins for buttons and LEDs
 GPIO.setmode(GPIO.BCM)
@@ -114,7 +126,6 @@ def start_stream():
     stream_process = subprocess.Popen(stream_command)
     GPIO.output(STREAM_LED_PIN, GPIO.HIGH)
     logging.debug("Stream started!")
-    logging.debug(stream_command)
     streaming = True
     state["streaming"] = True
     save_state(state)
@@ -133,8 +144,8 @@ def stop_stream():
         stream_process.wait()
         stream_process = None
         GPIO.output(STREAM_LED_PIN, GPIO.LOW)
-        logging.debug("Stream stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
+    logging.debug("Stream stopped!")
     streaming = False
     state["streaming"] = False
     save_state(state)
@@ -170,7 +181,6 @@ def start_recording():
     record_process = subprocess.Popen(record_command)
     GPIO.output(RECORD_LED_PIN, GPIO.HIGH)
     logging.debug("Recording started!")
-    logging.debug(record_command)
     recording = True
     state["recording"] = True
     save_state(state)
@@ -189,8 +199,8 @@ def stop_recording():
         record_process.wait()
         record_process = None
         GPIO.output(RECORD_LED_PIN, GPIO.LOW)
-        logging.debug("Recording stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
+    logging.debug("Recording stopped!")
     recording = False
     state["recording"] = False
     save_state(state)
@@ -220,7 +230,6 @@ def start_stream_recording():
 
     stream_record_process = subprocess.Popen(stream_record_command)
     logging.debug("Recording stream started!")
-    logging.debug(stream_record_command)
     recording = True
     state["streaming_and_recording"] = True
     save_state(state)
@@ -242,8 +251,8 @@ def stop_stream_recording():
         stream_record_process.terminate()
         stream_record_process.wait()
         stream_record_process = None
-        logging.debug("Recording stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
+    logging.debug("Recording stopped!")
     recording = False
     state["streaming_and_recording"] = False
     save_state(state)
@@ -284,7 +293,6 @@ def start_file_stream():
     # Ensure GPIO library is imported and configured if using
     GPIO.output(STREAM_LED_PIN, GPIO.HIGH)
     logging.debug("File stream started!")
-    logging.debug(file_stream_command)
     streaming = True
     state["file_streaming"] = True
     save_state(state)
@@ -302,8 +310,8 @@ def stop_file_stream():
         stream_process.wait()
         stream_process = None
         GPIO.output(STREAM_LED_PIN, GPIO.LOW)
-        logging.debug("File stream stopped!")
         time.sleep(3)  # Wait for 3 seconds
+    logging.debug("File stream stopped!")
     streaming = False
     state["file_streaming"] = False
     save_state(state)
@@ -360,6 +368,7 @@ def update_env_file(data):
         STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
         STREAM_FILE = os.getenv('STREAM_FILE')
         BUFFER_SIZE = BITRATE * 2
+        logging.debug("Updated env")
 
 @app.route('/')
 def index():
@@ -475,6 +484,15 @@ def poweroff_route():
 def restart_route():
     restart_service()
     return jsonify({"message": "Restarting service..."}), 200
+
+@app.route('/get_log')
+def get_log():
+    try:
+        with open(log_file_path, 'r') as file:
+            log_content = file.read()
+        return jsonify({'log': log_content})
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 # Function to run the Flask app in a separate thread
 def run_flask_app():
