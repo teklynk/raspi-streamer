@@ -30,10 +30,16 @@ STREAM_FILE = os.getenv('STREAM_FILE')  # Add STREAM_FILE variable
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
 
-# Configure logging
 # Determine the current working directory
 current_directory = os.path.dirname(os.path.abspath(__file__))
 log_file_path = os.path.join(current_directory, 'stream_control.log')
+
+# Configure logging
+logging.basicConfig(
+    filename=log_file_path,
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
 # Set up GPIO pins for buttons and LEDs
 GPIO.setmode(GPIO.BCM)
