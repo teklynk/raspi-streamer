@@ -351,7 +351,6 @@ app = Flask(__name__)
 
 # Function to update the .env file
 def update_env_file(data):
-    logging.debug("Updating env")
     with open('.env', 'w') as env_file:
         for key, value in data.items():
             env_file.write(f"{key}={value}\n")
