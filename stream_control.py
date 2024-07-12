@@ -31,7 +31,9 @@ STREAM_FILE = os.getenv('STREAM_FILE')  # Add STREAM_FILE variable
 BUFFER_SIZE = BITRATE * 2  # in kbps
 
 # Configure logging
-# logging.basicConfig(filename='/home/teklynk/raspi-streamer/stream_control.log', level=logging.DEBUG)
+# Determine the current working directory
+current_directory = os.path.dirname(os.path.abspath(__file__))
+log_file_path = os.path.join(current_directory, 'stream_control.log')
 
 # Set up GPIO pins for buttons and LEDs
 GPIO.setmode(GPIO.BCM)
@@ -475,6 +477,15 @@ def poweroff_route():
 def restart_route():
     restart_service()
     return jsonify({"message": "Restarting service..."}), 200
+
+@app.route('/get_log')
+def get_log():
+    try:
+        with open(log_file_path, 'r') as file:
+            log_content = file.read()
+        return jsonify({'log': log_content})
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 # Function to run the Flask app in a separate thread
 def run_flask_app():

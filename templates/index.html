@@ -81,6 +81,10 @@
                         <label for="STREAM_FILE">File Stream Path:</label>
                         <input type="text" class="form-control form-control-lg" id="STREAM_FILE" name="STREAM_FILE" value="{{ config['STREAM_FILE'] }}" placeholder="Enter STREAM_FILE path">
                     </div>
+                    <div class="form-group">
+                        <label for="logTextarea">Log:</label>
+                        <textarea class="form-control" id="logTextarea" name="logTextarea" rows="10" cols="80" readonly></textarea>
+                    </div>
                     <div class="text-center mt-4">
                         <button class="btn btn-lg btn-primary" type="submit">Update</button>
                     </div>
@@ -194,6 +198,27 @@
     
         document.addEventListener("DOMContentLoaded", function() {
             fetchState();
+        });
+
+        function updateLog() {
+        fetch('/get_log')
+            .then(response => response.json())
+            .then(data => {
+                if (data.log) {
+                    document.getElementById('logTextarea').value = data.log;
+                } else if (data.error) {
+                    console.error('Error fetching log:', data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Update the log every second
+        setInterval(updateLog, 1000);
+
+        // Initial log fetch
+        document.addEventListener("DOMContentLoaded", function() {
+            updateLog();
         });
     
         // Activate the default tab
