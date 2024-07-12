@@ -116,7 +116,6 @@ def start_stream():
     stream_process = subprocess.Popen(stream_command)
     GPIO.output(STREAM_LED_PIN, GPIO.HIGH)
     logging.debug("Stream started!")
-    logging.debug(stream_command)
     streaming = True
     state["streaming"] = True
     save_state(state)
@@ -172,7 +171,6 @@ def start_recording():
     record_process = subprocess.Popen(record_command)
     GPIO.output(RECORD_LED_PIN, GPIO.HIGH)
     logging.debug("Recording started!")
-    logging.debug(record_command)
     recording = True
     state["recording"] = True
     save_state(state)
@@ -222,7 +220,6 @@ def start_stream_recording():
 
     stream_record_process = subprocess.Popen(stream_record_command)
     logging.debug("Recording stream started!")
-    logging.debug(stream_record_command)
     recording = True
     state["streaming_and_recording"] = True
     save_state(state)
@@ -286,7 +283,6 @@ def start_file_stream():
     # Ensure GPIO library is imported and configured if using
     GPIO.output(STREAM_LED_PIN, GPIO.HIGH)
     logging.debug("File stream started!")
-    logging.debug(file_stream_command)
     streaming = True
     state["file_streaming"] = True
     save_state(state)
