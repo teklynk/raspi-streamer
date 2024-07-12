@@ -30,10 +30,12 @@
 
         <div class="tab-content mt-4">
             <div class="tab-pane mb-4 fade show active" id="ControlPanel" role="tabpanel" aria-labelledby="control-panel-tab">
+                {% if config['RTMP_SERVER'] %}
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-success mb-2" id="stream_button" onclick="toggle('stream')">Start Stream</button>
                 </div>
-                {% if config['STREAM_M3U8_URL'] %}
+                {% endif %}
+                {% if config['RTMP_SERVER'] and config['STREAM_M3U8_URL'] %}
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-success mb-2" id="stream_record_button" onclick="toggle('stream_record')">Start Stream & Record</button>
                 </div>
@@ -41,7 +43,7 @@
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
                 </div>
-                {% if config['STREAM_FILE'] %}
+                {% if config['RTMP_SERVER'] and config['STREAM_FILE'] %}
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-success mb-2" id="file_stream_button" onclick="toggle('file_stream')">Start File Stream</button>
                 </div>
@@ -82,7 +84,7 @@
                         <input type="text" class="form-control form-control-lg" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}" placeholder="-0.8">
                     </div>
                     <div class="form-group">
-                        <label for="STREAM_M3U8_URL">m3u8 URL:</label>
+                        <label for="STREAM_M3U8_URL">HLS/M3U8 URL:</label>
                         <input type="text" class="form-control form-control-lg" id="STREAM_M3U8_URL" name="STREAM_M3U8_URL" value="{{ config['STREAM_M3U8_URL'] }}" placeholder="https://stream.example.com/hls/1/stream.m3u8">
                     </div>
                     <div class="form-group">
@@ -97,9 +99,6 @@
                         <button class="btn btn-lg btn-block btn-primary" type="submit">Update</button>
                     </div>
                 </form>
-                <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/restart')">Restart Service</button>
-                </div>
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/reboot')">Reboot System</button>
                 </div>
