@@ -135,8 +135,8 @@ def stop_stream():
         stream_process.wait()
         stream_process = None
         GPIO.output(STREAM_LED_PIN, GPIO.LOW)
-        logging.debug("Stream stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
+    logging.debug("Stream stopped!")
     streaming = False
     state["streaming"] = False
     save_state(state)
@@ -191,8 +191,8 @@ def stop_recording():
         record_process.wait()
         record_process = None
         GPIO.output(RECORD_LED_PIN, GPIO.LOW)
-        logging.debug("Recording stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
+    logging.debug("Recording stopped!")
     recording = False
     state["recording"] = False
     save_state(state)
@@ -244,8 +244,8 @@ def stop_stream_recording():
         stream_record_process.terminate()
         stream_record_process.wait()
         stream_record_process = None
-        logging.debug("Recording stopped!")
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
+    logging.debug("Recording stopped!")
     recording = False
     state["streaming_and_recording"] = False
     save_state(state)
@@ -304,8 +304,8 @@ def stop_file_stream():
         stream_process.wait()
         stream_process = None
         GPIO.output(STREAM_LED_PIN, GPIO.LOW)
-        logging.debug("File stream stopped!")
         time.sleep(3)  # Wait for 3 seconds
+    logging.debug("File stream stopped!")
     streaming = False
     state["file_streaming"] = False
     save_state(state)
@@ -362,6 +362,7 @@ def update_env_file(data):
         STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
         STREAM_FILE = os.getenv('STREAM_FILE')
         BUFFER_SIZE = BITRATE * 2
+        logging.debug("Updated env")
 
 @app.route('/')
 def index():
