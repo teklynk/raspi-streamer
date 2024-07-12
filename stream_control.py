@@ -41,6 +41,10 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
+# Disable werkzeug logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 # Set up GPIO pins for buttons and LEDs
 GPIO.setmode(GPIO.BCM)
 STREAM_BUTTON_PIN = 23
