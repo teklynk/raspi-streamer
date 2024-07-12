@@ -368,7 +368,7 @@ def update_env_file(data):
         STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
         STREAM_FILE = os.getenv('STREAM_FILE')
         BUFFER_SIZE = BITRATE * 2
-        logging.debug("Updated env")
+    logging.debug("Updated env")
 
 @app.route('/')
 def index():

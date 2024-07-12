@@ -43,7 +43,7 @@
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
                 </div>
-                {% if config['STREAM_FILE'] %}
+                {% if config['RTMP_SERVER'] and config['STREAM_FILE'] %}
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-success mb-2" id="file_stream_button" onclick="toggle('file_stream')">Start File Stream</button>
                 </div>
@@ -99,9 +99,6 @@
                         <button class="btn btn-lg btn-block btn-primary" type="submit">Update</button>
                     </div>
                 </form>
-                <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/restart')">Restart Service</button>
-                </div>
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/reboot')">Reboot System</button>
                 </div>
