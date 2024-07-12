@@ -351,12 +351,14 @@ app = Flask(__name__)
 
 # Function to update the .env file
 def update_env_file(data):
+    # Remove unwanted keys
+    data.pop("logTextarea", None)
+
     # Open the .env file in write mode
     with open('.env', 'w') as env_file:
         # Write each key-value pair to the file
         for key, value in data.items():
             env_file.write(f"{key}={value}\n")
-    # The file is automatically closed here when the with block is exited
 
     # Reload the .env file to update the environment variables
     load_dotenv()
