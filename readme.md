@@ -199,14 +199,6 @@ sudo reboot
 - __File Stream:__
   - File streaming can stream a mp4 or playlist.txt file. The stream will loop the file or playlist. File streaming does not re-encoded the file (I tried but the Pi could not handle it. CPU=100%). Use files that are properly converted and able to stream. If streaming a playlist.txt of files, be sure that all of the files are a consistent format, bitrate, resolution... Do not try to stream a 4k or Bluray quality file. Convert the file down to 1280x720 with a program like HandBrake.
 
-# Future Plans
-This project is ongoing, with exciting future enhancements in the pipeline:
-- __Hardware Upgrade:__
-  - We plan to incorporate the [Geekworm Raspberry Pi Hdmi to CSI-2 Module C790](https://geekworm.com/products/c790) to replace the current USB capture device. This module will be integrated onto a custom circuit board along with LEDs, buttons, and GPIO headers, creating a "hat" for the Raspberry Pi. This will streamline the setup, making it almost a plug-and-play solution.
-- __Web UI:__
-  - Ability to create multiple config files for various platforms and/or stream settings and choose a config to use for streaming or recording. A way to manage config files (create, edit, delete).
-  - Ability to stream a video file or a directory of files.
-
 # Troubleshooting
 Find out what resolutions your capture device is capable of:
 
@@ -251,3 +243,10 @@ This is all stored under my entertainment center and powered on when I want to s
 <div style="text-align:center;margin:4px;display:block;">
 <img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/screenshot_webui_2.png?raw=true" style=" width:400px;" />
 </div>
+
+# Future Plans
+This project is ongoing, with exciting future enhancements in the pipeline:
+- __Hardware Upgrade:__
+  - Incorporate the [Geekworm Raspberry Pi Hdmi to CSI-2 Module C790](https://geekworm.com/products/c790) to replace the current USB capture device. This module will be integrated onto a custom circuit board along with LEDs, buttons, and GPIO headers, creating a "hat" for the Raspberry Pi. This will streamline the setup, making it almost a plug-and-play solution.
+- __Web UI:__
+  - Ability to create multiple config files for various platforms and/or stream settings and choose a config to use for streaming or recording. A way to manage config files (create, edit, delete).
