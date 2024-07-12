@@ -351,23 +351,29 @@ app = Flask(__name__)
 
 # Function to update the .env file
 def update_env_file(data):
+    # Open the .env file in write mode
     with open('.env', 'w') as env_file:
+        # Write each key-value pair to the file
         for key, value in data.items():
             env_file.write(f"{key}={value}\n")
-        load_dotenv()  # Reload the .env file to update the environment variables
-        # Update global variables with new values
-        global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL, STREAM_FILE
-        STREAM_KEY = os.getenv('STREAM_KEY')
-        RTMP_SERVER = os.getenv('RTMP_SERVER')
-        ALSA_AUDIO_SOURCE = os.getenv('ALSA_AUDIO_SOURCE')
-        VIDEO_SIZE = os.getenv('VIDEO_SIZE')
-        FRAME_RATE = int(os.getenv('FRAME_RATE'))
-        BITRATE = int(os.getenv('BITRATE'))
-        KEYFRAME_INTERVAL = int(os.getenv('KEYFRAME_INTERVAL'))
-        AUDIO_OFFSET = os.getenv('AUDIO_OFFSET')
-        STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
-        STREAM_FILE = os.getenv('STREAM_FILE')
-        BUFFER_SIZE = BITRATE * 2
+    # The file is automatically closed here when the with block is exited
+
+    # Reload the .env file to update the environment variables
+    load_dotenv()
+    
+    # Update global variables with new values
+    global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL, STREAM_FILE
+    STREAM_KEY = os.getenv('STREAM_KEY')
+    RTMP_SERVER = os.getenv('RTMP_SERVER')
+    ALSA_AUDIO_SOURCE = os.getenv('ALSA_AUDIO_SOURCE')
+    VIDEO_SIZE = os.getenv('VIDEO_SIZE')
+    FRAME_RATE = int(os.getenv('FRAME_RATE'))
+    BITRATE = int(os.getenv('BITRATE'))
+    KEYFRAME_INTERVAL = int(os.getenv('KEYFRAME_INTERVAL'))
+    AUDIO_OFFSET = os.getenv('AUDIO_OFFSET')
+    STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
+    STREAM_FILE = os.getenv('STREAM_FILE')
+    BUFFER_SIZE = BITRATE * 2
 
 @app.route('/')
 def index():
