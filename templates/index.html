@@ -10,6 +10,9 @@
         .form-control[readonly] {
             background-color: transparent !important;
         }
+        .btn-group-lg>.btn, .btn-lg {
+            font-size: 1.75rem !important;
+        }
     </style>
 </head>
 <body>
@@ -28,19 +31,19 @@
         <div class="tab-content mt-4">
             <div class="tab-pane mb-4 fade show active" id="ControlPanel" role="tabpanel" aria-labelledby="control-panel-tab">
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-success mb-2" id="stream_button" onclick="toggle('stream')">Start Stream</button>
+                    <button class="btn btn-lg btn-block btn-success mb-2" id="stream_button" onclick="toggle('stream')">Start Stream</button>
                 </div>
                 {% if config['STREAM_M3U8_URL'] %}
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-success mb-2" id="stream_record_button" onclick="toggle('stream_record')">Start Stream & Record</button>
+                    <button class="btn btn-lg btn-block btn-success mb-2" id="stream_record_button" onclick="toggle('stream_record')">Start Stream & Record</button>
                 </div>
                 {% endif %}
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
+                    <button class="btn btn-lg btn-block btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
                 </div>
                 {% if config['STREAM_FILE'] %}
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-success mb-2" id="file_stream_button" onclick="toggle('file_stream')">Start File Stream</button>
+                    <button class="btn btn-lg btn-block btn-success mb-2" id="file_stream_button" onclick="toggle('file_stream')">Start File Stream</button>
                 </div>
                 {% endif %}
             </div>
@@ -90,18 +93,18 @@
                         <label for="logTextarea">Log:</label>
                         <textarea class="form-control" id="logTextarea" name="logTextarea" rows="10" cols="80" readonly></textarea>
                     </div>
-                    <div class="text-center mt-4">
-                        <button class="btn btn-lg btn-primary" type="submit">Update</button>
+                    <div class="text-center mt-4 mb-5">
+                        <button class="btn btn-lg btn-block btn-primary" type="submit">Update</button>
                     </div>
                 </form>
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-danger" onclick="sendRequest('/restart')">Restart Service</button>
+                    <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/restart')">Restart Service</button>
                 </div>
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-danger" onclick="sendRequest('/reboot')">Reboot System</button>
+                    <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/reboot')">Reboot System</button>
                 </div>
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
+                    <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
                 </div>
             </div>
             </div>
