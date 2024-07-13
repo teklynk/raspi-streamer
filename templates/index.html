@@ -65,27 +65,38 @@
                     </div>
                     <div class="form-group">
                         <label for="VIDEO_SIZE">Video Size:</label>
-                        <input type="text" class="form-control form-control-lg" id="VIDEO_SIZE" name="VIDEO_SIZE" value="{{ config['VIDEO_SIZE'] }}" placeholder="1280x720">
+                        <select class="form-control form-control-lg" id="VIDEO_SIZE" name="VIDEO_SIZE">
+                            <option value="1920x1080" {% if config['VIDEO_SIZE'] == '1920x1080' %}selected{% endif %}>1920x1080</option>
+                            <option value="1280x720" {% if config['VIDEO_SIZE'] == '1280x720' %}selected{% endif %}>1280x720</option>
+                            <option value="720x576" {% if config['VIDEO_SIZE'] == '720x576' %}selected{% endif %}>720x576</option>
+                            <option value="640x480" {% if config['VIDEO_SIZE'] == '640x480' %}selected{% endif %}>640x480</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="FRAME_RATE">Frame Rate:</label>
-                        <input type="text" class="form-control form-control-lg" id="FRAME_RATE" name="FRAME_RATE" value="{{ config['FRAME_RATE'] }}" placeholder="30">
+                        <label for="FRAME_RATE">Frame Rate:</label>                      
+                        <select class="form-control form-control-lg" id="FRAME_RATE" name="FRAME_RATE">
+                            <option value="30" {% if config['FRAME_RATE'] == '30' %}selected{% endif %}>30</option>
+                            <option value="60" {% if config['FRAME_RATE'] == '60' %}selected{% endif %}>60</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="BITRATE">Bitrate:</label>
-                        <input type="text" class="form-control form-control-lg" id="BITRATE" name="BITRATE" value="{{ config['BITRATE'] }}" placeholder="3000">
+                        <input type="number" min="500" max="6000" step="500" class="form-control form-control-lg" id="BITRATE" name="BITRATE" value="{{ config['BITRATE'] }}" placeholder="3000">
                     </div>
                     <div class="form-group">
                         <label for="KEYFRAME_INTERVAL">Keyframe Interval:</label>
-                        <input type="text" class="form-control form-control-lg" id="KEYFRAME_INTERVAL" name="KEYFRAME_INTERVAL" value="{{ config['KEYFRAME_INTERVAL'] }}" placeholder="60">
+                        <select class="form-control form-control-lg" id="KEYFRAME_INTERVAL" name="KEYFRAME_INTERVAL">
+                            <option value="30" {% if config['KEYFRAME_INTERVAL'] == '30' %}selected{% endif %}>30</option>
+                            <option value="60" {% if config['KEYFRAME_INTERVAL'] == '60' %}selected{% endif %}>60</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="AUDIO_OFFSET">Audio Offset:</label>
-                        <input type="text" class="form-control form-control-lg" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}" placeholder="-0.8">
+                        <input type="number" class="form-control form-control-lg" id="AUDIO_OFFSET" name="AUDIO_OFFSET" min="-1.0" max="1.0" step="0.1" value="{{ config['AUDIO_OFFSET'] }}">
                     </div>
                     <div class="form-group">
                         <label for="STREAM_M3U8_URL">HLS/M3U8 URL:</label>
-                        <input type="text" class="form-control form-control-lg" id="STREAM_M3U8_URL" name="STREAM_M3U8_URL" value="{{ config['STREAM_M3U8_URL'] }}" placeholder="https://stream.example.com/hls/1/stream.m3u8">
+                        <input type="url" class="form-control form-control-lg" id="STREAM_M3U8_URL" name="STREAM_M3U8_URL" value="{{ config['STREAM_M3U8_URL'] }}" placeholder="https://stream.example.com/hls/1/stream.m3u8">
                     </div>
                     <div class="form-group">
                         <label for="STREAM_FILE">File Stream Path:</label>
