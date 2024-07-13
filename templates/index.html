@@ -57,7 +57,7 @@
                     </div>
                     <div class="form-group">
                         <label for="RTMP_SERVER">RTMP Server:</label>
-                        <input type="text" class="form-control form-control-lg" id="RTMP_SERVER" name="RTMP_SERVER" value="{{ config['RTMP_SERVER'] }}" placeholder="rtmp://192.168.0.40:1935/live/">
+                        <input type="url" class="form-control form-control-lg" id="RTMP_SERVER" name="RTMP_SERVER" value="{{ config['RTMP_SERVER'] }}" placeholder="rtmp://stream.example.com:1935/live/">
                     </div>
                     <div class="form-group">
                         <label for="ALSA_AUDIO_SOURCE">ALSA Audio Source:</label>
@@ -65,35 +65,43 @@
                     </div>
                     <div class="form-group">
                         <label for="VIDEO_SIZE">Video Size:</label>
-                        <input type="text" class="form-control form-control-lg" id="VIDEO_SIZE" name="VIDEO_SIZE" value="{{ config['VIDEO_SIZE'] }}" placeholder="1280x720">
+                        <select class="form-control form-control-lg" id="VIDEO_SIZE" name="VIDEO_SIZE">
+                            <option value="1920x1080" {% if config['VIDEO_SIZE'] == '1920x1080' %}selected{% endif %}>1920x1080</option>
+                            <option value="1280x720" {% if config['VIDEO_SIZE'] == '1280x720' %}selected{% endif %}>1280x720</option>
+                            <option value="720x576" {% if config['VIDEO_SIZE'] == '720x576' %}selected{% endif %}>720x576</option>
+                            <option value="640x480" {% if config['VIDEO_SIZE'] == '640x480' %}selected{% endif %}>640x480</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label for="FRAME_RATE">Frame Rate:</label>
-                        <input type="text" class="form-control form-control-lg" id="FRAME_RATE" name="FRAME_RATE" value="{{ config['FRAME_RATE'] }}" placeholder="30">
+                        <label for="FRAME_RATE">Frame Rate:</label>                      
+                        <select class="form-control form-control-lg" id="FRAME_RATE" name="FRAME_RATE">
+                            <option value="30" {% if config['FRAME_RATE'] == '30' %}selected{% endif %}>30</option>
+                            <option value="60" {% if config['FRAME_RATE'] == '60' %}selected{% endif %}>60</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="BITRATE">Bitrate:</label>
-                        <input type="text" class="form-control form-control-lg" id="BITRATE" name="BITRATE" value="{{ config['BITRATE'] }}" placeholder="3000">
+                        <input type="number" min="500" max="6000" step="500" class="form-control form-control-lg" id="BITRATE" name="BITRATE" value="{{ config['BITRATE'] }}" placeholder="3000">
                     </div>
                     <div class="form-group">
                         <label for="KEYFRAME_INTERVAL">Keyframe Interval:</label>
-                        <input type="text" class="form-control form-control-lg" id="KEYFRAME_INTERVAL" name="KEYFRAME_INTERVAL" value="{{ config['KEYFRAME_INTERVAL'] }}" placeholder="60">
+                        <select class="form-control form-control-lg" id="KEYFRAME_INTERVAL" name="KEYFRAME_INTERVAL">
+                            <option value="30" {% if config['KEYFRAME_INTERVAL'] == '30' %}selected{% endif %}>30</option>
+                            <option value="60" {% if config['KEYFRAME_INTERVAL'] == '60' %}selected{% endif %}>60</option>
+                        </select>
                     </div>
                     <div class="form-group">
                         <label for="AUDIO_OFFSET">Audio Offset:</label>
-                        <input type="text" class="form-control form-control-lg" id="AUDIO_OFFSET" name="AUDIO_OFFSET" value="{{ config['AUDIO_OFFSET'] }}" placeholder="-0.8">
+                        <input type="number" class="form-control form-control-lg" id="AUDIO_OFFSET" name="AUDIO_OFFSET" min="-1.0" max="1.0" step="0.1" value="{{ config['AUDIO_OFFSET'] }}">
                     </div>
                     <div class="form-group">
                         <label for="STREAM_M3U8_URL">HLS/M3U8 URL:</label>
-                        <input type="text" class="form-control form-control-lg" id="STREAM_M3U8_URL" name="STREAM_M3U8_URL" value="{{ config['STREAM_M3U8_URL'] }}" placeholder="https://stream.example.com/hls/1/stream.m3u8">
+                        <input type="url" class="form-control form-control-lg" id="STREAM_M3U8_URL" name="STREAM_M3U8_URL" value="{{ config['STREAM_M3U8_URL'] }}" placeholder="https://stream.example.com/hls/1/stream.m3u8">
                     </div>
                     <div class="form-group">
                         <label for="STREAM_FILE">File Stream Path:</label>
-                        <input type="text" class="form-control form-control-lg" id="STREAM_FILE" name="STREAM_FILE" value="{{ config['STREAM_FILE'] }}" placeholder="Enter STREAM_FILE path">
-                    </div>
-                    <div class="form-group">
-                        <label for="logTextarea">Log:</label>
-                        <textarea class="form-control" id="logTextarea" name="logTextarea" rows="10" cols="80" readonly></textarea>
+                        <input type="text" class="form-control form-control-lg" id="STREAM_FILE" name="STREAM_FILE" value="{{ config['STREAM_FILE'] }}" placeholder="/home/user/raspi-streamer/media/video.mp4">
+                        <small>*.mp4 OR playlist.txt</small>
                     </div>
                     <div class="text-center mt-4 mb-5">
                         <button class="btn btn-lg btn-block btn-primary" type="submit">Update</button>
@@ -104,6 +112,10 @@
                 </div>
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
+                </div>
+                <div class="form-group mt-4">
+                    <label for="logTextarea">Log:</label>
+                    <textarea class="form-control" id="logTextarea" name="logTextarea" rows="10" cols="80" readonly></textarea>
                 </div>
             </div>
             </div>
