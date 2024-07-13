@@ -103,10 +103,6 @@
                         <input type="text" class="form-control form-control-lg" id="STREAM_FILE" name="STREAM_FILE" value="{{ config['STREAM_FILE'] }}" placeholder="/home/user/raspi-streamer/media/video.mp4">
                         <small>*.mp4 OR playlist.txt</small>
                     </div>
-                    <div class="form-group">
-                        <label for="logTextarea">Log:</label>
-                        <textarea class="form-control" id="logTextarea" name="logTextarea" rows="10" cols="80" readonly></textarea>
-                    </div>
                     <div class="text-center mt-4 mb-5">
                         <button class="btn btn-lg btn-block btn-primary" type="submit">Update</button>
                     </div>
@@ -116,6 +112,10 @@
                 </div>
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
+                </div>
+                <div class="form-group mt-4">
+                    <label for="logTextarea">Log:</label>
+                    <textarea class="form-control" id="logTextarea" name="logTextarea" rows="10" cols="80" readonly></textarea>
                 </div>
             </div>
             </div>
