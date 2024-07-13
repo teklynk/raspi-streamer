@@ -1,4 +1,3 @@
-import RPi.GPIO as GPIO
 import time
 import json
 import subprocess
@@ -45,38 +44,13 @@ logging.basicConfig(
 log = logging.getLogger('werkzeug')
 log.setLevel(logging.ERROR)
 
-# Set up GPIO pins for buttons and LEDs
-GPIO.setmode(GPIO.BCM)
-STREAM_BUTTON_PIN = 23
-RECORD_BUTTON_PIN = 24
-SHUTDOWN_BUTTON_PIN = 16
-STREAM_LED_PIN = 17
-RECORD_LED_PIN = 26
-
-GPIO.setup(STREAM_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(RECORD_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(SHUTDOWN_BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(STREAM_LED_PIN, GPIO.OUT)
-GPIO.setup(RECORD_LED_PIN, GPIO.OUT)
-
 # Initialize variables
 streaming = False
 recording = False
-last_stream_button_state = GPIO.input(STREAM_BUTTON_PIN)
-last_record_button_state = GPIO.input(RECORD_BUTTON_PIN)
-last_shutdown_button_state = GPIO.input(SHUTDOWN_BUTTON_PIN)
 stream_process = None
 record_process = None
 
 state_file = 'state.json'
-
-# Timestamp variables for debouncing
-last_stream_action_time = 0
-last_record_action_time = 0
-last_shutdown_action_time = 0
-
-# Minimum delay between actions in seconds
-ACTION_DELAY = 3
 
 # Save current state to json file
 def load_state():
@@ -124,7 +98,6 @@ def start_stream():
         "-f", "flv", f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
     ]
     stream_process = subprocess.Popen(stream_command)
-    GPIO.output(STREAM_LED_PIN, GPIO.HIGH)
     logging.debug("Stream started!")
     streaming = True
     state["streaming"] = True
@@ -143,7 +116,6 @@ def stop_stream():
         stream_process.terminate()
         stream_process.wait()
         stream_process = None
-        GPIO.output(STREAM_LED_PIN, GPIO.LOW)
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
     logging.debug("Stream stopped!")
     streaming = False
@@ -179,7 +151,6 @@ def start_recording():
         "-f", "mp4", f"recordings/recording_{int(time.time())}.mp4"
     ]
     record_process = subprocess.Popen(record_command)
-    GPIO.output(RECORD_LED_PIN, GPIO.HIGH)
     logging.debug("Recording started!")
     recording = True
     state["recording"] = True
@@ -198,7 +169,6 @@ def stop_recording():
         record_process.terminate()
         record_process.wait()
         record_process = None
-        GPIO.output(RECORD_LED_PIN, GPIO.LOW)
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
     logging.debug("Recording stopped!")
     recording = False
@@ -290,8 +260,6 @@ def start_file_stream():
         return
 
     stream_process = subprocess.Popen(file_stream_command)
-    # Ensure GPIO library is imported and configured if using
-    GPIO.output(STREAM_LED_PIN, GPIO.HIGH)
     logging.debug("File stream started!")
     streaming = True
     state["file_streaming"] = True
@@ -309,7 +277,6 @@ def stop_file_stream():
         stream_process.terminate()
         stream_process.wait()
         stream_process = None
-        GPIO.output(STREAM_LED_PIN, GPIO.LOW)
         time.sleep(3)  # Wait for 3 seconds
     logging.debug("File stream stopped!")
     streaming = False
@@ -322,7 +289,6 @@ def shutdown_pi():
         stop_stream()
     if recording:
         stop_recording()
-    GPIO.cleanup()
     time.sleep(3)
     subprocess.call(['sudo', 'shutdown', '-r', 'now'])
 
@@ -332,7 +298,6 @@ def restart_service():
         stop_stream()
     if recording:
         stop_recording()
-    GPIO.cleanup()
     time.sleep(3)
     subprocess.call(['sudo', 'systemctl', 'restart', 'stream_control.service'])
 
@@ -342,7 +307,6 @@ def poweroff_pi():
         stop_stream()
     if recording:
         stop_recording()
-    GPIO.cleanup()
     time.sleep(3)
     subprocess.call(['sudo', 'shutdown', '-h', 'now'])
 
@@ -505,39 +469,3 @@ def run_flask_app():
 # Start the Flask app in a separate thread
 flask_thread = Thread(target=run_flask_app)
 flask_thread.start()
-
-# Main loop to handle button presses
-try:
-    while True:
-        stream_button_state = GPIO.input(STREAM_BUTTON_PIN)
-        record_button_state = GPIO.input(RECORD_BUTTON_PIN)
-        shutdown_button_state = GPIO.input(SHUTDOWN_BUTTON_PIN)
-        
-        current_time = time.time()
-
-        if stream_button_state == GPIO.LOW and last_stream_button_state == GPIO.HIGH and (current_time - last_stream_action_time) > ACTION_DELAY:
-            if streaming:
-                stop_stream()
-            else:
-                start_stream()
-            last_stream_action_time = current_time
-
-        if record_button_state == GPIO.LOW and last_record_button_state == GPIO.HIGH and (current_time - last_record_action_time) > ACTION_DELAY:
-            if recording:
-                stop_recording()
-            else:
-                start_recording()
-            last_record_action_time = current_time
-
-        if shutdown_button_state == GPIO.LOW and last_shutdown_button_state == GPIO.HIGH and (current_time - last_shutdown_action_time) > ACTION_DELAY:
-            shutdown_pi()
-            last_shutdown_action_time = current_time
-
-        last_stream_button_state = stream_button_state
-        last_record_button_state = record_button_state
-        last_shutdown_button_state = shutdown_button_state
-
-        time.sleep(0.1)
-
-except KeyboardInterrupt:
-    GPIO.cleanup()

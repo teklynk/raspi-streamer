@@ -8,8 +8,7 @@ All you have to do is connect it to the internet, plug in your HDMI source from 
 You can also control the Raspi-Streamer using the Web UI from any web browser. Just visit http://<ip_address_of_pi>:5000 from your mobile device connected to the same network to start, stop, and manage your streams and recordings remotely.
 
 ## Key Features
-- __Hardware Integration:__ Utilize the GPIO pins on the Raspberry Pi to connect push buttons and LEDs, providing a physical interface to start/stop streaming and recording with visual feedback.
-- __High-Quality Streaming:__ Capture video via a USB capture device and stream it in real-time to an RTMP server, ensuring smooth and reliable video output.
+- __Streaming:__ Capture video via a USB capture device and stream it in real-time to an RTMP server, ensuring smooth and reliable video output.
 - __Audio Synchronization:__ Achieve perfect sync between audio and video using ALSA for audio input.
 - __Automated Control:__ A Python script runs as a system service, enabling the device to handle streaming and recording commands autonomously.
 - __Network Accessibility:__ With Samba configured, easily access and manage your recordings over the network from any device.
@@ -26,7 +25,7 @@ You can also control the Raspi-Streamer using the Web UI from any web browser. J
 
 ## Prerequisites
 - You have already installed the Lite version of Raspberry Pi OS.
-- A user has been created and you have enabled Remote GPIO from `raspi-config`.
+- A user has been created.
 
 # Install necessary packages
 ```bash
@@ -45,7 +44,7 @@ sudo apt install git
 These steps are only nessasary if you do not want to use the `install.sh` script.
 
 ```bash
-sudo apt install ffmpeg python3-rpi-lgpio python3-dotenv python3-flask v4l-utils samba samba-common-bin nodejs npm git
+sudo apt install ffmpeg python3-dotenv python3-flask v4l-utils samba samba-common-bin nodejs npm git
 ```
 
 # Web UI setup
@@ -246,7 +245,5 @@ This is all stored under my entertainment center and powered on when I want to s
 
 # Future Plans
 This project is ongoing, with exciting future enhancements in the pipeline:
-- __Hardware Upgrade:__
-  - Incorporate the [Geekworm Raspberry Pi Hdmi to CSI-2 Module C790](https://geekworm.com/products/c790) to replace the current USB capture device. This module will be integrated onto a custom circuit board along with LEDs, buttons, and GPIO headers, creating a "hat" for the Raspberry Pi. This will streamline the setup, making it almost a plug-and-play solution.
 - __Web UI:__
   - Ability to create multiple config files for various platforms and/or stream settings and choose a config to use for streaming or recording. A way to manage config files (create, edit, delete).
