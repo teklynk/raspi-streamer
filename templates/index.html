@@ -30,24 +30,18 @@
 
         <div class="tab-content mt-4">
             <div class="tab-pane mb-4 fade show active" id="ControlPanel" role="tabpanel" aria-labelledby="control-panel-tab">
-                {% if config['RTMP_SERVER'] %}
-                <div class="text-center mt-4">
+                <div class="text-center mt-4 {% if not config['RTMP_SERVER'] %}d-none{% endif %}">
                     <button class="btn btn-lg btn-block btn-success mb-2" id="stream_button" onclick="toggle('stream')">Start Stream</button>
                 </div>
-                {% endif %}
-                {% if config['RTMP_SERVER'] and config['STREAM_M3U8_URL'] %}
-                <div class="text-center mt-4">
+                <div class="text-center mt-4 {% if not config['STREAM_M3U8_URL'] %}d-none{% endif %}">
                     <button class="btn btn-lg btn-block btn-success mb-2" id="stream_record_button" onclick="toggle('stream_record')">Start Stream & Record</button>
                 </div>
-                {% endif %}
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
                 </div>
-                {% if config['RTMP_SERVER'] and config['STREAM_FILE'] %}
-                <div class="text-center mt-4">
+                <div class="text-center mt-4 {% if not config['STREAM_FILE'] %}d-none{% endif %}">
                     <button class="btn btn-lg btn-block btn-success mb-2" id="file_stream_button" onclick="toggle('file_stream')">Start File Stream</button>
                 </div>
-                {% endif %}
             </div>
             <div class="tab-pane fade mb-4" id="ConfigSettings" role="tabpanel" aria-labelledby="config-settings-tab">
                 <form id="configForm">
