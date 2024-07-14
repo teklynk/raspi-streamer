@@ -448,10 +448,23 @@ def start_stream_record_route():
     start_stream_recording()
     return jsonify({"message": "Stream and recording started."}), 200
 
+
 @app.route('/stop_stream_record', methods=['POST'])
 def stop_stream_record_route():
-    stop_stream()
-    stop_stream_recording()
+    try:
+        print("Calling stop_stream()")
+        stop_stream()
+        print("stop_stream() executed successfully")
+    except Exception as e:
+        print(f"Error in stop_stream(): {e}")
+
+    try:
+        print("Calling stop_stream_recording()")
+        stop_stream_recording()
+        print("stop_stream_recording() executed successfully")
+    except Exception as e:
+        print(f"Error in stop_stream_recording(): {e}")
+
     return jsonify({"message": "Stream and recording stopped."}), 200
 
 @app.route('/start_record', methods=['POST'])
