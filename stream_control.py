@@ -100,6 +100,8 @@ def start_stream():
     stream_process = subprocess.Popen(stream_command)
     logging.debug("Stream started!")
     streaming = True
+    state["streaming_and_recording"] = False
+    state["recording"] = False
     state["streaming"] = True
     save_state(state)
 
@@ -153,6 +155,8 @@ def start_recording():
     record_process = subprocess.Popen(record_command)
     logging.debug("Recording started!")
     recording = True
+    state["streaming"] = False
+    state["streaming_and_recording"] = False
     state["recording"] = True
     save_state(state)
 
@@ -201,6 +205,8 @@ def start_stream_recording():
     stream_record_process = subprocess.Popen(stream_record_command)
     logging.debug("Recording stream started!")
     recording = True
+    state["recording"] = False
+    state["streaming"] = False
     state["streaming_and_recording"] = True
     save_state(state)
 
@@ -282,6 +288,8 @@ def start_file_stream():
     stream_process = subprocess.Popen(file_stream_command)
     logging.debug("File stream started!")
     streaming = True
+    state["recording"] = False
+    state["streaming"] = False
     state["file_streaming"] = True
     save_state(state)
 
