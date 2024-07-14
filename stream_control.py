@@ -177,7 +177,7 @@ def stop_stream():
     save_state(state)
     logging.debug(f"Updated state: {state}")
     print(f"Updated state: {state}")
-    
+
 def start_recording():
     global record_process, recording
 
@@ -265,7 +265,7 @@ def start_stream_recording():
     logging.debug("Recording stream started!")
 
 def stop_stream_recording():
-    global stream_record_process, stream_recording
+    global stream_record_process, stream_recording, stream_process
 
     state = load_state()
 
@@ -281,7 +281,13 @@ def stop_stream_recording():
         stream_record_process.terminate()
         stream_record_process.wait()
         stream_record_process = None
-    logging.debug("Recording stopped!")
+
+        logging.debug("Stopping stream...")
+        stream_process.terminate()
+        stream_process.wait()
+        stream_process = None
+
+    logging.debug("Stream and Recording stopped!")
     stream_recording = False
     state["streaming_and_recording"] = False
     save_state(state)
