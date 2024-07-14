@@ -200,11 +200,8 @@ def start_stream_recording():
 
     stream_record_process = subprocess.Popen(stream_record_command)
     logging.debug("Recording stream started!")
-    streaming = True
     recording = True
     state["streaming_and_recording"] = True
-    state["recording"] = False
-    state["streaming"] = False
     save_state(state)
 
 def stop_stream_recording():
@@ -226,10 +223,8 @@ def stop_stream_recording():
         stream_record_process = None
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
     logging.debug("Recording stopped!")
-    streaming = False
     recording = False
     state["streaming_and_recording"] = False
-    state["recording"] = False
     save_state(state)
 
 def start_file_stream():
@@ -248,17 +243,37 @@ def start_file_stream():
         logging.debug(f"Streaming single file: {STREAM_FILE}")
         file_stream_command = [
             "ffmpeg",
-            "-re", "-stream_loop", "-1", "-i", str(STREAM_FILE),
-            "-c:v", "copy", "-c:a", "aac", "-strict", "-2", "-ac", "2", "-b:a", "128k", "-ar", "44100", "-f", "flv",
-            f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
+            "-re",  # Read input at native frame rate
+            "-stream_loop", "-1",  # Loop the input file indefinitely
+            "-i", str(STREAM_FILE),  # Input file
+            "-c:v", "copy",  # Copy the video codec
+            "-c:a", "aac",  # Audio codec
+            "-strict", "-2",  # Allow experimental codecs
+            "-ac", "2",  # Set number of audio channels
+            "-b:a", "128k",  # Audio bitrate
+            "-ar", "44100",  # Audio sampling rate
+            "-bufsize", "2M",  # Set buffer size for the stream
+            "-f", "flv",  # Output format
+            f"{RTMP_SERVER}{STREAM_KEY}"  # RTMP server URL and stream key
         ]
     elif STREAM_FILE.endswith('.txt') and os.path.isfile(STREAM_FILE):
         logging.debug(f"Streaming playlist file: {STREAM_FILE}")
         file_stream_command = [
             "ffmpeg",
-            "-re", "-f", "concat", "-safe", "0", "-stream_loop", "-1", "-i", str(STREAM_FILE),
-            "-c:v", "copy", "-c:a", "aac", "-strict", "-2", "-ac", "2", "-b:a", "128k", "-ar", "44100", "-f", "flv",
-            f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
+            "-re",  # Read input at native frame rate
+            "-f", "concat",  # Use concat demuxer
+            "-safe", "0",  # Allow unsafe file paths
+            "-stream_loop", "-1",  # Loop the playlist indefinitely
+            "-i", str(STREAM_FILE),  # Input playlist file
+            "-c:v", "copy",  # Copy the video codec
+            "-c:a", "aac",  # Audio codec
+            "-strict", "-2",  # Allow experimental codecs
+            "-ac", "2",  # Set number of audio channels
+            "-b:a", "128k",  # Audio bitrate
+            "-ar", "44100",  # Audio sampling rate
+            "-bufsize", "2M",  # Set buffer size for the stream
+            "-f", "flv",  # Output format
+            f"{RTMP_SERVER}{STREAM_KEY}"  # RTMP server URL and stream key
         ]
     else:
         logging.error(f"{STREAM_FILE} not found or invalid format. Cannot start file streaming.")
