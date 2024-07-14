@@ -206,6 +206,8 @@ def start_stream_recording():
     ensure_recordings_directory()
     logging.debug("Starting stream recording...")
 
+    start_stream()
+
     time.sleep(30)  # Wait 30 seconds after the stream has started
 
     stream_record_command = [
@@ -240,6 +242,7 @@ def stop_stream_recording():
         stream_record_process.wait()
         stream_record_process = None
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
+        stop_stream()
     logging.debug("Recording stopped!")
     recording = False
     state["streaming_and_recording"] = False
@@ -448,13 +451,11 @@ def stop_stream_route():
 
 @app.route('/start_stream_record', methods=['POST'])
 def start_stream_record_route():
-    start_stream()
     start_stream_recording()
     return jsonify({"message": "Stream and recording started."}), 200
 
 @app.route('/stop_stream_record', methods=['POST'])
 def stop_stream_record_route():
-    stop_stream()
     stop_stream_recording()
     return jsonify({"message": "Stream and recording stopped."}), 200
 
