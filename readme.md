@@ -246,4 +246,4 @@ This is all stored under my entertainment center and powered on when I want to s
 # Future Plans
 This project is ongoing, with exciting future enhancements in the pipeline:
 - __Web UI:__
-  - Ability to create multiple config files for various platforms and/or stream settings and choose a config to use for streaming or recording. A way to manage config files (create, edit, delete).
+  - Ability to create multiple config files for various platforms and/or stream settings and choose a config to use for streaming or recording.
