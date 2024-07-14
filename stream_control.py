@@ -63,6 +63,9 @@ def save_state(state):
     with open(state_file, 'w') as f:
         json.dump(state, f)
 
+# Sets state to false on restart
+load_state()
+
 state = load_state()
 
 def ensure_recordings_directory():
