@@ -50,6 +50,14 @@ recording = False
 file_streaming = False
 stream_recording = False
 
+# Initialize global variables
+stream_record_process = None
+stream_recording = False
+stream_process = None
+streaming = False
+file_stream_process = None
+file_streaming = False
+
 state_file = 'state.json'
 
 default_state = {"streaming": False, "recording": False, "file_streaming": False, "streaming_and_recording": False}
