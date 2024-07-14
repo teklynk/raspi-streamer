@@ -129,54 +129,19 @@ def stop_stream():
 
     state = load_state()
 
-    logging.debug(f"Initial state: {state}")
-
-    if not state["streaming"]:
-        logging.debug("Stream is not currently active.")
+    if not state["streaming"] and not state["streaming_and_recording"]:
+        logging.debug("No active stream to stop.")
         return
 
-    print(f"stream_process: {stream_process}")
-
     if stream_process:
-        logging.debug(f"Stopping stream process with PID: {stream_process.pid}")
-        print(f"Stopping stream process with PID: {stream_process.pid}")
-        
-        # Attempt to terminate the process
+        logging.debug("Stopping stream...")
         stream_process.terminate()
-        
-        try:
-            stream_process.wait(timeout=5)
-        except subprocess.TimeoutExpired:
-            logging.debug("Stream process did not terminate in time, forcing kill.")
-            print("Stream process did not terminate in time, forcing kill.")
-            stream_process.kill()
-            stream_process.wait()
-        
-        logging.debug(f"Stream process terminated: {stream_process.returncode}")
-        print(f"Stream process terminated: {stream_process.returncode}")
-
-        # Verify the process is terminated
-        try:
-            os.kill(stream_process.pid, 0)
-        except OSError:
-            logging.debug("Stream process successfully terminated.")
-            print("Stream process successfully terminated.")
-        else:
-            logging.error("Failed to terminate stream process.")
-            print("Failed to terminate stream process.")
-
+        stream_process.wait()
         stream_process = None
-    else:
-        logging.debug("No stream process found.")
-        print("No stream process found.")
-
     logging.debug("Stream stopped!")
-    print("Stream stopped!")
     streaming = False
     state["streaming"] = False
     save_state(state)
-    logging.debug(f"Updated state: {state}")
-    print(f"Updated state: {state}")
 
 def start_recording():
     global record_process, recording
@@ -281,11 +246,6 @@ def stop_stream_recording():
         stream_record_process.terminate()
         stream_record_process.wait()
         stream_record_process = None
-
-        logging.debug("Stopping stream...")
-        stream_process.terminate()
-        stream_process.wait()
-        stream_process = None
 
     logging.debug("Stream and Recording stopped!")
     stream_recording = False
