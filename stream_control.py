@@ -47,8 +47,6 @@ log.setLevel(logging.ERROR)
 # Initialize variables
 streaming = False
 recording = False
-stream_process = None
-record_process = None
 
 state_file = 'state.json'
 
@@ -220,7 +218,7 @@ def start_stream_recording():
     logging.debug("Recording stream started!")
 
 def stop_stream_recording():
-    global stream_record_process, recording, stream_process
+    global stream_record_process, recording
 
     state = load_state()
 
