@@ -59,12 +59,23 @@ def load_state():
             return json.load(f)
     return {"streaming": False, "recording": False, "file_streaming": False, "streaming_and_recording": False}
 
+def load_default_state():
+    default_state = {
+        "streaming": False,
+        "recording": False,
+        "file_streaming": False,
+        "streaming_and_recording": False
+    }
+    
+    with open("state.json", "w") as file:
+        json.dump(default_state, file, indent=4)
+
 def save_state(state):
     with open(state_file, 'w') as f:
         json.dump(state, f)
 
 # Sets state to false on restart
-load_state()
+load_default_state()
 
 state = load_state()
 
