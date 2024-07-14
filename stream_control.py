@@ -206,7 +206,11 @@ def start_stream_recording():
     ensure_recordings_directory()
     logging.debug("Starting stream recording...")
 
-    start_stream()
+    recording = True
+    state["recording"] = False
+    state["streaming"] = False
+    state["streaming_and_recording"] = True
+    save_state(state)
 
     time.sleep(30)  # Wait 30 seconds after the stream has started
 
@@ -218,11 +222,6 @@ def start_stream_recording():
 
     stream_record_process = subprocess.Popen(stream_record_command)
     logging.debug("Recording stream started!")
-    recording = True
-    state["recording"] = False
-    state["streaming"] = False
-    state["streaming_and_recording"] = True
-    save_state(state)
 
 def stop_stream_recording():
     global stream_record_process, recording, stream_process
@@ -242,10 +241,6 @@ def stop_stream_recording():
         stream_record_process.wait()
         stream_record_process = None
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
-        logging.debug("Stopping stream...")
-        stream_process.terminate()
-        stream_process.wait()
-        stream_process = None
     logging.debug("Stream stopped!")
     logging.debug("Recording stopped!")
     recording = False
@@ -455,11 +450,13 @@ def stop_stream_route():
 
 @app.route('/start_stream_record', methods=['POST'])
 def start_stream_record_route():
+    start_stream()
     start_stream_recording()
     return jsonify({"message": "Stream and recording started."}), 200
 
 @app.route('/stop_stream_record', methods=['POST'])
 def stop_stream_record_route():
+    stop_stream()
     stop_stream_recording()
     return jsonify({"message": "Stream and recording stopped."}), 200
 
