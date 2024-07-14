@@ -2,6 +2,7 @@ import time
 import json
 import subprocess
 import os
+import signal
 import logging
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify
@@ -47,8 +48,16 @@ log.setLevel(logging.ERROR)
 # Initialize variables
 streaming = False
 recording = False
+file_streaming = False
+stream_recording = False
+
+# Initialize global variables
+stream_record_process = None
+stream_recording = False
 stream_process = None
-record_process = None
+streaming = False
+file_stream_process = None
+file_streaming = False
 
 state_file = 'state.json'
 
@@ -120,7 +129,8 @@ def stop_stream():
 
     state = load_state()
 
-    if not state["streaming"]:
+    if not state["streaming"] and not state["streaming_and_recording"]:
+        logging.debug("No active stream to stop.")
         return
 
     if stream_process:
@@ -188,7 +198,7 @@ def stop_recording():
     save_state(state)
 
 def start_stream_recording():
-    global stream_record_process, recording
+    global stream_record_process, stream_recording
 
     state = load_state()
 
@@ -202,7 +212,7 @@ def start_stream_recording():
     ensure_recordings_directory()
     logging.debug("Starting stream recording...")
 
-    recording = True
+    stream_recording = True
     state["recording"] = False
     state["streaming"] = False
     state["streaming_and_recording"] = True
@@ -220,7 +230,7 @@ def start_stream_recording():
     logging.debug("Recording stream started!")
 
 def stop_stream_recording():
-    global stream_record_process, recording, stream_process
+    global stream_record_process, stream_recording, stream_process
 
     state = load_state()
 
@@ -236,13 +246,14 @@ def stop_stream_recording():
         stream_record_process.terminate()
         stream_record_process.wait()
         stream_record_process = None
-    logging.debug("Recording stopped!")
-    recording = False
+
+    logging.debug("Stream and Recording stopped!")
+    stream_recording = False
     state["streaming_and_recording"] = False
     save_state(state)
 
 def start_file_stream():
-    global stream_process, streaming
+    global file_stream_process, file_streaming
 
     state = load_state()
 
@@ -293,29 +304,29 @@ def start_file_stream():
         logging.error(f"{STREAM_FILE} not found or invalid format. Cannot start file streaming.")
         return
 
-    stream_process = subprocess.Popen(file_stream_command)
+    file_stream_process = subprocess.Popen(file_stream_command)
     logging.debug("File stream started!")
-    streaming = True
+    file_streaming = True
     state["recording"] = False
     state["streaming"] = False
     state["file_streaming"] = True
     save_state(state)
 
 def stop_file_stream():
-    global stream_process
+    global file_stream_process, file_streaming
 
     state = load_state()
 
     if not state["file_streaming"]:
         return
 
-    if stream_process:
-        stream_process.terminate()
-        stream_process.wait()
-        stream_process = None
+    if file_stream_process:
+        file_stream_process.terminate()
+        file_stream_process.wait()
+        file_stream_process = None
         time.sleep(3)  # Wait for 3 seconds
     logging.debug("File stream stopped!")
-    streaming = False
+    file_streaming = False
     state["file_streaming"] = False
     save_state(state)
 
@@ -325,6 +336,10 @@ def shutdown_pi():
         stop_stream()
     if recording:
         stop_recording()
+    if file_streaming:
+        stop_file_stream()
+    if stream_recording:
+        stop_stream_recording()
     time.sleep(3)
     subprocess.call(['sudo', 'shutdown', '-r', 'now'])
 
@@ -334,6 +349,10 @@ def restart_service():
         stop_stream()
     if recording:
         stop_recording()
+    if file_streaming:
+        stop_file_stream()
+    if stream_recording:
+        stop_stream_recording()
     time.sleep(3)
     subprocess.call(['sudo', 'systemctl', 'restart', 'stream_control.service'])
 
@@ -343,6 +362,10 @@ def poweroff_pi():
         stop_stream()
     if recording:
         stop_recording()
+    if file_streaming:
+        stop_file_stream()
+    if stream_recording:
+        stop_stream_recording()
     time.sleep(3)
     subprocess.call(['sudo', 'shutdown', '-h', 'now'])
 
@@ -418,8 +441,10 @@ def toggle():
             start_file_stream()
     elif action == 'stream_record':
         if state["streaming_and_recording"]:
+            stop_stream()
             stop_stream_recording()
         else:
+            start_stream()
             start_stream_recording()
 
     state = load_state()  # Reload the state after the action
@@ -448,10 +473,23 @@ def start_stream_record_route():
     start_stream_recording()
     return jsonify({"message": "Stream and recording started."}), 200
 
+
 @app.route('/stop_stream_record', methods=['POST'])
 def stop_stream_record_route():
-    stop_stream()
-    stop_stream_recording()
+    try:
+        print("Calling stop_stream()")
+        stop_stream()
+        print("stop_stream() executed successfully")
+    except Exception as e:
+        print(f"Error in stop_stream(): {e}")
+
+    try:
+        print("Calling stop_stream_recording()")
+        stop_stream_recording()
+        print("stop_stream_recording() executed successfully")
+    except Exception as e:
+        print(f"Error in stop_stream_recording(): {e}")
+
     return jsonify({"message": "Stream and recording stopped."}), 200
 
 @app.route('/start_record', methods=['POST'])
