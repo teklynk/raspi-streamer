@@ -200,8 +200,10 @@ def start_stream_recording():
 
     stream_record_process = subprocess.Popen(stream_record_command)
     logging.debug("Recording stream started!")
+    streaming = True
     recording = True
     state["streaming_and_recording"] = True
+    state["recording"] = False
     save_state(state)
 
 def stop_stream_recording():
@@ -223,8 +225,10 @@ def stop_stream_recording():
         stream_record_process = None
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
     logging.debug("Recording stopped!")
+    streaming = False
     recording = False
     state["streaming_and_recording"] = False
+    state["recording"] = False
     save_state(state)
 
 def start_file_stream():
