@@ -130,11 +130,9 @@ def stop_stream():
     state = load_state()
 
     logging.debug(f"Initial state: {state}")
-    print(f"Initial state: {state}")
 
     if not state["streaming"]:
         logging.debug("Stream is not currently active.")
-        print("Stream is not currently active.")
         return
 
     print(f"stream_process: {stream_process}")
@@ -179,7 +177,7 @@ def stop_stream():
     save_state(state)
     logging.debug(f"Updated state: {state}")
     print(f"Updated state: {state}")
-
+    
 def start_recording():
     global record_process, recording
 
