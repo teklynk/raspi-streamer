@@ -52,30 +52,28 @@ record_process = None
 
 state_file = 'state.json'
 
+default_state = {"streaming": False, "recording": False, "file_streaming": False, "streaming_and_recording": False}
+
+# Sets the default state on startup
+def load_default_state():    
+    with open("state.json", "w") as file:
+        json.dump(default_state, file, indent=4)
+
+# Sets default state
+load_default_state()
+
 # Save current state to json file
 def load_state():
     if os.path.exists(state_file):
         with open(state_file, 'r') as f:
             return json.load(f)
-    return {"streaming": False, "recording": False, "file_streaming": False, "streaming_and_recording": False}
-
-def load_default_state():
-    default_state = {
-        "streaming": False,
-        "recording": False,
-        "file_streaming": False,
-        "streaming_and_recording": False
-    }
-    
-    with open("state.json", "w") as file:
-        json.dump(default_state, file, indent=4)
+    return default_state
 
 def save_state(state):
     with open(state_file, 'w') as f:
         json.dump(state, f)
 
-# Sets state to false on restart
-load_default_state()
+
 
 state = load_state()
 
