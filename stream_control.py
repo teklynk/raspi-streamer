@@ -225,7 +225,7 @@ def start_stream_recording():
     save_state(state)
 
 def stop_stream_recording():
-    global stream_record_process, recording, stream_process, streaming
+    global stream_record_process, recording, stream_process
 
     state = load_state()
 
@@ -242,7 +242,11 @@ def stop_stream_recording():
         stream_record_process.wait()
         stream_record_process = None
         time.sleep(3)  # Wait for 3 seconds to ensure the device is released
-        stop_stream()
+        logging.debug("Stopping stream...")
+        stream_process.terminate()
+        stream_process.wait()
+        stream_process = None
+    logging.debug("Stream stopped!")
     logging.debug("Recording stopped!")
     recording = False
     state["streaming_and_recording"] = False
