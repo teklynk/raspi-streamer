@@ -73,8 +73,6 @@ def save_state(state):
     with open(state_file, 'w') as f:
         json.dump(state, f)
 
-
-
 state = load_state()
 
 def ensure_recordings_directory():
@@ -130,7 +128,6 @@ def stop_stream():
         stream_process.terminate()
         stream_process.wait()
         stream_process = None
-        time.sleep(3)  # Wait for 3 seconds to ensure the device is released
     logging.debug("Stream stopped!")
     streaming = False
     state["streaming"] = False
@@ -185,7 +182,6 @@ def stop_recording():
         record_process.terminate()
         record_process.wait()
         record_process = None
-        time.sleep(3)  # Wait for 3 seconds to ensure the device is released
     logging.debug("Recording stopped!")
     recording = False
     state["recording"] = False
@@ -240,8 +236,6 @@ def stop_stream_recording():
         stream_record_process.terminate()
         stream_record_process.wait()
         stream_record_process = None
-        time.sleep(3)  # Wait for 3 seconds to ensure the device is released
-    logging.debug("Stream stopped!")
     logging.debug("Recording stopped!")
     recording = False
     state["streaming_and_recording"] = False
