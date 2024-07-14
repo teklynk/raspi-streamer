@@ -225,7 +225,7 @@ def start_stream_recording():
     save_state(state)
 
 def stop_stream_recording():
-    global stream_record_process, recording
+    global stream_record_process, recording, stream_process, streaming
 
     state = load_state()
 
