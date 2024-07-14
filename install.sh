@@ -8,7 +8,7 @@ CURRENT_USER=$(whoami)
 sudo apt update && sudo apt upgrade -y
 
 # Install necessary packages
-sudo apt install -y ffmpeg python3-dotenv python3-flask v4l-utils samba samba-common-bin nodejs npm git
+sudo apt install -y ffmpeg alsa-base alsa-utils python3-dotenv python3-flask v4l-utils samba samba-common-bin nodejs npm git
 
 # Change to the working directory
 cd "$WORK_DIR"
