@@ -47,6 +47,8 @@ log.setLevel(logging.ERROR)
 # Initialize variables
 streaming = False
 recording = False
+file_streaming = False
+stream_recording = False
 
 state_file = 'state.json'
 
