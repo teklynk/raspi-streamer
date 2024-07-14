@@ -118,18 +118,26 @@ def stop_stream():
 
     state = load_state()
 
+    logging.debug(f"Initial state: {state}")
+
     if not state["streaming"]:
+        logging.debug("Stream is not currently active.")
         return
 
     if stream_process:
-        logging.debug("Stopping stream...")
+        logging.debug(f"Stopping stream process with PID: {stream_process.pid}")
         stream_process.terminate()
         stream_process.wait()
+        logging.debug(f"Stream process terminated: {stream_process.returncode}")
         stream_process = None
+    else:
+        logging.debug("No stream process found.")
+
     logging.debug("Stream stopped!")
     streaming = False
     state["streaming"] = False
     save_state(state)
+    logging.debug(f"Updated state: {state}")
 
 def start_recording():
     global record_process, recording
