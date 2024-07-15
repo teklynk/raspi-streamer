@@ -197,21 +197,31 @@ def stop_recording():
     state["recording"] = False
     save_state(state)
 
+# Assuming load_state, save_state, ensure_recordings_directory, STREAM_M3U8_URL, 
+# stream_record_process, and stream_recording are defined elsewhere
+
+stop_event = threading.Event()
+
 def delayed_start_recording():
-    time.sleep(30)  # Wait 30 seconds after the stream has started
+    for _ in range(30):
+        if stop_event.is_set():
+            logging.debug("Delayed start recording process was stopped before it started.")
+            return
+        time.sleep(1)
 
-    stream_record_command = [
-        "ffmpeg",
-        "-re", "-i", str(STREAM_M3U8_URL),
-        "-c", "copy", f"recordings/stream_{int(time.time())}.mp4"
-    ]
+    if not stop_event.is_set():
+        stream_record_command = [
+            "ffmpeg",
+            "-re", "-i", str(STREAM_M3U8_URL),
+            "-c", "copy", f"recordings/stream_{int(time.time())}.mp4"
+        ]
 
-    global stream_record_process
-    stream_record_process = subprocess.Popen(stream_record_command)
-    logging.debug("Recording stream started!")
+        global stream_record_process
+        stream_record_process = subprocess.Popen(stream_record_command)
+        logging.debug("Recording stream started!")
 
 def start_stream_recording():
-    global stream_record_process, stream_recording
+    global stream_record_process, stream_recording, stop_event
 
     state = load_state()
 
@@ -228,11 +238,11 @@ def start_stream_recording():
     state["streaming_and_recording"] = True
     save_state(state)
 
-    # Start the delayed recording in a separate thread
+    stop_event.clear()  # Clear the stop event before starting the thread
     threading.Thread(target=delayed_start_recording).start()
 
 def stop_stream_recording():
-    global stream_record_process, stream_recording, stream_process
+    global stream_record_process, stream_recording, stream_process, stop_event
 
     state = load_state()
 
@@ -242,6 +252,8 @@ def stop_stream_recording():
     if not STREAM_M3U8_URL:
         logging.error("STREAM_M3U8_URL is not set or is empty. Cannot stop recording.")
         return
+
+    stop_event.set()  # Signal the delayed start thread to stop
 
     if stream_record_process:
         logging.debug("Stopping recording...")
