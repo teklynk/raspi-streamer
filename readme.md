@@ -23,9 +23,10 @@ You can also control the Raspi-Streamer using the Web UI from any web browser. J
 
 # Setup guide
 
-## Prerequisites
+## Prerequisites before installing
 - You have already installed the Lite version of Raspberry Pi OS.
 - A user has been created.
+- Your capture device is currently plugged into the Raspberry Pi.
 
 # Install necessary packages
 ```bash
