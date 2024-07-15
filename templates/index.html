@@ -31,16 +31,16 @@
         <div class="tab-content mt-4">
             <div class="tab-pane mb-4 fade show active" id="ControlPanel" role="tabpanel" aria-labelledby="control-panel-tab">
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-block btn-success mb-2 {% if not config['RTMP_SERVER'] %}d-none{% endif %}" id="stream_button" onclick="toggle('stream')">Start Stream</button>
+                    <button class="btn btn-lg btn-block btn-success mb-2 {% if not config['RTMP_SERVER'] %}d-none{% endif %}" id="stream_button" onclick="toggle('streaming')">Start Stream</button>
                 </div>
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-block btn-success mb-2 {% if not config['STREAM_M3U8_URL'] %}d-none{% endif %}" id="stream_record_button" onclick="toggle('stream_record')">Start Stream & Record</button>
+                    <button class="btn btn-lg btn-block btn-success mb-2 {% if not config['STREAM_M3U8_URL'] %}d-none{% endif %}" id="stream_record_button" onclick="toggle('streaming_and_recording')">Start Stream & Record</button>
                 </div>
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-block btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
+                    <button class="btn btn-lg btn-block btn-success mb-2" id="record_button" onclick="toggle('recording')">Start Record</button>
                 </div>
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-block btn-success mb-2 {% if not config['STREAM_FILE'] %}d-none{% endif %}" id="file_stream_button" onclick="toggle('file_stream')">Start File Stream</button>
+                    <button class="btn btn-lg btn-block btn-success mb-2 {% if not config['STREAM_FILE'] %}d-none{% endif %}" id="file_stream_button" onclick="toggle('file_streaming')">Start File Stream</button>
                 </div>
             </div>
             <div class="tab-pane fade mb-4" id="ConfigSettings" role="tabpanel" aria-labelledby="config-settings-tab">

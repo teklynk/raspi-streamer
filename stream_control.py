@@ -430,19 +430,19 @@ def toggle_action(action):
         state[action] = not state[action]
         logging.debug(f"Toggled '{action}' to {state[action]}")
 
-        if action == 'stream_record' and state[action]:
+        if action == 'streaming_and_recording' and state[action]:
             state['streaming'] = False
             state['recording'] = False
             state['file_streaming'] = False
-        elif action == 'stream' and state[action]:
+        elif action == 'streaming' and state[action]:
             state['streaming_and_recording'] = False
             state['recording'] = False
             state['file_streaming'] = False
-        elif action == 'record' and state[action]:
+        elif action == 'recording' and state[action]:
             state['streaming_and_recording'] = False
             state['streaming'] = False
             state['file_streaming'] = False
-        elif action == 'file_stream' and state[action]:
+        elif action == 'file_streaming' and state[action]:
             state['streaming_and_recording'] = False
             state['streaming'] = False
             state['recording'] = False
