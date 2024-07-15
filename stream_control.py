@@ -414,41 +414,76 @@ def index():
     state = load_state()
     return render_template('index.html', config=config, state=state)
 
-@app.route('/get_state', methods=['GET'])
-def get_state():
+@app.route('/load_state', methods=['GET'])
+def load_state_endpoint():
     state = load_state()
     return jsonify(state)
 
-@app.route('/toggle', methods=['POST'])
-def toggle():
-    action = request.json.get('action')
-    state = load_state()
+@app.route('/toggle_<action>', methods=['POST'])
+def toggle_action(action):
+    try:
+        state = load_state()
+        logging.debug(f"Current state before toggle: {state}")
+        
+        if action not in state:
+            raise ValueError(f"Invalid action: {action}")
 
-    if action == 'stream':
-        if state["streaming"]:
-            stop_stream()
-        else:
-            start_stream()
-    elif action == 'record':
-        if state["recording"]:
-            stop_recording()
-        else:
-            start_recording()
-    elif action == 'file_stream':
-        if state["file_streaming"]:
-            stop_file_stream()
-        else:
-            start_file_stream()
-    elif action == 'stream_record':
-        if state["streaming_and_recording"]:
-            stop_stream()
-            stop_stream_recording()
-        else:
-            start_stream()
-            start_stream_recording()
+        # Determine the current and new state for the action
+        current_state = state[action]
+        new_state = not current_state
 
-    state = load_state()  # Reload the state after the action
-    return jsonify(state)
+        # Call the appropriate start/stop functions based on the action and new state
+        if action == 'streaming':
+            if new_state:
+                start_stream()
+            else:
+                stop_stream()
+        elif action == 'recording':
+            if new_state:
+                start_recording()
+            else:
+                stop_recording()
+        elif action == 'file_streaming':
+            if new_state:
+                start_file_stream()
+            else:
+                stop_file_stream()
+        elif action == 'streaming_and_recording':
+            if new_state:
+                start_stream()
+                start_stream_recording()
+            else:
+                stop_stream()
+                stop_stream_recording()
+
+        # Update the state
+        state[action] = new_state
+        logging.debug(f"Toggled '{action}' to {state[action]}")
+
+        # Ensure mutual exclusivity
+        if action == 'streaming_and_recording' and new_state:
+            state['streaming'] = False
+            state['recording'] = False
+            state['file_streaming'] = False
+        elif action == 'streaming' and new_state:
+            state['streaming_and_recording'] = False
+            state['recording'] = False
+            state['file_streaming'] = False
+        elif action == 'recording' and new_state:
+            state['streaming_and_recording'] = False
+            state['streaming'] = False
+            state['file_streaming'] = False
+        elif action == 'file_streaming' and new_state:
+            state['streaming_and_recording'] = False
+            state['streaming'] = False
+            state['recording'] = False
+
+        logging.debug(f"New state after toggle: {state}")
+        save_state(state)
+        return jsonify(state), 200
+    except Exception as e:
+        logging.error(f"Error toggling action '{action}': {e}")
+        return jsonify({"error": str(e)}), 400
 
 @app.route('/update_config', methods=['POST'])
 def update_config():

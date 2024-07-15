@@ -30,17 +30,17 @@
 
         <div class="tab-content mt-4">
             <div class="tab-pane mb-4 fade show active" id="ControlPanel" role="tabpanel" aria-labelledby="control-panel-tab">
-                <div class="text-center mt-4 {% if not config['RTMP_SERVER'] %}d-none{% endif %}">
-                    <button class="btn btn-lg btn-block btn-success mb-2" id="stream_button" onclick="toggle('stream')">Start Stream</button>
-                </div>
-                <div class="text-center mt-4 {% if not config['STREAM_M3U8_URL'] %}d-none{% endif %}">
-                    <button class="btn btn-lg btn-block btn-success mb-2" id="stream_record_button" onclick="toggle('stream_record')">Start Stream & Record</button>
+                <div class="text-center mt-4">
+                    <button class="btn btn-lg btn-block btn-success mb-2 {% if not config['RTMP_SERVER'] %}d-none{% endif %}" id="stream_button" onclick="toggle('streaming')">Start Stream</button>
                 </div>
                 <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-block btn-success mb-2" id="record_button" onclick="toggle('record')">Start Record</button>
+                    <button class="btn btn-lg btn-block btn-success mb-2 {% if not config['STREAM_M3U8_URL'] %}d-none{% endif %}" id="stream_record_button" onclick="toggle('streaming_and_recording')">Start Stream & Record</button>
                 </div>
-                <div class="text-center mt-4 {% if not config['STREAM_FILE'] %}d-none{% endif %}">
-                    <button class="btn btn-lg btn-block btn-success mb-2" id="file_stream_button" onclick="toggle('file_stream')">Start File Stream</button>
+                <div class="text-center mt-4">
+                    <button class="btn btn-lg btn-block btn-success mb-2" id="record_button" onclick="toggle('recording')">Start Record</button>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-lg btn-block btn-success mb-2 {% if not config['STREAM_FILE'] %}d-none{% endif %}" id="file_stream_button" onclick="toggle('file_streaming')">Start File Stream</button>
                 </div>
             </div>
             <div class="tab-pane fade mb-4" id="ConfigSettings" role="tabpanel" aria-labelledby="config-settings-tab">
@@ -123,6 +123,13 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/load_state')
+                .then(response => response.json())
+                .then(data => updateButtons(data))
+                .catch(error => console.error('Error loading state:', error));
+        });
+
         document.getElementById('configForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const formData = new FormData(event.target);
@@ -140,80 +147,100 @@
             .then(data => alert(data.message))
             .catch(error => console.error('Error:', error));
         });
-    
+
         function sendRequest(endpoint) {
-            fetch(endpoint, { method: 'POST' })
-                .then(response => response.json())
-                .then(data => alert(data.message))
-                .catch(error => console.error('Error:', error));
-        }
-    
-        function toggle(type) {
-            let button = document.getElementById(`${type}_button`);
-            if (!button) {
-                console.error(`Button with ID ${type}_button not found`);
-                return;
-            }
-    
-            let otherButtons = ['stream_button', 'stream_record_button', 'record_button', 'file_stream_button'].filter(id => id !== `${type}_button`);
-            let startText = `Start ${getButtonLabel(type)}`;
-            let stopText = `Stop ${getButtonLabel(type)}`;
-    
-            if (button.innerText === startText) {
-                sendRequest(`/start_${type}`);
-                button.innerText = stopText;
-                otherButtons.forEach(id => document.getElementById(id).disabled = true);
-            } else {
-                sendRequest(`/stop_${type}`);
-                button.innerText = startText;
-                otherButtons.forEach(id => document.getElementById(id).disabled = false);
-            }
-    
-            button.classList.toggle("btn-success");
-            button.classList.toggle("btn-danger");
-        }
-    
-        function getButtonLabel(type) {
-            switch (type) {
-                case 'stream': return 'Stream';
-                case 'stream_record': return 'Stream & Record';
-                case 'record': return 'Record';
-                case 'file_stream': return 'File Stream';
-                default: return '';
-            }
-        }
-    
-        function updateButtonLabels(state) {
-            document.getElementById("stream_button").innerText = state.streaming ? "Stop Stream" : "Start Stream";
-            document.getElementById("record_button").innerText = state.recording ? "Stop Record" : "Start Record";
-            document.getElementById("file_stream_button").innerText = state.file_streaming ? "Stop File Stream" : "Start File Stream";
-            document.getElementById("stream_record_button").innerText = state.streaming_and_recording ? "Stop Stream & Record" : "Start Stream & Record";
-    
-            let buttons = ['stream_button', 'stream_record_button', 'record_button', 'file_stream_button'];
-            buttons.forEach(id => {
-                let button = document.getElementById(id);
-                if (button.innerText.startsWith("Stop")) {
-                    button.classList.add("btn-danger");
-                    button.classList.remove("btn-success");
-                    buttons.filter(bid => bid !== id).forEach(bid => document.getElementById(bid).disabled = true);
-                } else {
-                    button.classList.add("btn-success");
-                    button.classList.remove("btn-danger");
-                    buttons.filter(bid => bid !== id).forEach(bid => document.getElementById(bid).disabled = false);
-                }
+            fetch(endpoint, {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to send request.');
             });
         }
-    
-        function fetchState() {
-            fetch('/get_state')
-                .then(response => response.json())
-                .then(data => updateButtonLabels(data))
-                .catch(error => console.error('Error fetching state:', error));
+
+        function toggle(action) {
+            fetch('/toggle_' + action, {
+                method: 'POST'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to toggle ' + action);
+                }
+                return response.json();
+            })
+            .then(data => updateButtons(data))
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to toggle ' + action + '.');
+            });
         }
-    
-        document.addEventListener("DOMContentLoaded", function() {
-            fetchState();
-        });
+
+        function updateButtons(state) {
+            const buttons = {
+                stream: document.getElementById('stream_button'),
+                stream_record: document.getElementById('stream_record_button'),
+                record: document.getElementById('record_button'),
+                file_stream: document.getElementById('file_stream_button')
+            };
+
+            if (state.streaming) {
+                buttons.stream.classList.remove('btn-success');
+                buttons.stream.classList.add('btn-danger');
+                buttons.stream.innerText = 'Stop Stream';
+            } else {
+                buttons.stream.classList.remove('btn-danger');
+                buttons.stream.classList.add('btn-success');
+                buttons.stream.innerText = 'Start Stream';
+            }
+
+            if (state.streaming_and_recording) {
+                buttons.stream_record.classList.remove('btn-success');
+                buttons.stream_record.classList.add('btn-danger');
+                buttons.stream_record.innerText = 'Stop Stream & Record';
+            } else {
+                buttons.stream_record.classList.remove('btn-danger');
+                buttons.stream_record.classList.add('btn-success');
+                buttons.stream_record.innerText = 'Start Stream & Record';
+            }
+
+            if (state.recording) {
+                buttons.record.classList.remove('btn-success');
+                buttons.record.classList.add('btn-danger');
+                buttons.record.innerText = 'Stop Record';
+            } else {
+                buttons.record.classList.remove('btn-danger');
+                buttons.record.classList.add('btn-success');
+                buttons.record.innerText = 'Start Record';
+            }
+
+            if (state.file_streaming) {
+                buttons.file_stream.classList.remove('btn-success');
+                buttons.file_stream.classList.add('btn-danger');
+                buttons.file_stream.innerText = 'Stop File Stream';
+            } else {
+                buttons.file_stream.classList.remove('btn-danger');
+                buttons.file_stream.classList.add('btn-success');
+                buttons.file_stream.innerText = 'Start File Stream';
+            }
+
+            for (const buttonKey in buttons) {
+                if (buttonKey !== 'stream_record' && state.streaming_and_recording) {
+                    buttons[buttonKey].disabled = true;
+                } else if (buttonKey !== 'stream' && state.streaming) {
+                    buttons[buttonKey].disabled = true;
+                } else if (buttonKey !== 'record' && state.recording) {
+                    buttons[buttonKey].disabled = true;
+                } else if (buttonKey !== 'file_stream' && state.file_streaming) {
+                    buttons[buttonKey].disabled = true;
+                } else {
+                    buttons[buttonKey].disabled = false;
+                }
+            }
+        }
 
         function updateLog() {
         fetch('/get_log')
@@ -240,6 +267,6 @@
     
         // Activate the default tab
         $('#defaultTab').tab('show');
-    </script>    
+    </script>
 </body>
 </html>
