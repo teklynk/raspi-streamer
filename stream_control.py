@@ -197,13 +197,23 @@ def stop_recording():
     state["recording"] = False
     save_state(state)
 
+def delayed_start_recording():
+    time.sleep(30)  # Wait 30 seconds after the stream has started
+
+    stream_record_command = [
+        "ffmpeg",
+        "-re", "-i", str(STREAM_M3U8_URL),
+        "-c", "copy", f"recordings/stream_{int(time.time())}.mp4"
+    ]
+
+    global stream_record_process
+    stream_record_process = subprocess.Popen(stream_record_command)
+    logging.debug("Recording stream started!")
+
 def start_stream_recording():
     global stream_record_process, stream_recording
 
     state = load_state()
-
-    if state["streaming_and_recording"]:
-        return
 
     if not STREAM_M3U8_URL:
         logging.error("STREAM_M3U8_URL is not set or is empty. Cannot start recording.")
@@ -218,16 +228,8 @@ def start_stream_recording():
     state["streaming_and_recording"] = True
     save_state(state)
 
-    time.sleep(30)  # Wait 30 seconds after the stream has started
-
-    stream_record_command = [
-        "ffmpeg",
-        "-re", "-i", str(STREAM_M3U8_URL),
-        "-c", "copy", f"recordings/stream_{int(time.time())}.mp4"
-    ]
-
-    stream_record_process = subprocess.Popen(stream_record_command)
-    logging.debug("Recording stream started!")
+    # Start the delayed recording in a separate thread
+    threading.Thread(target=delayed_start_recording).start()
 
 def stop_stream_recording():
     global stream_record_process, stream_recording, stream_process
