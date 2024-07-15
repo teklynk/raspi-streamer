@@ -414,40 +414,32 @@ def index():
     state = load_state()
     return render_template('index.html', config=config, state=state)
 
-@app.route('/get_state', methods=['GET'])
-def get_state():
+@app.route('/load_state', methods=['GET'])
+def load_state_endpoint():
     state = load_state()
     return jsonify(state)
 
-@app.route('/toggle', methods=['POST'])
-def toggle():
-    action = request.json.get('action')
+@app.route('/toggle_<action>', methods=['POST'])
+def toggle_action(action):
     state = load_state()
-
-    if action == 'stream':
-        if state["streaming"]:
-            stop_stream()
-        else:
-            start_stream()
-    elif action == 'record':
-        if state["recording"]:
-            stop_recording()
-        else:
-            start_recording()
-    elif action == 'file_stream':
-        if state["file_streaming"]:
-            stop_file_stream()
-        else:
-            start_file_stream()
-    elif action == 'stream_record':
-        if state["streaming_and_recording"]:
-            stop_stream()
-            stop_stream_recording()
-        else:
-            start_stream()
-            start_stream_recording()
-
-    state = load_state()  # Reload the state after the action
+    state[action] = not state[action]
+    if action == 'streaming_and_recording' and state[action]:
+        state['streaming'] = False
+        state['recording'] = False
+        state['file_streaming'] = False
+    elif action == 'streaming' and state[action]:
+        state['streaming_and_recording'] = False
+        state['recording'] = False
+        state['file_streaming'] = False
+    elif action == 'recording' and state[action]:
+        state['streaming_and_recording'] = False
+        state['streaming'] = False
+        state['file_streaming'] = False
+    elif action == 'file_streaming' and state[action]:
+        state['streaming_and_recording'] = False
+        state['streaming'] = False
+        state['recording'] = False
+    save_state(state)
     return jsonify(state)
 
 @app.route('/update_config', methods=['POST'])
