@@ -37,6 +37,7 @@ BUFFER_SIZE = BITRATE * 2  # in kbps
 # Determine the current working directory
 current_directory = os.path.dirname(os.path.abspath(__file__))
 log_file_path = os.path.join(current_directory, 'stream_control.log')
+sys_info_file_path = os.path.join(current_directory, 'system_info.txt')
 
 # Configure logging
 logging.basicConfig(
@@ -586,6 +587,15 @@ def get_log():
         with open(log_file_path, 'r') as file:
             log_content = file.read()
         return jsonify({'log': log_content})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/get_sys_info')
+def get_sys_info():
+    try:
+        with open(sys_info_file_path, 'r') as file:
+            sys_info_content = file.read()
+        return jsonify({'info': sys_info_content})
     except Exception as e:
         return jsonify({'error': str(e)})
 
