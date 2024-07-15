@@ -140,18 +140,12 @@
             fetch('/update_config', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/x-www-form-urlencoded'
                 },
-                body: JSON.stringify(data)
-            })
-            .then(response => response.json())
-            .then(data => {
-                alert('Config updated successfully!');
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Failed to update config.');
-            });
+                body: new URLSearchParams(data)
+            }).then(response => response.json())
+            .then(data => alert(data.message))
+            .catch(error => console.error('Error:', error));
         });
 
         function sendRequest(endpoint) {
