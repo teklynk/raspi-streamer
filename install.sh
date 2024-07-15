@@ -91,8 +91,10 @@ Description=Stream Control Service
 After=network.target sound.target
 
 [Service]
-ExecStartPre=/bin/sleep 10
+ExecStartPre=/bin/sleep 5
 ExecStartPre=$WORK_DIR/update_audio_device.sh
+ExecStartPre=/bin/sleep 1
+ExecStartPre=$WORK_DIR/update_system_info.sh
 ExecStartPre=/bin/sleep 1
 ExecStart=/usr/bin/sudo -E /usr/bin/python3 $WORK_DIR/stream_control.py
 WorkingDirectory=$WORK_DIR
