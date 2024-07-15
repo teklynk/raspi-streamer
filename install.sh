@@ -84,8 +84,14 @@ echo "Samba share configured"
 # Create stream_control service file
 SERVICE_FILE="/etc/systemd/system/stream_control.service"
 
-if [ ! -f "$SERVICE_FILE" ]; then
-    sudo tee "$SERVICE_FILE" > /dev/null <<EOL
+# Remove existing service file if it exists
+if [ -f "$SERVICE_FILE" ]; then
+    sudo rm "$SERVICE_FILE"
+    echo "Existing stream_control.service deleted"
+fi
+
+# Create the new service file
+sudo tee "$SERVICE_FILE" > /dev/null <<EOL
 [Unit]
 Description=Stream Control Service
 After=network.target sound.target
@@ -109,10 +115,7 @@ Environment="PYTHONUNBUFFERED=1"
 WantedBy=multi-user.target
 EOL
 
-    echo "stream_control.service created"
-else
-    echo "stream_control.service already exists"
-fi
+echo "stream_control.service created"
 
 # Reload systemd daemon and enable/start the stream_control service
 sudo systemctl daemon-reload
