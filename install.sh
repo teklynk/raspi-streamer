@@ -30,6 +30,7 @@ select_audio_device() {
 
     echo "$device_name" > audio_device.txt
     echo "Audio device $device_name has been written to audio_device.txt"
+    echo "Run the installer again if you need to change this device. You can also manually change the device in the audio_device.txt file."
 }
 
 # Get the current working directory and current user
