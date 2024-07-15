@@ -424,25 +424,56 @@ def toggle_action(action):
     try:
         state = load_state()
         logging.debug(f"Current state before toggle: {state}")
+        
         if action not in state:
             raise ValueError(f"Invalid action: {action}")
 
-        state[action] = not state[action]
+        # Determine the current and new state for the action
+        current_state = state[action]
+        new_state = not current_state
+
+        # Call the appropriate start/stop functions based on the action and new state
+        if action == 'streaming':
+            if new_state:
+                start_stream()
+            else:
+                stop_stream()
+        elif action == 'recording':
+            if new_state:
+                start_recording()
+            else:
+                stop_recording()
+        elif action == 'file_streaming':
+            if new_state:
+                start_file_stream()
+            else:
+                stop_file_stream()
+        elif action == 'streaming_and_recording':
+            if new_state:
+                start_stream()
+                start_stream_recording()
+            else:
+                stop_stream()
+                stop_stream_recording()
+
+        # Update the state
+        state[action] = new_state
         logging.debug(f"Toggled '{action}' to {state[action]}")
 
-        if action == 'streaming_and_recording' and state[action]:
+        # Ensure mutual exclusivity
+        if action == 'streaming_and_recording' and new_state:
             state['streaming'] = False
             state['recording'] = False
             state['file_streaming'] = False
-        elif action == 'streaming' and state[action]:
+        elif action == 'streaming' and new_state:
             state['streaming_and_recording'] = False
             state['recording'] = False
             state['file_streaming'] = False
-        elif action == 'recording' and state[action]:
+        elif action == 'recording' and new_state:
             state['streaming_and_recording'] = False
             state['streaming'] = False
             state['file_streaming'] = False
-        elif action == 'file_streaming' and state[action]:
+        elif action == 'file_streaming' and new_state:
             state['streaming_and_recording'] = False
             state['streaming'] = False
             state['recording'] = False
