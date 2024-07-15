@@ -8,11 +8,23 @@
 # Run: `arecord -l` to get a list of connected usb devices. 
 # Update: `if [[ $line == *"EVGA XR1 Lite Capture Box Video"* ]]; then` to match your device name.
 
+# Function to get the value from audio_device.txt
+get_device_value() {
+    local device_file="audio_device.txt"
+    if [[ -f "$device_file" ]]; then
+        cat "$device_file"
+    else
+        echo "audio_device.txt file not found"
+        exit 1
+    fi
+}
+
 # Function to get the audio device
 get_audio_device() {
+    local device_value="$1"
     arecord_output=$(arecord -l)
     while IFS= read -r line; do
-        if [[ $line == *"EVGA XR1 Lite Capture Box Video"* ]]; then
+        if [[ $line == *"$device_value"* ]]; then
             card=$(echo "$line" | awk '{print $2}' | tr -d ':')
             device=$(echo "$line" | grep -oP '(?<=device )\d+')
             echo "hw:${card},${device}"
@@ -38,7 +50,8 @@ update_env_file() {
 }
 
 # Main script logic
-audio_device=$(get_audio_device)
+device_value=$(get_device_value)
+audio_device=$(get_audio_device "$device_value")
 if [[ -n "$audio_device" ]]; then
     update_env_file "$audio_device"
     echo "Updated .env file with ALSA_AUDIO_SOURCE=${audio_device}"
