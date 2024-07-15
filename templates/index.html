@@ -172,7 +172,12 @@
             fetch('/toggle_' + action, {
                 method: 'POST'
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to toggle ' + action);
+                }
+                return response.json();
+            })
             .then(data => updateButtons(data))
             .catch(error => {
                 console.error('Error:', error);

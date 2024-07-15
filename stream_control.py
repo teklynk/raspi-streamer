@@ -421,26 +421,38 @@ def load_state_endpoint():
 
 @app.route('/toggle_<action>', methods=['POST'])
 def toggle_action(action):
-    state = load_state()
-    state[action] = not state[action]
-    if action == 'streaming_and_recording' and state[action]:
-        state['streaming'] = False
-        state['recording'] = False
-        state['file_streaming'] = False
-    elif action == 'streaming' and state[action]:
-        state['streaming_and_recording'] = False
-        state['recording'] = False
-        state['file_streaming'] = False
-    elif action == 'recording' and state[action]:
-        state['streaming_and_recording'] = False
-        state['streaming'] = False
-        state['file_streaming'] = False
-    elif action == 'file_streaming' and state[action]:
-        state['streaming_and_recording'] = False
-        state['streaming'] = False
-        state['recording'] = False
-    save_state(state)
-    return jsonify(state)
+    try:
+        state = load_state()
+        logging.debug(f"Current state before toggle: {state}")
+        if action not in state:
+            raise ValueError(f"Invalid action: {action}")
+
+        state[action] = not state[action]
+        logging.debug(f"Toggled '{action}' to {state[action]}")
+
+        if action == 'streaming_and_recording' and state[action]:
+            state['streaming'] = False
+            state['recording'] = False
+            state['file_streaming'] = False
+        elif action == 'streaming' and state[action]:
+            state['streaming_and_recording'] = False
+            state['recording'] = False
+            state['file_streaming'] = False
+        elif action == 'recording' and state[action]:
+            state['streaming_and_recording'] = False
+            state['streaming'] = False
+            state['file_streaming'] = False
+        elif action == 'file_streaming' and state[action]:
+            state['streaming_and_recording'] = False
+            state['streaming'] = False
+            state['recording'] = False
+
+        logging.debug(f"New state after toggle: {state}")
+        save_state(state)
+        return jsonify(state), 200
+    except Exception as e:
+        logging.error(f"Error toggling action '{action}': {e}")
+        return jsonify({"error": str(e)}), 400
 
 @app.route('/update_config', methods=['POST'])
 def update_config():
