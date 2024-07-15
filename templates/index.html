@@ -241,6 +241,32 @@
                 }
             }
         }
+
+        function updateLog() {
+        fetch('/get_log')
+            .then(response => response.json())
+            .then(data => {
+                if (data.log) {
+                    document.getElementById('logTextarea').value = data.log;
+                    // Scroll to the bottom of the textarea
+                    logTextarea.scrollTop = logTextarea.scrollHeight;
+                } else if (data.error) {
+                    console.error('Error fetching log:', data.error);
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+
+        // Update the log every 5 seconds
+        setInterval(updateLog, 5000);
+
+        // Initial log fetch
+        document.addEventListener("DOMContentLoaded", function() {
+            updateLog();
+        });
+    
+        // Activate the default tab
+        $('#defaultTab').tab('show');
     </script>
 </body>
 </html>
