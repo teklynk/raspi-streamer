@@ -6,7 +6,7 @@ import signal
 import logging
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify
-from threading import Thread
+from threading import Thread, Event
 
 # Load environment variables from .env file
 load_dotenv()
@@ -200,7 +200,7 @@ def stop_recording():
 # Assuming load_state, save_state, ensure_recordings_directory, STREAM_M3U8_URL, 
 # stream_record_process, and stream_recording are defined elsewhere
 
-stop_event = threading.Event()
+stop_event = Event()
 
 def delayed_start_recording():
     for _ in range(30):
@@ -239,7 +239,7 @@ def start_stream_recording():
     save_state(state)
 
     stop_event.clear()  # Clear the stop event before starting the thread
-    threading.Thread(target=delayed_start_recording).start()
+    Thread(target=delayed_start_recording).start()
 
 def stop_stream_recording():
     global stream_record_process, stream_recording, stream_process, stop_event
