@@ -1,5 +1,38 @@
 #!/bin/bash
 
+# Function to list audio devices and prompt user for selection
+select_audio_device() {
+    arecord_output=$(arecord -l)
+    device_list=()
+    echo "Available audio devices:"
+    while IFS= read -r line; do
+        if [[ $line == *"card"* && $line == *"device"* ]]; then
+            device_list+=("$line")
+            echo "${#device_list[@]}: $line"
+        fi
+    done <<< "$arecord_output"
+
+    if [ ${#device_list[@]} -eq 0 ]; then
+        echo "No audio devices found. Exiting."
+        exit 1
+    fi
+
+    echo -n "Enter the number of the audio device you want to use: "
+    read -r device_number
+
+    if ! [[ "$device_number" =~ ^[0-9]+$ ]] || [ "$device_number" -lt 1 ] || [ "$device_number" -gt ${#device_list[@]} ]; then
+        echo "Invalid selection. Exiting."
+        exit 1
+    fi
+
+    chosen_device="${device_list[$((device_number - 1))]}"
+    device_name=$(echo "$chosen_device" | awk -F '[][]' '{print $2}')
+
+    echo "$device_name" > audio_device.txt
+    echo "Audio device $device_name has been written to audio_device.txt"
+    echo "Run the installer again if you need to change this device. You can also manually change the device in the audio_device.txt file."
+}
+
 # Get the current working directory and current user
 WORK_DIR=$(pwd)
 CURRENT_USER=$(whoami)
@@ -86,6 +119,9 @@ sudo systemctl restart stream_control.service
 
 # Get the IP address of the Raspberry Pi
 IP_ADDRESS=$(hostname -I | awk '{print $1}')
+
+# Select audio device
+select_audio_device
 
 echo "Installation complete"
 echo "Please reboot the Raspberry Pi and then visit http://$IP_ADDRESS:5000 to access the Web UI."
