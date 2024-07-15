@@ -8,6 +8,10 @@ from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify
 from threading import Thread, Event
 
+# Truncate the stream_control.log file
+with open('stream_control.log', 'w'):
+    pass
+
 # Load environment variables from .env file
 load_dotenv()
 
