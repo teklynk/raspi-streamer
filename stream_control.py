@@ -116,6 +116,7 @@ def start_stream():
         "-c:a", "aac", "-b:a", "128k", "-ar", "44100",  # Audio encoding settings
         "-use_wallclock_as_timestamps", "1",  # Use wallclock timestamps
         "-flush_packets", "1",  # Flush packets
+        "-async", "1",  # Sync audio with video
         "-f", "flv", f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
     ]
 
@@ -168,6 +169,7 @@ def start_recording():
         "-c:a", "aac", "-b:a", "128k", "-ar", "44100",  # Audio encoding settings
         "-use_wallclock_as_timestamps", "1",  # Use wallclock timestamps
         "-flush_packets", "1",  # Flush packets
+        "-async", "1",  # Sync audio with video
         "-f", "mp4", f"recordings/recording_{int(time.time())}.mp4"  # Output to MP4 file
     ]
     
