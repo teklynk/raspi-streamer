@@ -41,7 +41,7 @@ CURRENT_USER=$(whoami)
 sudo apt update && sudo apt upgrade -y
 
 # Install necessary packages
-sudo apt install -y ffmpeg alsa-tools alsa-utils python3-dotenv python3-flask v4l-utils samba samba-common-bin nodejs npm git
+sudo apt install -y ffmpeg alsa-tools alsa-utils python3-dotenv python3-flask python3-flask-basicauth v4l-utils samba samba-common-bin nodejs npm git
 
 # Change to the working directory
 cd "$WORK_DIR"
@@ -59,6 +59,14 @@ if [ -f "sample.env" ]; then
     echo "sample.env renamed to .env"
 else
     echo "sample.env not found"
+fi
+
+# Rename sample.auth to .auth if it exists
+if [ -f "sample.auth" ]; then
+    mv sample.auth .auth
+    echo "sample.auth renamed to .auth"
+else
+    echo "sample.auth not found"
 fi
 
 # Setup Samba share configuration
