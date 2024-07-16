@@ -41,6 +41,11 @@ sudo apt install git
 - That's it. No need to manually install.
 - review the `install.sh` script if you would like to see what it installs and how.
 
+# Basic authentication
+- username: admin
+- password: abc123
+- You can change this in the `.auth` file.
+
 # Static IP Address
 
 ```bash
