@@ -113,12 +113,6 @@
                         <button class="btn btn-lg btn-block btn-primary" type="submit">Update</button>
                     </div>
                 </form>
-                <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/reboot')">Reboot System</button>
-                </div>
-                <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
-                </div>
                 <div class="form-group mt-4">
                     <label for="logTextarea">Log:</label>
                     <textarea class="form-control" id="logTextarea" name="logTextarea" rows="10" cols="80" readonly></textarea>
@@ -128,6 +122,12 @@
                 <div class="form-group mt-4">
                     <label for="logTextarea">System:</label>
                     <textarea class="form-control" id="systemTextarea" name="systemTextarea" rows="40" cols="80" readonly></textarea>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/reboot')">Reboot System</button>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
                 </div>
             </div>
             </div>
