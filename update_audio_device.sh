@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# The purpose of this script: 
-# Sometimes when the Pi reboots it will randomly assign the capture device hw:1,0 or sometimes it would set it to: hw:2,0 or hw:3,0.
-# I tried various things like creating a udev rule and an alias but nothing seemed to work. This solution is low effort and works.
-# You may not even need this script if `arecord -l` shows consistent card:device after each reboot.
-# Be sure that this script runs before the stream_control.py starts. Check the readme for including this script with the service. 
-# Run: `arecord -l` to get a list of connected usb devices. 
-# Update: `if [[ $line == *"EVGA XR1 Lite Capture Box Video"* ]]; then` to match your device name.
-
 # Function to get the value from audio_device.txt
 get_device_value() {
     local device_file="audio_device.txt"
@@ -27,7 +19,11 @@ get_audio_device() {
         if [[ $line == *"$device_value"* ]]; then
             card=$(echo "$line" | awk '{print $2}' | tr -d ':')
             device=$(echo "$line" | grep -oP '(?<=device )\d+')
-            echo "hw:${card},${device}"
+            if [[ $device_value == hw:* || $device_value == plughw:* ]]; then
+                echo "${device_value}${card},${device}"
+            else
+                echo "hw:${card},${device}"
+            fi
             return
         fi
     done <<< "$arecord_output"
