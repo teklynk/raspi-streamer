@@ -113,15 +113,15 @@
                         <button class="btn btn-lg btn-block btn-primary" type="submit">Update</button>
                     </div>
                 </form>
+            </div>
+            <div class="tab-pane fade mb-4" id="System" role="tabpanel" aria-labelledby="system-tab">
                 <div class="form-group mt-4">
                     <label for="logTextarea">Log:</label>
                     <textarea class="form-control" id="logTextarea" name="logTextarea" rows="10" cols="80" readonly></textarea>
                 </div>
-            </div>
-            <div class="tab-pane fade mb-4" id="System" role="tabpanel" aria-labelledby="system-tab">
                 <div class="form-group mt-4">
                     <label for="logTextarea">System:</label>
-                    <textarea class="form-control" id="systemTextarea" name="systemTextarea" rows="40" cols="80" readonly></textarea>
+                    <textarea class="form-control" id="systemTextarea" name="systemTextarea" rows="20" cols="80" readonly></textarea>
                 </div>
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/reboot')">Reboot System</button>
