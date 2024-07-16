@@ -106,18 +106,19 @@ def start_stream():
     stream_command = [
         "ffmpeg",
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
-        "-thread_queue_size", "1024",
-        "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
-        "-fflags", "nobuffer", "-flags", "low_delay", "-strict", "experimental",  # Flags for low latency
-        "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0",  # Video input settings
-        "-probesize", "10M", "-analyzeduration", "10M",  # Increase probing size and analysis duration
-        "-c:v", "libx264", "-preset", "ultrafast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", "2M",  # Video encoding settings
+        "-thread_queue_size", "64",
+        "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE), # Input from ALSA
+        "-fflags", "nobuffer", "-flags", "low_delay", "-strict", "experimental", # Flags for low latency
+        "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0", # Video input settings
+        "-probesize", "32", "-analyzeduration", "0", # Lower probing size and analysis duration for reduced latency
+        "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k", # Video encoding settings
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
         "-profile:v", "main",
-        "-c:a", "aac", "-b:a", "128k", "-ar", "44100",  # Audio encoding settings
-        "-max_delay", "0",  # Max delay set to 0 for low latency
-        "-use_wallclock_as_timestamps", "1",  # Use wallclock timestamps
-        "-async", "1",  # Sync audio with video
+        "-c:a", "aac", "-b:a", "128k", "-ar", "44100", # Audio encoding settings
+        "-max_delay", "0", # Max delay set to 0 for low latency
+        "-use_wallclock_as_timestamps", "1", # Use wallclock timestamps
+        "-flush_packets", "1", # Flush packets
+        "-async", "1", # Sync audio with video
         "-f", "flv", f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
     ]
 
@@ -161,19 +162,19 @@ def start_recording():
     record_command = [
         "ffmpeg",
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
-        "-thread_queue_size", "1024",
-        "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
-        "-fflags", "nobuffer", "-flags", "low_delay", "-strict", "experimental",  # Flags for low latency
-        "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0",  # Video input settings
-        "-probesize", "10M", "-analyzeduration", "10M",  # Increase probing size and analysis duration
-        "-c:v", "libx264", "-preset", "ultrafast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", "2M",  # Video encoding settings
+        "-thread_queue_size", "64",
+        "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE), # Input from ALSA
+        "-fflags", "nobuffer", "-flags", "low_delay", "-strict", "experimental", # Flags for low latency
+        "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0", # Video input settings
+        "-probesize", "32", "-analyzeduration", "0", # Lower probing size and analysis duration for reduced latency
+        "-c:v", "libx264", "-preset", "veryfast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k", # Video encoding settings
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
         "-profile:v", "main",
-        "-c:a", "aac", "-b:a", "128k", "-ar", "44100",  # Audio encoding settings
-        "-max_delay", "0",  # Max delay set to 0 for low latency
-        "-use_wallclock_as_timestamps", "1",  # Use wallclock timestamps
-        "-flush_packets", "1",  # Flush packets
-        "-async", "1",  # Sync audio with video
+        "-c:a", "aac", "-b:a", "128k", "-ar", "44100", # Audio encoding settings
+        "-max_delay", "0", # Max delay set to 0 for low latency
+        "-use_wallclock_as_timestamps", "1", # Use wallclock timestamps
+        "-flush_packets", "1", # Flush packets
+        "-async", "1", # Sync audio with video
         "-f", "mp4", f"recordings/recording_{int(time.time())}.mp4"
     ]
     record_process = subprocess.Popen(record_command)
