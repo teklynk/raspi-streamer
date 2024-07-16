@@ -1,6 +1,7 @@
 /recordings
 *.log
 .env
+.auth
 /node_modules
 .idea/
 .idea

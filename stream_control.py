@@ -6,7 +6,11 @@ import signal
 import logging
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify
+from flask_basicauth import BasicAuth
 from threading import Thread, Event
+
+# Flask application
+app = Flask(__name__)
 
 # Truncate the stream_control.log file
 with open('stream_control.log', 'w'):
@@ -14,6 +18,17 @@ with open('stream_control.log', 'w'):
 
 # Load environment variables from .env file
 load_dotenv()
+
+# Load environment variables from .auth file
+load_dotenv('.auth')
+
+# Configure BasicAuth using environment variables
+app.config['BASIC_AUTH_USERNAME'] = os.getenv('BASIC_AUTH_USERNAME')
+app.config['BASIC_AUTH_PASSWORD'] = os.getenv('BASIC_AUTH_PASSWORD')
+app.config['BASIC_AUTH_FORCE'] = os.getenv('BASIC_AUTH_FORCE')
+
+# Basic auth enabled
+basic_auth = BasicAuth(app)
 
 # RTMP stream settings
 STREAM_KEY = os.getenv('STREAM_KEY')
@@ -384,9 +399,6 @@ def poweroff_pi():
         stop_stream_recording()
     time.sleep(3)
     subprocess.call(['sudo', 'shutdown', '-h', 'now'])
-
-# Flask application
-app = Flask(__name__)
 
 # Function to update the .env file
 def update_env_file(data):
