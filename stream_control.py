@@ -170,7 +170,7 @@ def start_recording():
         "-flush_packets", "1",  # Flush packets
         "-f", "mp4", f"recordings/recording_{int(time.time())}.mp4"  # Output to MP4 file
     ]
-
+    
     record_process = subprocess.Popen(record_command)
     logging.debug("Recording started!")
     recording = True
