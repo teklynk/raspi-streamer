@@ -57,7 +57,8 @@
                 <form id="configForm">
                     <div class="form-group">
                         <label for="STREAM_KEY">Stream Key:</label>
-                        <input type="text" class="form-control form-control-lg" id="STREAM_KEY" name="STREAM_KEY" value="{{ config['STREAM_KEY'] }}" placeholder="abc123">
+                        <input type="password" class="form-control form-control-lg" id="STREAM_KEY" name="STREAM_KEY" value="{{ config['STREAM_KEY'] }}" placeholder="abc123">
+                        <span id="show_key" style="cursor:pointer;text-align:left;display:inline-block;width:70px;margin-top: 4px;font-size:smaller;vertical-align:top;" title="Show/Hide">show</span>
                     </div>
                     <div class="form-group">
                         <label for="RTMP_SERVER">RTMP Server:</label>
@@ -194,6 +195,16 @@
                 alert('Failed to toggle ' + action + '.');
             });
         }
+
+        document.getElementById("show_key").addEventListener("click", function (e) {
+            if (document.getElementById("show_key").innerText === "hide") {
+                document.getElementById("show_key").innerText = "show";
+                document.getElementById("STREAM_KEY").setAttribute('type', 'password');
+            } else {
+                document.getElementById("show_key").innerText = "hide";
+                document.getElementById("STREAM_KEY").setAttribute('type', 'text');
+            }
+        }, false);
 
         function updateButtons(state) {
             const buttons = {
