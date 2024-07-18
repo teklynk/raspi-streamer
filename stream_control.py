@@ -548,8 +548,8 @@ def toggle_action(action):
 def update_config():
     data = request.form.to_dict()
     update_env_file(data)
-    shutdown_pi()
-    return jsonify({"message": "Config updated successfully. Rebooting..."}), 200
+    restart_service()
+    return jsonify({"message": "Config updated successfully. Restarting service..."}), 200
 
 @app.route('/start_stream', methods=['POST'])
 def start_stream_route():
