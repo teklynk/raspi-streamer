@@ -114,10 +114,10 @@ def reinitialize_device():
     try:
         logging.debug("Reloading uvcvideo module...")
         subprocess.run(["sudo", "modprobe", "-r", "uvcvideo"], check=True)
-        time.sleep(2)  # Add a delay to ensure the module is removed
+        time.sleep(1)  # Add a delay to ensure the module is removed
         subprocess.run(["sudo", "modprobe", "uvcvideo"], check=True)
         logging.debug("uvcvideo module reloaded.")
-        time.sleep(2)  # Add a delay to ensure the device is initialized
+        time.sleep(1)  # Add a delay to ensure the device is initialized
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
@@ -133,7 +133,7 @@ def start_stream():
 
     # Reinitialize the video device before starting the recording
     reinitialize_device()
-    time.sleep(3)
+    time.sleep(1)
 
     stream_command = [
         "ffmpeg",
@@ -195,7 +195,7 @@ def start_recording():
 
     # Reinitialize the video device before starting the recording
     reinitialize_device()
-    time.sleep(3)
+    time.sleep(1)
 
     record_command = [
         "ffmpeg",
@@ -322,7 +322,7 @@ def start_file_stream():
 
     # Reinitialize the video device before starting the recording
     reinitialize_device()
-    time.sleep(3)
+    time.sleep(1)
 
     if os.path.isfile(STREAM_FILE) and not STREAM_FILE.endswith('.txt'):
         logging.debug(f"Streaming single file: {STREAM_FILE}")
@@ -418,7 +418,7 @@ def restart_service():
         stop_stream_recording()
     # Reinitialize the video device before starting the recording
     reinitialize_device()
-    time.sleep(3)
+    time.sleep(1)
     subprocess.call(['sudo', 'systemctl', 'restart', 'stream_control.service'])
 
 def poweroff_pi():
