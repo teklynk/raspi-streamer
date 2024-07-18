@@ -121,7 +121,7 @@ def start_stream():
     stream_command = [
         "ffmpeg",
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
-        "-thread_queue_size", "64",
+        "-thread_queue_size", "1024",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0",  # Video input settings
         "-probesize", "32", "-analyzeduration", "0",  # Lower probing size and analysis duration for reduced latency
@@ -176,7 +176,7 @@ def start_recording():
     record_command = [
         "ffmpeg",
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
-        "-thread_queue_size", "64",
+        "-thread_queue_size", "1024",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0",  # Video input settings
         "-c:v", "libx264", "-preset", "ultrafast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k",  # Video encoding settings
@@ -187,7 +187,7 @@ def start_recording():
         "-async", "1",  # Sync audio with video
         "-f", "mp4", f"recordings/recording_{int(time.time())}.mp4"  # Output to MP4 file
     ]
-    
+
     record_process = subprocess.Popen(record_command)
     logging.debug("Recording started!")
     recording = True
