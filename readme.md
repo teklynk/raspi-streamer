@@ -120,9 +120,6 @@ Check the status of stream_control for errors.
 sudo service stream_control status
 ```
 
-## The stream is not working!
-If you have ended stream, recording or stream recording and try to press the stream button again, the system sometimes fails to stream or do anything. If you run into this issue, simply reboot or power cycle the Raspberry Pi. It takes less than a minute to get back up and running again. I don't know what causes this issue. It seems like some process, device or service is still using ffmpeg and/or the capture device? The "turn it off and on again" approach seems to work for now.
-
 # Screenshots
 
 ## Here is my setup:
