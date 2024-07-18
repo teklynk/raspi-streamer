@@ -110,6 +110,17 @@ def ensure_recordings_directory():
     if not os.path.exists("recordings"):
         os.makedirs("recordings")
 
+def reinitialize_device():
+    try:
+        logging.debug("Reloading uvcvideo module...")
+        subprocess.run(["sudo", "modprobe", "-r", "uvcvideo"], check=True)
+        time.sleep(2)  # Add a delay to ensure the module is removed
+        subprocess.run(["sudo", "modprobe", "uvcvideo"], check=True)
+        logging.debug("uvcvideo module reloaded.")
+        time.sleep(2)  # Add a delay to ensure the device is initialized
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Failed to reload uvcvideo module: {e}")
+
 def start_stream():
     global stream_process, streaming
 
@@ -119,6 +130,10 @@ def start_stream():
         return
 
     logging.debug("Starting stream...")
+
+    # Reinitialize the video device before starting the recording
+    reinitialize_device()
+    time.sleep(3)
 
     stream_command = [
         "ffmpeg",
@@ -165,7 +180,7 @@ def stop_stream():
     save_state(state)
 
     # Add a delay to ensure FFmpeg process and buffers are cleaned up
-    time.sleep(3)
+    time.sleep(1)
 
 def start_recording():
     global record_process, recording
@@ -177,6 +192,10 @@ def start_recording():
 
     ensure_recordings_directory()
     logging.debug("Starting recording...")
+
+    # Reinitialize the video device before starting the recording
+    reinitialize_device()
+    time.sleep(3)
 
     record_command = [
         "ffmpeg",
@@ -220,7 +239,7 @@ def stop_recording():
     save_state(state)
 
     # Add a delay to ensure FFmpeg process and buffers are cleaned up
-    time.sleep(3)
+    time.sleep(1)
 
 def delayed_start_recording():
     for _ in range(30):
@@ -287,7 +306,7 @@ def stop_stream_recording():
     save_state(state)
 
     # Add a delay to ensure FFmpeg process and buffers are cleaned up
-    time.sleep(3)
+    time.sleep(1)
 
 def start_file_stream():
     global file_stream_process, file_streaming
@@ -300,6 +319,10 @@ def start_file_stream():
     if not STREAM_FILE:
         logging.error("STREAM_FILE is not set or is empty. Cannot start file streaming.")
         return
+
+    # Reinitialize the video device before starting the recording
+    reinitialize_device()
+    time.sleep(3)
 
     if os.path.isfile(STREAM_FILE) and not STREAM_FILE.endswith('.txt'):
         logging.debug(f"Streaming single file: {STREAM_FILE}")
@@ -361,14 +384,14 @@ def stop_file_stream():
         file_stream_process.terminate()
         file_stream_process.wait()
         file_stream_process = None
-        time.sleep(3)  # Wait for 3 seconds
+        time.sleep(1)  # Wait for 3 seconds
     logging.debug("File stream stopped!")
     file_streaming = False
     state["file_streaming"] = False
     save_state(state)
 
     # Add a delay to ensure FFmpeg process and buffers are cleaned up
-    time.sleep(3)
+    time.sleep(1)
 
 def shutdown_pi():
     logging.debug("Rebooting...")
@@ -380,7 +403,7 @@ def shutdown_pi():
         stop_file_stream()
     if stream_recording:
         stop_stream_recording()
-    time.sleep(3)
+    time.sleep(1)
     subprocess.call(['sudo', 'shutdown', '-r', 'now'])
 
 def restart_service():
@@ -393,6 +416,8 @@ def restart_service():
         stop_file_stream()
     if stream_recording:
         stop_stream_recording()
+    # Reinitialize the video device before starting the recording
+    reinitialize_device()
     time.sleep(3)
     subprocess.call(['sudo', 'systemctl', 'restart', 'stream_control.service'])
 
@@ -406,7 +431,7 @@ def poweroff_pi():
         stop_file_stream()
     if stream_recording:
         stop_stream_recording()
-    time.sleep(3)
+    time.sleep(1)
     subprocess.call(['sudo', 'shutdown', '-h', 'now'])
 
 # Function to update the .env file
