@@ -30,6 +30,8 @@ app.config['BASIC_AUTH_FORCE'] = os.getenv('BASIC_AUTH_FORCE')
 # Basic auth enabled
 basic_auth = BasicAuth(app)
 
+stop_event = Event()
+
 # RTMP stream settings
 STREAM_KEY = os.getenv('STREAM_KEY')
 RTMP_SERVER = os.getenv('RTMP_SERVER')
@@ -162,6 +164,9 @@ def stop_stream():
     state["streaming"] = False
     save_state(state)
 
+    # Add a delay to ensure FFmpeg process and buffers are cleaned up
+    time.sleep(3)
+
 def start_recording():
     global record_process, recording
 
@@ -214,10 +219,8 @@ def stop_recording():
     state["recording"] = False
     save_state(state)
 
-# Assuming load_state, save_state, ensure_recordings_directory, STREAM_M3U8_URL, 
-# stream_record_process, and stream_recording are defined elsewhere
-
-stop_event = Event()
+    # Add a delay to ensure FFmpeg process and buffers are cleaned up
+    time.sleep(3)
 
 def delayed_start_recording():
     for _ in range(30):
@@ -282,6 +285,9 @@ def stop_stream_recording():
     stream_recording = False
     state["streaming_and_recording"] = False
     save_state(state)
+
+    # Add a delay to ensure FFmpeg process and buffers are cleaned up
+    time.sleep(3)
 
 def start_file_stream():
     global file_stream_process, file_streaming
@@ -360,6 +366,9 @@ def stop_file_stream():
     file_streaming = False
     state["file_streaming"] = False
     save_state(state)
+
+    # Add a delay to ensure FFmpeg process and buffers are cleaned up
+    time.sleep(3)
 
 def shutdown_pi():
     logging.debug("Rebooting...")
@@ -535,7 +544,6 @@ def start_stream_record_route():
     start_stream()
     start_stream_recording()
     return jsonify({"message": "Stream and recording started."}), 200
-
 
 @app.route('/stop_stream_record', methods=['POST'])
 def stop_stream_record_route():
