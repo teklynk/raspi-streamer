@@ -133,7 +133,6 @@ def start_stream():
 
     # Reinitialize the video device before starting the recording
     reinitialize_device()
-    time.sleep(1)
 
     stream_command = [
         "ffmpeg",
@@ -195,7 +194,6 @@ def start_recording():
 
     # Reinitialize the video device before starting the recording
     reinitialize_device()
-    time.sleep(1)
 
     record_command = [
         "ffmpeg",
@@ -322,7 +320,6 @@ def start_file_stream():
 
     # Reinitialize the video device before starting the recording
     reinitialize_device()
-    time.sleep(1)
 
     if os.path.isfile(STREAM_FILE) and not STREAM_FILE.endswith('.txt'):
         logging.debug(f"Streaming single file: {STREAM_FILE}")
