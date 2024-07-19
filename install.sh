@@ -49,9 +49,8 @@ cd "$WORK_DIR"
 # Update the code base
 git pull
 
-# Initialize npm and install node packages
-npm init -y
-npm install express dotenv
+# Install node packages
+npm install
 
 # Rename sample.env to .env if it exists
 if [ -f "sample.env" ]; then

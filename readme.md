@@ -7,6 +7,8 @@ All you have to do is connect it to the internet, plug in your HDMI source from 
 
 You can also control the Raspi-Streamer using the Web UI from any web browser. Just visit http://<ip_address_of_pi>:5000 from your mobile device connected to the same network to start, stop, and manage your streams and recordings remotely.
 
+I would compare this project to professional-grade devices like the [LiveStream Broadcaster Pro](https://livestream.com/broadcaster) or the [BoxCaster](https://www.boxcast.com/platform/boxcaster), but without the hefty price tag and subscription fees. This setup can be used with a professional camera to stream and/or record live events, making it ideal for concerts, churches, conferences, and seminars. Additionally, it can be completely wireless when connected to a cellular hotspot and battery pack.
+
 ## Key Features
 - __Streaming:__ Capture video via a USB capture device and stream it in real-time to an RTMP server, ensuring smooth and reliable video output.
 - __Audio Synchronization:__ Achieve perfect sync between audio and video using ALSA for audio input.
@@ -39,45 +41,12 @@ sudo apt install git
 - `cd raspi-streamer`
 - `./install.sh`
 - That's it. No need to manually install.
-- review the `install.sh` script if you would like to see what it installs and how.
+- Review the `install.sh` script if you would like to see what it installs and how.
 
 # Basic authentication
 - username: admin
 - password: abc123
 - You can change this in the `.auth` file.
-
-# Static IP Address
-
-```bash
-nmcli connection show
-```
-```bash
-sudo nmcli connection modify "Wired connection 1" ipv4.addresses 192.168.0.100/24 ipv4.gateway 192.168.0.1 ipv4.dns "192.168.0.1 8.8.8.8" ipv4.method manual
-```
-```bash
-sudo nmcli connection down "Wired connection 1" && sudo nmcli connection up "Wired connection 1"
-```
-```bash
-nmcli connection show "Wired connection 1"
-```
-
-# Disable WiFi and Bluetooth
-
-```bash
-sudo nano /boot/firmware/config.txt
-```
-```bash
-dtoverlay=disable-bt
-dtoverlay=disable-wifi
-```
-To prevent the Bluetooth service from starting
-
-```bash
-sudo systemctl disable hciuart
-```
-```bash
-sudo reboot
-```
 
 # Additional Notes
 - __Samba Setup:__
@@ -120,6 +89,21 @@ Check the status of stream_control for errors.
 sudo service stream_control status
 ```
 
+## Static IP Address
+
+```bash
+nmcli connection show
+```
+```bash
+sudo nmcli connection modify "Wired connection 1" ipv4.addresses 192.168.0.100/24 ipv4.gateway 192.168.0.1 ipv4.dns "192.168.0.1 8.8.8.8" ipv4.method manual
+```
+```bash
+sudo nmcli connection down "Wired connection 1" && sudo nmcli connection up "Wired connection 1"
+```
+```bash
+nmcli connection show "Wired connection 1"
+```
+
 # Screenshots
 
 ## Here is my setup:
@@ -131,7 +115,7 @@ sudo service stream_control status
 This is all stored under my entertainment center and powered on when I want to stream from my game consoles. I use the Web UI from my phone to control Raspi-Streamer.
 
 <div style="text-align:center;margin:4px;display:block;">
-<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_rpi_1.png?raw=true&cachebust=071424" style=" width:400px;" />
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_rpi_1.png?raw=true" style=" width:400px;" />
 </div>
 
 ## Web UI
