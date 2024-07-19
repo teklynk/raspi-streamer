@@ -43,11 +43,6 @@ sudo apt install git
 - That's it. No need to manually install.
 - Review the `install.sh` script if you would like to see what it installs and how.
 
-# Basic authentication
-- username: admin
-- password: abc123
-- You can change this in the `.auth` file.
-
 # Additional Notes
 - __Samba Setup:__
   - Customize the Samba configuration (smb.conf) according to your security and network requirements.
