@@ -548,7 +548,8 @@ def toggle_action(action):
 def update_config():
     data = request.form.to_dict()
     update_env_file(data)
-    restart_service()
+    # Create and start a thread to restart the service after a short delay
+    threading.Thread(target=restart_service).start()
     return jsonify({"message": "Config updated successfully. Restarting service..."}), 200
 
 @app.route('/start_stream', methods=['POST'])
