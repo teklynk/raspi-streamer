@@ -1,5 +1,20 @@
 #!/bin/bash
 
+# Function to prompt for and save basic auth credentials
+set_basic_auth_credentials() {
+    read -rp "Enter the Basic Auth username: " username
+    read -rsp "Enter the Basic Auth password: " password
+    echo
+
+    auth_file=".auth"
+
+    echo "BASIC_AUTH_USERNAME=$username" > "$auth_file"
+    echo "BASIC_AUTH_PASSWORD=$password" >> "$auth_file"
+    echo "BASIC_AUTH_FORCE=True" >> "$auth_file"
+
+    echo "Basic Auth credentials have been saved to $auth_file"
+}
+
 # Function to list audio devices and prompt user for selection
 select_audio_device() {
     arecord_output=$(arecord -l)
@@ -67,6 +82,9 @@ if [ -f "sample.auth" ]; then
 else
     echo "sample.auth not found"
 fi
+
+# Prompt for and save basic auth credentials
+set_basic_auth_credentials
 
 # Setup Samba share configuration
 SAMBA_CONF="/etc/samba/smb.conf"
