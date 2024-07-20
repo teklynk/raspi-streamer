@@ -5,7 +5,7 @@ import os
 import signal
 import logging
 from dotenv import load_dotenv
-from flask import Flask, request, render_template, send_from_directory, jsonify
+from flask import Flask, request, render_template, send_file, send_from_directory, jsonify
 from flask_basicauth import BasicAuth
 from threading import Thread, Event
 
