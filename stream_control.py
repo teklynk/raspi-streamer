@@ -5,7 +5,7 @@ import os
 import signal
 import logging
 from dotenv import load_dotenv
-from flask import Flask, request, render_template, send_file, send_from_directory, jsonify
+from flask import Flask, request, render_template, jsonify
 from flask_basicauth import BasicAuth
 from threading import Thread, Event
 
@@ -455,26 +455,6 @@ def update_env_file(data):
     STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
     STREAM_FILE = os.getenv('STREAM_FILE')
     BUFFER_SIZE = BITRATE * 2
-
-@app.route('/sw.js')
-def serve_sw():
-    try:
-        return send_file('sw.js', mimetype='application/javascript')
-    except Exception as e:
-        app.logger.error(f"Error serving sw.js: {e}")
-        return "Internal Server Error", 500
-
-@app.route('/manifest.json')
-def manifest():
-    try:
-        return send_file('manifest.json', mimetype='application/json')
-    except Exception as e:
-        app.logger.error(f"Error serving manifest.json: {e}")
-        return "Internal Server Error", 500
-
-@app.route('/static/<path:filename>')
-def static_files(filename):
-    return send_from_directory('static', filename)
 
 @app.route('/')
 def index():
