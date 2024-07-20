@@ -458,11 +458,15 @@ def update_env_file(data):
 
 @app.route('/manifest.json')
 def serve_manifest():
-    return send_file('manifest.json', mimetype='application/manifest+json')
+    return send_from_directory('.', 'manifest.json')
 
 @app.route('/sw.js')
 def serve_sw():
-    return send_file('sw.js', mimetype='application/javascript')
+    return send_from_directory('.', 'sw.js')
+
+@app.route('/static/<path:filename>')
+def static_files(filename):
+    return send_from_directory('static', filename)
 
 @app.route('/')
 def index():
