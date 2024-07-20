@@ -210,6 +210,10 @@ def start_recording():
         "-f", "mp4", f"recordings/recording_{int(time.time())}.mp4"  # Output to MP4 file
     ]
 
+    # Print the constructed command
+    print("Constructed command:")
+    print(" ".join(record_command))
+
     record_process = subprocess.Popen(record_command)
     logging.debug("Recording started!")
     recording = True
