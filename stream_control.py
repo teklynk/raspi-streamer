@@ -201,7 +201,7 @@ def start_recording():
         "-thread_queue_size", "1024",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "mjpeg", "-i", "/dev/video0",  # Video input settings
-        "-c:v", "libx264", "-preset", "ultrafast", "-tune", "zeralatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k",  # Video encoding settings
+        "-c:v", "libx264", "-preset", "ultrafast", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k",  # Video encoding settings
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
         "-c:a", "aac", "-b:a", "128k", "-ar", "44100",  # Audio encoding settings
         "-use_wallclock_as_timestamps", "1",  # Use wallclock timestamps
