@@ -47,6 +47,7 @@ KEYFRAME_INTERVAL = int(os.getenv('KEYFRAME_INTERVAL'))
 AUDIO_OFFSET = os.getenv('AUDIO_OFFSET')
 STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
 STREAM_FILE = os.getenv('STREAM_FILE')  # Add STREAM_FILE variable
+FORMAT = os.getenv('FORMAT')
 
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
@@ -139,7 +140,7 @@ def start_stream():
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
         "-thread_queue_size", "1024",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
-        "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0",  # Video input settings
+        "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", str(FORMAT), "-i", "/dev/video0",  # Video input settings
         "-probesize", "32", "-analyzeduration", "0",  # Lower probing size and analysis duration for reduced latency
         "-c:v", "libx264", "-preset", "ultrafast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k",  # Video encoding settings
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
@@ -200,7 +201,7 @@ def start_recording():
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
         "-thread_queue_size", "1024",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
-        "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", "yuyv422", "-i", "/dev/video0",  # Video input settings
+        "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", str(FORMAT), "-i", "/dev/video0",  # Video input settings
         "-c:v", "libx264", "-preset", "ultrafast", "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k",  # Video encoding settings
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
         "-c:a", "aac", "-b:a", "128k", "-ar", "44100",  # Audio encoding settings
@@ -447,7 +448,7 @@ def update_env_file(data):
     load_dotenv()
     
     # Update global variables with new values
-    global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL, STREAM_FILE
+    global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL, STREAM_FILE, FORMAT
     STREAM_KEY = os.getenv('STREAM_KEY')
     RTMP_SERVER = os.getenv('RTMP_SERVER')
     ALSA_AUDIO_SOURCE = os.getenv('ALSA_AUDIO_SOURCE')
@@ -459,6 +460,7 @@ def update_env_file(data):
     STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
     STREAM_FILE = os.getenv('STREAM_FILE')
     BUFFER_SIZE = BITRATE * 2
+    FORMAT = os.getenv('FORMAT')
 
 @app.route('/')
 def index():
@@ -472,7 +474,8 @@ def index():
         'KEYFRAME_INTERVAL': os.getenv('KEYFRAME_INTERVAL'),
         'AUDIO_OFFSET': os.getenv('AUDIO_OFFSET'),
         'STREAM_M3U8_URL': os.getenv('STREAM_M3U8_URL'),
-        'STREAM_FILE': os.getenv('STREAM_FILE')  # Add STREAM_FILE to config
+        'STREAM_FILE': os.getenv('STREAM_FILE'),  # Add STREAM_FILE to config
+        'FORMAT': os.getenv('FORMAT')
     }
     state = load_state()
     return render_template('index.html', config=config, state=state)
