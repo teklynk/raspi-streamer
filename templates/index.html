@@ -20,20 +20,25 @@
             font-size: 1.75rem !important;
         }
     </style>
+</head>
+<body>
 
     <script>
         if ('serviceWorker' in navigator) {
-          window.addEventListener('load', function() {
-            navigator.serviceWorker.register("/sw.js").then(function(registration) {
-              console.log('ServiceWorker registration successful with scope: ', registration.scope);
-            }, function(err) {
-              console.log('ServiceWorker registration failed: ', err);
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+                // Re-register after unregistering all previous instances
+                navigator.serviceWorker.register("/sw.js").then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
             });
-          });
-        }
-      </script>
-</head>
-<body>
+        }        
+    </script>
+
     <div class="container">
         <h1 class="mt-4 mb-4 text-center">Raspi-Streamer</h1>
 
