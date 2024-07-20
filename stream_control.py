@@ -458,11 +458,19 @@ def update_env_file(data):
 
 @app.route('/manifest.json')
 def serve_manifest():
-    return send_from_directory('.', 'manifest.json')
+    try:
+        return send_from_directory('.', 'manifest.json')
+    except Exception as e:
+        app.logger.error(f"Error serving manifest.json: {e}")
+        return "Internal Server Error", 500
 
 @app.route('/sw.js')
-def serve_sw():
-    return send_from_directory('.', 'sw.js')
+def service_worker():
+    try:
+        return send_from_directory('.', 'sw.js')
+    except Exception as e:
+        app.logger.error(f"Error serving sw.js: {e}")
+        return "Internal Server Error", 500
 
 @app.route('/static/<path:filename>')
 def static_files(filename):
