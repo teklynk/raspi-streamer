@@ -103,7 +103,6 @@ nmcli connection show "Wired connection 1"
 
 ## Here is my setup:
 - Raspberry Pi 4 8gb
-- Argon One case
 - EVGA XR1 USB Capture card
 - HDMI Splitter 1 in 2 Out
 
@@ -111,6 +110,12 @@ This is all stored under my entertainment center and powered on when I want to s
 
 <div style="text-align:center;margin:4px;display:block;">
 <img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_rpi_1.png?raw=true" style=" width:400px;" />
+</div>
+
+Here is a more compact setup using a cheap ($14) USB capture device and 2 right angled USB 3 connectors. All purchased from Amazon. The capture device is held in place with heavy duty double sided tape.
+
+<div style="text-align:center;margin:4px;display:block;">
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer-setup.png?raw=true" style=" width:400px;" />
 </div>
 
 ## Web UI
