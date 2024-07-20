@@ -9,7 +9,7 @@
     <link rel="apple-touch-icon" sizes="152x152" href="{{ url_for('static', filename='assets/icons/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='assets/icons/favicon-32x32.png') }}">
     <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='assets/icons/favicon-16x16.png') }}">
-    <link rel="manifest" href="{{ url_for('static', filename='assets/icons/site.webmanifest') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='/manifest.json') }}">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#303030">
     <style>
@@ -20,6 +20,18 @@
             font-size: 1.75rem !important;
         }
     </style>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', function() {
+            navigator.serviceWorker.register("/sw.js").then(function(registration) {
+              console.log('ServiceWorker registration successful with scope: ', registration.scope);
+            }, function(err) {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+          });
+        }
+      </script>
 </head>
 <body>
     <div class="container">
