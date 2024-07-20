@@ -22,19 +22,6 @@
     </style>
 </head>
 <body>
-
-    <script>
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', function() {
-                navigator.serviceWorker.register("/sw.js").then(function(registration) {
-                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
-                }, function(err) {
-                    console.log('ServiceWorker registration failed: ', err);
-                });
-            });
-        }
-    </script>
-
     <div class="container">
         <h1 class="mt-4 mb-4 text-center">Raspi-Streamer</h1>
 
@@ -323,6 +310,17 @@
     
         // Activate the default tab
         $('#defaultTab').tab('show');
+
+        // Load service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register("/sw.js").then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
     </script>
 </body>
 </html>
