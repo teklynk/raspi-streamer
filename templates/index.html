@@ -77,8 +77,15 @@
                         <label for="VIDEO_SIZE">Video Size:</label>
                         <select class="form-control form-control-lg" id="VIDEO_SIZE" name="VIDEO_SIZE">
                             <option value="1920x1080" {% if config['VIDEO_SIZE'] == '1920x1080' %}selected{% endif %}>1920x1080</option>
+                            <option value="1600x1200" {% if config['VIDEO_SIZE'] == '1600x1200' %}selected{% endif %}>1600x1200</option>
+                            <option value="1360x768" {% if config['VIDEO_SIZE'] == '1360x768' %}selected{% endif %}>1360x768</option>
+                            <option value="1280x1024" {% if config['VIDEO_SIZE'] == '1280x1024' %}selected{% endif %}>1280x1024</option>
+                            <option value="1280x960" {% if config['VIDEO_SIZE'] == '1280x960' %}selected{% endif %}>1280x960</option>
                             <option value="1280x720" {% if config['VIDEO_SIZE'] == '1280x720' %}selected{% endif %}>1280x720</option>
+                            <option value="1024x768" {% if config['VIDEO_SIZE'] == '1024x768' %}selected{% endif %}>1024x768</option>
+                            <option value="800x600" {% if config['VIDEO_SIZE'] == '800x600' %}selected{% endif %}>800x600</option>
                             <option value="720x576" {% if config['VIDEO_SIZE'] == '720x576' %}selected{% endif %}>720x576</option>
+                            <option value="720x480" {% if config['VIDEO_SIZE'] == '720x480' %}selected{% endif %}>720x480</option>
                             <option value="640x480" {% if config['VIDEO_SIZE'] == '640x480' %}selected{% endif %}>640x480</option>
                         </select>
                     </div>
