@@ -74,6 +74,16 @@
                         </select>
                     </div>
                     <div class="form-group">
+                        <label for="PRESET">Preset (higher = less CPU):</label>                      
+                        <select class="form-control form-control-lg" id="PRESET" name="PRESET">
+                            <option value="ultrafast" {% if config['FORMAT'] == 'ultrafast' %}selected{% endif %}>ultrafast</option>
+                            <option value="superfast" {% if config['FORMAT'] == 'superfast' %}selected{% endif %}>superfast</option>
+                            <option value="veryfast" {% if config['FORMAT'] == 'veryfast' %}selected{% endif %}>veryfast</option>
+                            <option value="faster" {% if config['FORMAT'] == 'faster' %}selected{% endif %}>faster</option>
+                            <option value="fast" {% if config['FORMAT'] == 'fast' %}selected{% endif %}>fast</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
                         <label for="VIDEO_SIZE">Video Size:</label>
                         <select class="form-control form-control-lg" id="VIDEO_SIZE" name="VIDEO_SIZE">
                             <option value="1920x1080" {% if config['VIDEO_SIZE'] == '1920x1080' %}selected{% endif %}>1920x1080</option>
