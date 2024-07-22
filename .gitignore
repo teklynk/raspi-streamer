@@ -1,4 +1,6 @@
 /recordings
+/media
+playlist.txt
 *.log
 .env
 .auth
