@@ -77,9 +77,7 @@
                         <label for="PRESET">Preset (higher = less CPU):</label>                      
                         <select class="form-control form-control-lg" id="PRESET" name="PRESET">
                             <option value="ultrafast" {% if config['PRESET'] == 'ultrafast' %}selected{% endif %}>ultrafast</option>
-                            <option value="superfast" {% if config['PRESET'] == 'superfast' %}selected{% endif %}>superfast</option>
                             <option value="veryfast" {% if config['PRESET'] == 'veryfast' %}selected{% endif %}>veryfast</option>
-                            <option value="faster" {% if config['PRESET'] == 'faster' %}selected{% endif %}>faster</option>
                             <option value="fast" {% if config['PRESET'] == 'fast' %}selected{% endif %}>fast</option>
                         </select>
                     </div>
