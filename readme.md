@@ -55,15 +55,18 @@ sudo apt install git
   - The values in `sample.env` worked best for testing on a Raspberry Pi 4 8GB with Twitch and Owncast. Your experience may vary.
   - KEYFRAME_INTERVAL=60 corresponds to a 2-second keyframe interval, calculated as framerate * 2 (e.g., 30 fps * 2 = 60).
 - __Stream & Record:__
-  - If you would like to record while you stream you will need to set the m3u8 URL. The Stream & Record feature will not work if this is not set. Recordings are saved in the recordings directory.
+  - If you would like to record while you stream you will need to set the m3u8 URL. The Stream & Record feature will not work if this is not set. This is becuase the stream & record feature is simply recording the stream. Keep in mind that if the stream goes does down, then so does the recording. Recordings are saved in the recordings directory.
 - __Twitch Streaming:__
   - Visit [Twitch list of ingest servers](https://help.twitch.tv/s/twitch-ingest-recommendation?language=en_US) to find the rtmp url needed to stream to Twitch.
 - __File Stream:__
   - File streaming can stream a mp4 or playlist.txt file. The stream will loop the file or playlist. File streaming does not re-encoded the file (I tried but the Pi could not handle it. CPU=100%). Use files that are properly converted and able to stream. If streaming a playlist.txt of files, be sure that all of the files are a consistent format, bitrate, resolution... Do not try to stream a 4k or Bluray quality file. Convert the file down to 1280x720 with a program like HandBrake.
 
 # Troubleshooting
-Find out what resolutions your capture device is capable of:
 
+## Test recording before doing a stream
+You can do a test recording before doing a stream to check if the capture device is working and the quality. Recordings are saved in the recordings directory. You can access the recording from the smb share or directly from the sd card.
+
+## Find out what resolutions your capture device is capable of
 ```bash
 v4l2-ctl --list-formats-ext
 ```
@@ -84,8 +87,13 @@ Check the status of stream_control for errors.
 sudo service stream_control status
 ```
 
-## Static IP Address
+## Remove and add capture device from the command line
+This is handy if the device seems to be in a hung state or it is producing strange results. Capture devices are not perfect or consistent.
+```bash
+sudo modprobe -r uvcvideo && sudo modprobe uvcvideo
+```
 
+## Static IP Address
 ```bash
 nmcli connection show
 ```
@@ -99,6 +107,9 @@ sudo nmcli connection down "Wired connection 1" && sudo nmcli connection up "Wir
 nmcli connection show "Wired connection 1"
 ```
 
+## Re-install to re-configure
+Run the `install.sh` script again to pull down the latest updates, reconfigure smb share, set a new username and password, set a new capture device.
+
 # Screenshots
 
 ## Here is my setup:
@@ -109,21 +120,21 @@ nmcli connection show "Wired connection 1"
 This is all stored under my entertainment center and powered on when I want to stream from my game consoles. I use the Web UI from my phone to control Raspi-Streamer.
 
 <div style="text-align:center;margin:4px;display:block;">
-<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_rpi_1.png?raw=true" style=" width:400px;" />
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_rpi_1.png?raw=true" style="width:400px;" />
 </div>
 
 Here is a more compact setup using a cheap ($14) USB capture device and 2 right angled USB 3 connectors. All purchased from Amazon. The capture device is held in place with heavy duty double sided tape.
 
 <div style="text-align:center;margin:4px;display:block;">
-<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer-setup.png?raw=true" style=" width:400px;" />
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer-setup.png?raw=true" style="width:400px;" />
 </div>
 
 ## Web UI
 <div style="text-align:center;margin:4px;display:block;">
-<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/screenshot_webui_1.png?raw=true" style=" width:400px;" />
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/screenshot_webui_1.png?raw=true" style="width:400px;" />
 </div>
 <div style="text-align:center;margin:4px;display:block;">
-<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/screenshot_webui_2.png?raw=true" style=" width:400px;" />
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/screenshot_webui_2.png?raw=true" style="width:400px;" />
 </div>
 
 # Future Plans
