@@ -123,10 +123,10 @@ This is all stored under my entertainment center and powered on when I want to s
 <img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer_rpi_1.png?raw=true" style="width:400px;" />
 </div>
 
-Here is a more compact setup using a cheap ($14) USB capture device and 2 right angled USB 3 connectors. All purchased from Amazon. The capture device is held in place with heavy duty double sided tape.
+Here is a more compact setup using a cheap [($14) USB capture device](https://a.co/d/he5fanX) and [2 right angled USB 3 connectors](https://a.co/d/fuRkyZH). All purchased from Amazon. The capture device is held in place with heavy duty double sided tape.
 
 <div style="text-align:center;margin:4px;display:block;">
-<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer-setup.png?raw=true" style="width:400px;" />
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer-setup-800w.png?raw=true" style="width:400px;" />
 </div>
 
 ## Web UI
