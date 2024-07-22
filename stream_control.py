@@ -473,7 +473,7 @@ def index():
         'AUDIO_OFFSET': os.getenv('AUDIO_OFFSET'),
         'STREAM_M3U8_URL': os.getenv('STREAM_M3U8_URL'),
         'STREAM_FILE': os.getenv('STREAM_FILE'),  # Add STREAM_FILE to config
-        'FORMAT': os.getenv('FORMAT')
+        'FORMAT': os.getenv('FORMAT'),
         'PRESET': os.getenv('PRESET')
     }
     state = load_state()
