@@ -22,8 +22,10 @@
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-4 mb-4 text-center">Raspi-Streamer</h1>
-
+        <div class="d-flex align-items-center justify-content-center mt-4 mb-4">
+            <img src="{{ url_for('static', filename='assets/icons/apple-touch-icon.png') }}" alt="Logo" class="mr-2" style="height: 90px;">
+            <h1>Raspi-Streamer</h1>
+        </div>
         <ul class="nav nav-pills nav-fill" role="tablist">
             <li class="nav-item">
                 <a class="nav-link active" id="control-panel-tab" data-toggle="tab" href="#ControlPanel" role="tab" aria-controls="ControlPanel" aria-selected="true">Control Panel</a>
