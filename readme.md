@@ -60,7 +60,7 @@ sudo apt install git
   - Visit [Twitch list of ingest servers](https://help.twitch.tv/s/twitch-ingest-recommendation?language=en_US) to find the rtmp url needed to stream to Twitch.
 - __File Stream:__
   - File streaming can stream a mp4 or playlist.txt file. The stream will loop the file or playlist. File streaming does not re-encoded the file (I tried but the Pi could not handle it. CPU=100%). Use files that are properly converted and able to stream. If streaming a playlist.txt of files, be sure that all of the files are a consistent format, bitrate, resolution... Do not try to stream a 4k or Bluray quality file. Convert the file down to 1280x720 with a program like HandBrake. 
-  - PLAYLIST: Place files inside a folder called `media` and run the `create_playlist.sh` script. This will generate a `playlist.txt` file inside the `/home/<user>/raspi-streamer/` directory. In the webUI you can set the File Stream Path to: `/home/<user>/raspi-streamer/playlist.txt`
+  - PLAYLIST: Place files inside a folder called `media` and run the `create_playlist.sh` script. This will generate a `playlist.txt` file inside the `/home/<user>/raspi-streamer/` directory. In the web UI you can set the File Stream Path to: `/home/<user>/raspi-streamer/playlist.txt`
 
 # Troubleshooting
 
@@ -95,7 +95,7 @@ sudo modprobe -r uvcvideo && sudo modprobe uvcvideo
 ```
 
 ## Overclocking
-You can try to overclock the Raspberry Pi 4 to sqeeze a bit more processing power out of it. This may help improve streaming and recording.
+You can try to overclock the Raspberry Pi 4 to squeeze a bit more processing power out of it. This may help improve streaming and recording.
 ```bash
 sudo nano /boot/firmware/config.txt
 ```
