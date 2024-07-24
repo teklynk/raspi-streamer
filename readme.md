@@ -19,7 +19,7 @@ I would compare this project to professional-grade devices like the [LiveStream 
 - __Compact and Convenient:__ The small form factor of the Raspberry Pi makes it easy to integrate into any setup, offering a simple and portable solution for streaming and recording.
 
 ## Components Used
-- __Raspberry Pi 4:__ The core of the setup, handling all processing and control logic.
+- __Raspberry Pi 5:__ The core of the setup, handling all processing and control logic.
 - __USB Capture Device:__ Captures video from an external source.
 - __ALSA (Advanced Linux Sound Architecture):__ Handles audio input and audio capture.
 
@@ -52,6 +52,7 @@ sudo apt install git
 - __Service Management:__
   - If you make changes to the stream_control.py script or .env, restart the stream_control service to apply the updates.
 - __Performance Tips:__
+  - Raspberry Pi 5 will give you the best results.
   - The values in `sample.env` worked best for testing on a Raspberry Pi 4 8GB with Twitch and Owncast. Your experience may vary.
   - KEYFRAME_INTERVAL=60 corresponds to a 2-second keyframe interval, calculated as framerate * 2 (e.g., 30 fps * 2 = 60).
 - __Stream & Record:__
@@ -75,6 +76,7 @@ v4l2-ctl --list-formats-ext
 ```bash
 ffmpeg -list_formats all -f v4l2 -i /dev/video0
 ```
+Choose a Format option that your capture card supports (mjpeg, yuyv422, nv12). 
 
 ## Update device firmware
 In my case with the EVGA XR1 Lite usb capture device, I had to update its firmware in order for `v4l2-ctl --list-formats-ext` to show resolutions above 1280x720 30fps. After the firmware update it now shows 1080p and 720p at 60fps. It also allowed me to disable HDCP. Check if your device has a firmware update.
@@ -94,7 +96,7 @@ This is handy if the device seems to be in a hung state or it is producing stran
 sudo modprobe -r uvcvideo && sudo modprobe uvcvideo
 ```
 
-## Overclocking
+## Overclocking (Raspberry Pi 4 only)
 You can try to overclock the Raspberry Pi 4 to squeeze a bit more processing power out of it. This may help improve streaming and recording.
 ```bash
 sudo nano /boot/firmware/config.txt
