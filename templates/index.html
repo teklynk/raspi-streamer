@@ -191,7 +191,10 @@
                 },
                 body: new URLSearchParams(data)
             }).then(response => response.json())
-            .then(data => alert(data.message))
+            .then(data => {
+                alert(data.message);
+                window.location.reload(); // Refresh the browser window
+            })
             .catch(error => console.error('Error:', error));
         });
 

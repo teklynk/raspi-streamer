@@ -556,7 +556,7 @@ def update_config():
     update_env_file(data)
     # Create and start a thread to restart the service after a short delay
     Thread(target=restart_service).start()
-    return jsonify({"message": "Config updated successfully. Restarting service..."}), 200
+    return jsonify({"message": "Config updated successfully. Restarting service and reloading the browser window."}), 200
 
 @app.route('/start_stream', methods=['POST'])
 def start_stream_route():
@@ -615,7 +615,7 @@ def stop_file_stream_route():
 @app.route('/reboot', methods=['POST'])
 def shutdown_route():
     shutdown_pi()
-    return jsonify({"message": "Rebooting"}), 200
+    return jsonify({"message": "Rebooting..."}), 200
 
 @app.route('/poweroff', methods=['POST'])
 def poweroff_route():
