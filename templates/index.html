@@ -192,8 +192,8 @@
                 body: new URLSearchParams(data)
             }).then(response => response.json())
             .then(data => {
+                alert(data.message);
                 setTimeout(() => {
-                    alert(data.message);
                     window.location.reload(); // Refresh the browser window
                 }, 2000); // 2000 milliseconds = 2 seconds
             })
