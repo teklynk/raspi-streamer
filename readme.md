@@ -96,15 +96,26 @@ This is handy if the device seems to be in a hung state or it is producing stran
 sudo modprobe -r uvcvideo && sudo modprobe uvcvideo
 ```
 
-## Overclocking (Raspberry Pi 4 only)
+## Overclocking
 You can try to overclock the Raspberry Pi 4 to squeeze a bit more processing power out of it. This may help improve streaming and recording.
 ```bash
 sudo nano /boot/firmware/config.txt
 ```
-Add this to the end of the file.
+__Raspberry Pi 4__
+
+Add this to the end of config.txt.
 ```bash
 over_voltage=6
 arm_freq=2000
+```
+
+__Raspberry Pi 5__
+
+Add this the end of config.txt.
+```bash
+arm_freq=3000
+gpu_freq=1000
+over_voltage_delta=50000
 ```
 
 ## Static IP Address
