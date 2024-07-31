@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# Get the user's home directory
-HOME_DIR="$HOME"
+# Get the user's current directory
+CUR_DIR="$(pwd)"
 
 # Directory containing media files
-MEDIA_DIR="$HOME_DIR/raspi-streamer/media"
+MEDIA_DIR="$CUR_DIR/media"
 # Output playlist file
-PLAYLIST_FILE="$HOME_DIR/raspi-streamer/playlist.txt"
+PLAYLIST_FILE="$CUR_DIR/playlist.txt"
 
 # Create the directory if it does not exist
 mkdir -p "$(dirname "$PLAYLIST_FILE")"
@@ -24,3 +24,4 @@ for file in "$MEDIA_DIR"/*; do
 done
 
 echo "Playlist created: $PLAYLIST_FILE"
+
