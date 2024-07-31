@@ -8,6 +8,12 @@ MEDIA_DIR="$CUR_DIR/media"
 # Output playlist file
 PLAYLIST_FILE="$CUR_DIR/playlist.txt"
 
+# Check if the media directory exists
+if [[ ! -d "$MEDIA_DIR" ]]; then
+    echo "Media directory '$MEDIA_DIR' not found. Please create it and try again."
+    exit 1
+fi
+
 # Create the directory if it does not exist
 mkdir -p "$(dirname "$PLAYLIST_FILE")"
 
@@ -24,4 +30,3 @@ for file in "$MEDIA_DIR"/*; do
 done
 
 echo "Playlist created: $PLAYLIST_FILE"
-
