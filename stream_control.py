@@ -73,7 +73,7 @@ def get_latest_ffmpeg_log(directory):
     latest_file = max(log_files, key=os.path.getmtime)
     
     return latest_file
-    
+
 # Get the latest ffmpeg log file
 latest_log_file = get_latest_ffmpeg_log(current_directory)
 
@@ -668,7 +668,7 @@ def get_sys_info():
 @app.route('/get_ffmpeg_log')
 def get_ffmpeg_log():
     try:
-        with open(ffmpeg_log_file_path, 'r') as file:
+        with open(latest_log_file, 'r') as file:
             latest_log_file = file.read()
         return jsonify({'log': latest_log_file})
     except Exception as e:
