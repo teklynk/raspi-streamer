@@ -140,12 +140,16 @@
             </div>
             <div class="tab-pane fade mb-4" id="System" role="tabpanel" aria-labelledby="system-tab">
                 <div class="form-group mt-4">
-                    <label for="logTextarea">Log:</label>
+                    <label for="ffmpeglogTextarea">Log:</label>
                     <textarea class="form-control" id="logTextarea" name="logTextarea" rows="10" cols="80" readonly></textarea>
                 </div>
                 <div class="form-group mt-4">
+                    <label for="logTextarea">FFMPEG Log:</label>
+                    <textarea class="form-control" id="ffmpeglogTextarea" name="ffmpeglogTextarea" rows="10" cols="80" readonly></textarea>
+                </div>
+                <div class="form-group mt-4">
                     <label for="logTextarea">System:</label>
-                    <textarea class="form-control" id="systemTextarea" name="systemTextarea" rows="20" cols="80" readonly></textarea>
+                    <textarea class="form-control" id="systemTextarea" name="systemTextarea" rows="10" cols="80" readonly></textarea>
                 </div>
                 <div class="text-center mt-4">
                     <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/restart')">Restart Service</button>
@@ -321,6 +325,24 @@
 
         // Update the log every 5 seconds
         setInterval(updateLog, 5000);
+
+        function updateFfmpegLog() {
+            fetch('/get_ffmpeg_log')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.log) {
+                        document.getElementById('ffmpeglogTextarea').value = data.log;
+                        // Scroll to the bottom of the textarea
+                        ffmpeglogTextarea.scrollTop = ffmpeglogTextarea.scrollHeight;
+                    } else if (data.error) {
+                        console.error('Error fetching ffmpeg log:', data.error);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Update the ffmpeg log every 5 seconds
+        setInterval(updateFfmpegLog, 5000);
 
         function get_sys_info() {
             fetch('/get_sys_info')

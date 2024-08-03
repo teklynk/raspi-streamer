@@ -4,6 +4,7 @@ import subprocess
 import os
 import signal
 import logging
+import glob
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify
 from flask_basicauth import BasicAuth
@@ -57,6 +58,8 @@ BUFFER_SIZE = BITRATE * 2  # in kbps
 current_directory = os.path.dirname(os.path.abspath(__file__))
 log_file_path = os.path.join(current_directory, 'stream_control.log')
 sys_info_file_path = os.path.join(current_directory, 'system_info.txt')
+# Get the latest ffmpeg log file
+latest_log_file = get_latest_ffmpeg_log(current_directory)
 
 # Configure logging
 logging.basicConfig(
@@ -123,6 +126,21 @@ def reinitialize_device():
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
+def get_latest_ffmpeg_log(directory):
+    # Create a pattern to match the ffmpeg log files
+    pattern = os.path.join(directory, 'ffmpeg-*.log')
+    
+    # Get all matching files
+    log_files = glob.glob(pattern)
+    
+    if not log_files:
+        return None
+    
+    # Find the latest file based on modification time
+    latest_file = max(log_files, key=os.path.getmtime)
+    
+    return latest_file
+
 def start_stream():
     global stream_process, streaming
 
@@ -138,6 +156,7 @@ def start_stream():
 
     stream_command = [
         "ffmpeg",
+        "-report",
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
         "-thread_queue_size", "1024",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
@@ -642,6 +661,15 @@ def get_sys_info():
         with open(sys_info_file_path, 'r') as file:
             sys_info_content = file.read()
         return jsonify({'info': sys_info_content})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/get_ffmpeg_log')
+def get_ffmpeg_log():
+    try:
+        with open(ffmpeg_log_file_path, 'r') as file:
+            latest_log_file = file.read()
+        return jsonify({'log': latest_log_file})
     except Exception as e:
         return jsonify({'error': str(e)})
 
