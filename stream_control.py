@@ -58,6 +58,22 @@ BUFFER_SIZE = BITRATE * 2  # in kbps
 current_directory = os.path.dirname(os.path.abspath(__file__))
 log_file_path = os.path.join(current_directory, 'stream_control.log')
 sys_info_file_path = os.path.join(current_directory, 'system_info.txt')
+
+def get_latest_ffmpeg_log(directory):
+    # Create a pattern to match the ffmpeg log files
+    pattern = os.path.join(directory, 'ffmpeg-*.log')
+    
+    # Get all matching files
+    log_files = glob.glob(pattern)
+    
+    if not log_files:
+        return None
+    
+    # Find the latest file based on modification time
+    latest_file = max(log_files, key=os.path.getmtime)
+    
+    return latest_file
+    
 # Get the latest ffmpeg log file
 latest_log_file = get_latest_ffmpeg_log(current_directory)
 
@@ -125,21 +141,6 @@ def reinitialize_device():
         time.sleep(1)  # Add a delay to ensure the device is initialized
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
-
-def get_latest_ffmpeg_log(directory):
-    # Create a pattern to match the ffmpeg log files
-    pattern = os.path.join(directory, 'ffmpeg-*.log')
-    
-    # Get all matching files
-    log_files = glob.glob(pattern)
-    
-    if not log_files:
-        return None
-    
-    # Find the latest file based on modification time
-    latest_file = max(log_files, key=os.path.getmtime)
-    
-    return latest_file
 
 def start_stream():
     global stream_process, streaming
