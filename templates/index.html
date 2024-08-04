@@ -139,6 +139,11 @@
                 </form>
             </div>
             <div class="tab-pane fade mb-4" id="System" role="tabpanel" aria-labelledby="system-tab">
+                <h1>System Stats</h1>
+                <div class="stats" id="cpu_usage">CPU Usage: --%</div>
+                <div class="stats" id="memory_usage_percent">Memory Usage: --%</div>
+                <div class="stats" id="memory_available">Available Memory: -- MB</div>
+                <div class="stats" id="memory_total">Total Memory: -- MB</div>
                 <div class="form-group mt-4">
                     <label for="ffmpeglogTextarea">Log:</label>
                     <textarea class="form-control" id="logTextarea" name="logTextarea" rows="10" cols="80" readonly></textarea>
@@ -356,6 +361,21 @@
                 })
                 .catch(error => console.error('Error:', error));
         }
+
+        function fetchStats() {
+            fetch('/get_cpu_stats')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('cpu_usage').innerText = `CPU Usage: ${data.cpu_usage}%`;
+                    document.getElementById('memory_usage_percent').innerText = `Memory Usage: ${data.memory_usage_percent}%`;
+                    document.getElementById('memory_available').innerText = `Available Memory: ${data.memory_available_mb.toFixed(2)} MB`;
+                    document.getElementById('memory_total').innerText = `Total Memory: ${data.memory_total_mb.toFixed(2)} MB`;
+                })
+                .catch(error => console.error('Error fetching stats:', error));
+        }
+
+        setInterval(fetchStats, 5000);
+        fetchStats(); // Initial call to fetch stats immediately
 
         document.addEventListener('DOMContentLoaded', function() {
             // Load log data

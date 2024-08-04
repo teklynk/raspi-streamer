@@ -5,6 +5,7 @@ import os
 import signal
 import logging
 import glob
+import psutil
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify
 from flask_basicauth import BasicAuth
@@ -91,6 +92,30 @@ def get_latest_ffmpeg_log(directory):
 
 # Get the latest ffmpeg log file
 latest_log_file = get_latest_ffmpeg_log(current_directory)
+
+def get_cpu_usage():
+    # Get the CPU usage percentage
+    cpu_usage = psutil.cpu_percent(interval=1)
+    return cpu_usage
+
+def get_memory_usage():
+    # Get the memory usage details
+    memory_info = psutil.virtual_memory()
+    return memory_info.percent, memory_info.available, memory_info.total
+
+def display_usage():
+    cpu_usage = get_cpu_usage()
+    memory_usage_percent, memory_available, memory_total = get_memory_usage()
+
+    usage_data = {
+        "cpu_usage": cpu_usage,
+        "memory_usage_percent": memory_usage_percent,
+        "memory_available_mb": memory_available / (1024 * 1024),
+        "memory_total_mb": memory_total / (1024 * 1024)
+    }
+
+    usage_json = json.dumps(usage_data, indent=4)
+    return usage_json
 
 # Configure logging
 logging.basicConfig(
@@ -697,6 +722,11 @@ def get_ffmpeg_log():
         return jsonify({'log': latest_log_file})
     except Exception as e:
         return jsonify({'error': str(e)})
+
+@app.route('/get_cpu_stats')
+def get_cpu_stats():
+    usage_json = display_usage()
+    return jsonify(json.loads(usage_json))
 
 # Function to run the Flask app in a separate thread
 def run_flask_app():
