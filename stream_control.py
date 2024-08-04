@@ -59,6 +59,21 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 log_file_path = os.path.join(current_directory, 'stream_control.log')
 sys_info_file_path = os.path.join(current_directory, 'system_info.txt')
 
+def remove_ffmpeg_logs(directory):
+    # Create a pattern to match the ffmpeg log files
+    pattern = os.path.join(directory, 'ffmpeg-*.log')
+    
+    # Get all matching files
+    log_files = glob.glob(pattern)
+    
+    # Remove each file
+    for log_file in log_files:
+        try:
+            os.remove(log_file)
+            print(f"Removed log file: {log_file}")
+        except Exception as e:
+            print(f"Error removing file {log_file}: {e}")
+
 def get_latest_ffmpeg_log(directory):
     # Create a pattern to match the ffmpeg log files
     pattern = os.path.join(directory, 'ffmpeg-*.log')
@@ -152,6 +167,9 @@ def start_stream():
 
     logging.debug("Starting stream...")
 
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
+
     # Reinitialize the video device before starting the recording
     reinitialize_device()
 
@@ -214,11 +232,15 @@ def start_recording():
     ensure_recordings_directory()
     logging.debug("Starting recording...")
 
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
+
     # Reinitialize the video device before starting the recording
     reinitialize_device()
 
     record_command = [
         "ffmpeg",
+        "-report",
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
         "-thread_queue_size", "1024",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
@@ -340,13 +362,14 @@ def start_file_stream():
         logging.error("STREAM_FILE is not set or is empty. Cannot start file streaming.")
         return
 
-    # Reinitialize the video device before starting the recording
-    reinitialize_device()
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
 
     if os.path.isfile(STREAM_FILE) and not STREAM_FILE.endswith('.txt'):
         logging.debug(f"Streaming single file: {STREAM_FILE}")
         file_stream_command = [
             "ffmpeg",
+            "-report",
             "-re",  # Read input at native frame rate
             "-stream_loop", "-1",  # Loop the input file indefinitely
             "-i", str(STREAM_FILE),  # Input file
@@ -364,6 +387,7 @@ def start_file_stream():
         logging.debug(f"Streaming playlist file: {STREAM_FILE}")
         file_stream_command = [
             "ffmpeg",
+            "-report",
             "-re",  # Read input at native frame rate
             "-f", "concat",  # Use concat demuxer
             "-safe", "0",  # Allow unsafe file paths
