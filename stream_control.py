@@ -668,9 +668,9 @@ def get_sys_info():
 @app.route('/get_ffmpeg_log')
 def get_ffmpeg_log():
     try:
-        with open(latest_log_file, 'r') as file:
+        with open(get_latest_ffmpeg_log(current_directory), 'r') as file:
             latest_log_file = file.read()
-        return jsonify({'log': latest_log_file})
+        return jsonify({'log': get_latest_ffmpeg_log(current_directory)})
     except Exception as e:
         return jsonify({'error': str(e)})
 
