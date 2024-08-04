@@ -670,7 +670,7 @@ def get_ffmpeg_log():
     try:
         with open(get_latest_ffmpeg_log(current_directory), 'r') as file:
             latest_log_file = file.read()
-        return jsonify({'log': get_latest_ffmpeg_log(current_directory)})
+        return jsonify({'log': latest_log_file})
     except Exception as e:
         return jsonify({'error': str(e)})
 
