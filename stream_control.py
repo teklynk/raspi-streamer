@@ -701,8 +701,8 @@ def restart_route():
 @app.route('/get_log')
 def get_log():
     try:
-        with open(log_file_path, 'r') as file:
-            log_content = file.read()
+        last_100_lines = get_last_n_lines(log_file_path, 100)
+        log_content = ''.join(last_100_lines)
         return jsonify({'log': log_content})
     except Exception as e:
         return jsonify({'error': str(e)})
