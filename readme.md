@@ -156,10 +156,13 @@ Here is a more compact setup using a cheap [($14) USB capture device](https://a.
 
 ## Web UI
 <div style="text-align:center;margin:4px;display:block;">
-<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/screenshot_webui_1.png?raw=true" style="width:400px;" />
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer-1.png?raw=true" style="width:400px;" />
 </div>
 <div style="text-align:center;margin:4px;display:block;">
-<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/screenshot_webui_2.png?raw=true" style="width:400px;" />
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer-2.png?raw=true" style="width:400px;" />
+</div>
+<div style="text-align:center;margin:4px;display:block;">
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer-3.png?raw=true" style="width:400px;" />
 </div>
 
 # Future Plans
