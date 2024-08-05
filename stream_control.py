@@ -90,8 +90,10 @@ def get_latest_ffmpeg_log(directory):
     
     return latest_file
 
-# Get the latest ffmpeg log file
-latest_log_file = get_latest_ffmpeg_log(current_directory)
+def get_last_n_lines(file_path, n):
+    with open(file_path, 'r') as file:
+        lines = file.readlines()
+    return lines[-n:]
 
 def get_cpu_usage():
     # Get the CPU usage percentage
@@ -717,8 +719,13 @@ def get_sys_info():
 @app.route('/get_ffmpeg_log')
 def get_ffmpeg_log():
     try:
-        with open(get_latest_ffmpeg_log(current_directory), 'r') as file:
-            latest_log_file = file.read()
+        latest_log_file_path = get_latest_ffmpeg_log(current_directory)
+        if latest_log_file_path is None:
+            return jsonify({'error': 'No log files found.'})
+        
+        last_100_lines = get_last_n_lines(latest_log_file_path, 100)
+        latest_log_file = ''.join(last_100_lines)
+        
         return jsonify({'log': latest_log_file})
     except Exception as e:
         return jsonify({'error': str(e)})
