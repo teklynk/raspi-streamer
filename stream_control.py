@@ -210,7 +210,7 @@ def start_stream():
         "-probesize", "32", "-analyzeduration", "0",  # Lower probing size and analysis duration for reduced latency
         "-c:v", "libx264", "-preset", str(PRESET), "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k",  # Video encoding settings
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
-        "-profile:v", "main",
+        "-profile:v", "high",
         "-c:a", "aac", "-b:a", "128k", "-ar", "44100",  # Audio encoding settings
         "-use_wallclock_as_timestamps", "1",  # Use wallclock timestamps
         "-flush_packets", "1",  # Flush packets
