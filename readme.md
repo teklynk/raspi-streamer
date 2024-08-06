@@ -56,7 +56,7 @@ sudo apt install git
   - The values in `sample.env` worked best for testing on a Raspberry Pi 4 8GB with Twitch and Owncast. Your experience may vary.
   - KEYFRAME_INTERVAL=60 corresponds to a 2-second keyframe interval, calculated as framerate * 2 (e.g., 30 fps * 2 = 60).
 - __Stream & Record:__
-  - If you would like to record while you stream you will need to set the m3u8 URL. The Stream & Record feature will not work if this is not set. This is becuase the stream & record feature is simply recording the stream using the m3u8 url. Keep in mind that if the stream goes does down, then so does the recording. Recordings are saved in the recordings directory.
+  - If you would like to record a local copy while you stream you will need to set the m3u8 URL. The Stream & Record feature will not work if this is not set. This is becuase the stream & record feature is simply recording the stream using the m3u8 url. Keep in mind that if the stream goes does down, then so does the recording. Recordings are saved in the recordings directory. Some platforms like Twitch, Kick, YouTube, DLive will automatically save a strea/VOD that you can download. So, you may not even need to use thise feature. I mainly use this feature with my Owncast server since Owncast does not automatically save the stream. 
 - __Twitch Streaming:__
   - Visit [Twitch list of ingest servers](https://help.twitch.tv/s/twitch-ingest-recommendation?language=en_US) to find the rtmp url needed to stream to Twitch.
 - __File Stream:__
@@ -113,9 +113,9 @@ __Raspberry Pi 5__
 
 Add this the end of config.txt.
 ```bash
-arm_freq=3000
+arm_freq=2600
 gpu_freq=1000
-over_voltage_delta=50000
+over_voltage_delta=40000
 ```
 
 ## Static IP Address
@@ -169,3 +169,4 @@ Here is a more compact setup using a cheap [($14) USB capture device](https://a.
 This project is ongoing, with exciting future enhancements in the pipeline:
 - __Web UI:__
   - Ability to create multiple config files for various platforms and/or stream settings and choose a config to use for streaming or recording.
+  - Schedule a stream (regularly recurring streams)
