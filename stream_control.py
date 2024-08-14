@@ -184,6 +184,20 @@ def reinitialize_device():
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
+def remux(input_file, output_file):
+    try:
+        remux_command = [
+            "ffmpeg",
+            "-i", input_file,  # Input file
+            "-c", "copy",  # Copy both audio and video streams
+            "-f", "mp4",  # Output format
+            output_file  # Output file
+        ]
+        subprocess.run(remux_command, check=True)
+        logging.debug(f"Remuxed file {input_file} to {output_file}")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Remuxing failed for {input_file}: {e}")
+
 def start_stream():
     global stream_process, streaming
 
@@ -302,6 +316,17 @@ def stop_recording():
         record_process.terminate()
         record_process.wait()
         record_process = None
+
+        # Remux the recording
+        recording_file = glob.glob('recordings/recording_*.mp4')[-1]  # Get the latest recording file
+        remux_file = f"recordings/recording_{int(time.time())}_remuxed.mp4"
+        remux(recording_file, remux_file)
+        # Delete the original recording file
+        os.remove(input_file)
+        # Rename the remuxed file to the original file name
+        os.rename(remux_file, recording_file)
+        print(f"Successfully remuxed and replaced: {input_file}")
+
     logging.debug("Recording stopped!")
     recording = False
     state["recording"] = False
