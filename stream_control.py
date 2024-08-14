@@ -119,6 +119,20 @@ def display_usage():
     usage_json = json.dumps(usage_data, indent=4)
     return usage_json
 
+def remux(input_file, output_file):
+    try:
+        remux_command = [
+            "ffmpeg",
+            "-i", input_file,  # Input file
+            "-c", "copy",  # Copy both audio and video streams
+            "-f", "mp4",  # Output format
+            output_file  # Output file
+        ]
+        subprocess.run(remux_command, check=True)
+        logging.debug(f"Remuxed file {input_file} to {output_file}")
+    except subprocess.CalledProcessError as e:
+        logging.error(f"Remuxing failed for {input_file}: {e}")
+
 # Configure logging
 logging.basicConfig(
     filename=log_file_path,
@@ -183,20 +197,6 @@ def reinitialize_device():
         time.sleep(1)  # Add a delay to ensure the device is initialized
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
-
-def remux(input_file, output_file):
-    try:
-        remux_command = [
-            "ffmpeg",
-            "-i", input_file,  # Input file
-            "-c", "copy",  # Copy both audio and video streams
-            "-f", "mp4",  # Output format
-            output_file  # Output file
-        ]
-        subprocess.run(remux_command, check=True)
-        logging.debug(f"Remuxed file {input_file} to {output_file}")
-    except subprocess.CalledProcessError as e:
-        logging.error(f"Remuxing failed for {input_file}: {e}")
 
 def start_stream():
     global stream_process, streaming
