@@ -394,6 +394,16 @@ def stop_stream_recording():
         stream_record_process.wait()
         stream_record_process = None
 
+        # Remux the recording
+        recording_file = glob.glob('recordings/recording_*.mp4')[-1]  # Get the latest recording file
+        remux_file = f"recordings/recording_{int(time.time())}_remuxed.mp4"
+        remux(recording_file, remux_file)
+        # Delete the original recording file
+        os.remove(input_file)
+        # Rename the remuxed file to the original file name
+        os.rename(remux_file, recording_file)
+        print(f"Successfully remuxed and replaced: {input_file}")
+
     logging.debug("Stream and Recording stopped!")
     stream_recording = False
     state["streaming_and_recording"] = False
