@@ -304,7 +304,7 @@ def start_recording():
     save_state(state)
 
 def stop_recording():
-    global record_process, recording
+    global record_process, recording, remux
 
     state = load_state()
 
@@ -322,10 +322,10 @@ def stop_recording():
         remux_file = f"recordings/recording_{int(time.time())}_remuxed.mp4"
         remux(recording_file, remux_file)
         # Delete the original recording file
-        os.remove(input_file)
+        os.remove(recording_file)
         # Rename the remuxed file to the original file name
         os.rename(remux_file, recording_file)
-        print(f"Successfully remuxed and replaced: {input_file}")
+        print(f"Successfully remuxed and replaced: {recording_file}")
 
     logging.debug("Recording stopped!")
     recording = False
@@ -399,10 +399,10 @@ def stop_stream_recording():
         remux_file = f"recordings/recording_{int(time.time())}_remuxed.mp4"
         remux(recording_file, remux_file)
         # Delete the original recording file
-        os.remove(input_file)
+        os.remove(recording_file)
         # Rename the remuxed file to the original file name
         os.rename(remux_file, recording_file)
-        print(f"Successfully remuxed and replaced: {input_file}")
+        print(f"Successfully remuxed and replaced: {recording_file}")
 
     logging.debug("Stream and Recording stopped!")
     stream_recording = False
