@@ -112,7 +112,7 @@ def update_env_file(audio_device):
 # Update audio device
 device_value = get_device_value()
 audio_device = get_audio_device(device_value)
-if audio_device:
+if device_value:
     update_env_file(audio_device)
     print(f"Updated .env file with ALSA_AUDIO_SOURCE={audio_device}")
 else:

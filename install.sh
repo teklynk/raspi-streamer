@@ -123,9 +123,6 @@ After=network.target sound.target
 
 [Service]
 StartDelaySec=3
-ExecStartPre=/bin/bash -c '$WORK_DIR/update_audio_device.sh'
-ExecStartPre=/bin/sleep 1
-ExecStartPre=/bin/bash -c '$WORK_DIR/update_system_info.sh'
 ExecStart=/usr/bin/sudo -E /usr/bin/python3 $WORK_DIR/stream_control.py
 WorkingDirectory=$WORK_DIR
 StandardOutput=inherit
