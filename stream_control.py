@@ -74,12 +74,19 @@ def get_audio_device(device_value):
     arecord_output = subprocess.run(['arecord', '-l'], capture_output=True, text=True).stdout
     for line in arecord_output.splitlines():
         if device_value in line:
-            card = re.search(r'card (\d+):', line).group(1)
-            device = re.search(r'device (\d+)', line).group(1)
-            if device_value.startswith("hw:") or device_value.startswith("plughw:"):
-                return f"{device_value}{card},{device}"
+            card_match = re.search(r'card (\d+):', line)
+            device_match = re.search(r'device (\d+)', line)
+            
+            if card_match and device_match:
+                card = card_match.group(1)
+                device = device_match.group(1)
+                if device_value.startswith("hw:") or device_value.startswith("plughw:"):
+                    return f"{device_value}{card},{device}"
+                else:
+                    return f"hw:{card},{device}"
             else:
-                return f"hw:{card},{device}"
+                print("Failed to parse card or device number from the line:")
+                print(line)
     return None
 
 def update_env_file(audio_device):
