@@ -1,5 +1,6 @@
 import time
 import json
+import re
 import subprocess
 import os
 import signal
@@ -60,6 +61,82 @@ current_directory = os.path.dirname(os.path.abspath(__file__))
 log_file_path = os.path.join(current_directory, 'stream_control.log')
 sys_info_file_path = os.path.join(current_directory, 'system_info.txt')
 
+def get_device_value():
+    device_file = "audio_device.txt"
+    if os.path.isfile(device_file):
+        with open(device_file, "r") as file:
+            return file.read().strip()
+    else:
+        print("audio_device.txt file not found")
+        exit(1)
+
+def get_audio_device(device_value):
+    arecord_output = subprocess.run(['arecord', '-l'], capture_output=True, text=True).stdout
+    for line in arecord_output.splitlines():
+        if device_value in line:
+            card = re.search(r'card (\d+):', line).group(1)
+            device = re.search(r'device (\d+)', line).group(1)
+            if device_value.startswith("hw:") or device_value.startswith("plughw:"):
+                return f"{device_value}{card},{device}"
+            else:
+                return f"hw:{card},{device}"
+    return None
+
+def update_env_file(audio_device):
+    env_file = ".env"
+    if os.path.isfile(env_file):
+        with open(env_file, "r") as file:
+            lines = file.readlines()
+        
+        with open(env_file, "w") as file:
+            updated = False
+            for line in lines:
+                if line.startswith("ALSA_AUDIO_SOURCE="):
+                    file.write(f"ALSA_AUDIO_SOURCE={audio_device}\n")
+                    updated = True
+                else:
+                    file.write(line)
+            if not updated:
+                file.write(f"ALSA_AUDIO_SOURCE={audio_device}\n")
+    else:
+        with open(env_file, "w") as file:
+            file.write(f"ALSA_AUDIO_SOURCE={audio_device}\n")
+
+# Update audio device
+device_value = get_device_value()
+audio_device = get_audio_device(device_value)
+if audio_device:
+    update_env_file(audio_device)
+    print(f"Updated .env file with ALSA_AUDIO_SOURCE={audio_device}")
+else:
+    print("No suitable audio device found")
+
+# Define the output file
+SYS_INFO_FILE = "system_info.txt"
+
+# Truncate the output file (or create it if it doesn't exist)
+with open(SYS_INFO_FILE, "w") as file:
+    pass
+
+def append_command_output(command, description):
+    with open(SYS_INFO_FILE, "a") as file:
+        file.write(f"Output of {description}:\n")
+        result = subprocess.run(command, capture_output=True, text=True)
+        file.write(result.stdout)
+        file.write("\n\n")
+
+# Run lsusb and append the output to the file
+append_command_output(["lsusb"], "lsusb")
+
+# Run arecord -l and append the output to the file
+append_command_output(["arecord", "-l"], "arecord -l")
+
+# Run v4l2-ctl --list-formats-ext and append the output to the file
+append_command_output(["v4l2-ctl", "--list-formats-ext"], "v4l2-ctl --list-formats-ext")
+
+print(f"System information saved to {SYS_INFO_FILE}")
+
+# Remove old ffmpeg logs
 def remove_ffmpeg_logs(directory):
     # Create a pattern to match the ffmpeg log files
     pattern = os.path.join(directory, 'ffmpeg-*.log')
