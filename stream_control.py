@@ -309,7 +309,7 @@ def start_stream():
         "-c:v", "libx264", "-preset", str(PRESET), "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k",  # Video encoding settings
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
         "-profile:v", "high",
-        "-c:a", "aac", "-b:a", "128k", "-ar", "44100",  # Audio encoding settings
+        "-c:a", "aac", "-b:a", "96k", "-ar", "44100",  # Audio encoding settings
         "-use_wallclock_as_timestamps", "1",  # Use wallclock timestamps
         "-flush_packets", "1",  # Flush packets
         "-async", "1",  # Sync audio with video
@@ -372,7 +372,7 @@ def start_recording():
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", str(FORMAT), "-i", "/dev/video0",  # Video input settings
         "-c:v", "libx264", "-preset", str(PRESET), "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k",  # Video encoding settings
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
-        "-c:a", "aac", "-b:a", "128k", "-ar", "44100",  # Audio encoding settings
+        "-c:a", "aac", "-b:a", "96k", "-ar", "44100",  # Audio encoding settings
         "-use_wallclock_as_timestamps", "1",  # Use wallclock timestamps
         "-flush_packets", "1",  # Flush packets
         "-async", "1",  # Sync audio with video
@@ -523,7 +523,7 @@ def start_file_stream():
             "-c:a", "aac",  # Audio codec
             "-strict", "-2",  # Allow experimental codecs
             "-ac", "2",  # Set number of audio channels
-            "-b:a", "128k",  # Audio bitrate
+            "-b:a", "96k",  # Audio bitrate
             "-ar", "44100",  # Audio sampling rate
             "-bufsize", "2M",  # Set buffer size for the stream
             "-f", "flv",  # Output format
@@ -543,7 +543,7 @@ def start_file_stream():
             "-c:a", "aac",  # Audio codec
             "-strict", "-2",  # Allow experimental codecs
             "-ac", "2",  # Set number of audio channels
-            "-b:a", "128k",  # Audio bitrate
+            "-b:a", "96k",  # Audio bitrate
             "-ar", "44100",  # Audio sampling rate
             "-bufsize", "2M",  # Set buffer size for the stream
             "-f", "flv",  # Output format
