@@ -430,6 +430,8 @@ def delayed_start_recording():
         stream_record_command = [
             "ffmpeg",
             "-re", "-i", str(STREAM_M3U8_URL),
+            "-analyzeduration", "1000000", 
+            "-probesize" "1500000",
             "-c", "copy", f"recordings/stream_{int(time.time())}.mp4"
         ]
 
