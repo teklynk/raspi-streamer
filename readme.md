@@ -62,6 +62,8 @@ sudo apt install git
 - __File Stream:__
   - File streaming can stream a mp4 or playlist.txt file. The stream will loop the file or playlist. File streaming does not re-encoded the file (I tried but the Pi could not handle it. CPU=100%). Use files that are properly converted and able to stream. If streaming a playlist.txt of files, be sure that all of the files are a consistent format, bitrate, resolution... Do not try to stream a 4k or Bluray quality file. Convert the file down to 1280x720 with a program like HandBrake. 
   - PLAYLIST: Place files inside a folder called `media` and run the `create_playlist.sh` script. This will generate a `playlist.txt` file inside the `/home/<user>/raspi-streamer/` directory. In the web UI you can set the File Stream Path to: `/home/<user>/raspi-streamer/playlist.txt`
+- __Duration Time:__
+  - Set the max length of time that you want the process to run. The process will run for the set time period and automatically stop when it reaches the duration time. This is handy if you just want to start a process and walk away, or forget to stop the process. This should help prevent the SD card from filling up if you hit record and accidentally forget to stop recording.
 
 # Troubleshooting
 
