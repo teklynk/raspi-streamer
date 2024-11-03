@@ -282,6 +282,15 @@ def reinitialize_device():
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
+def timer(seconds):
+    end_time = time.time() + seconds
+    while True:
+        print(f"Elapsed time: {time.time() - start_time:.2f} seconds")
+        if time.time() > end_time:
+            print("Timer finished!")
+            break
+        time.sleep(0.1)
+
 def start_stream():
     global stream_process, streaming
 
@@ -323,6 +332,12 @@ def start_stream():
     state["recording"] = False
     state["streaming"] = True
     save_state(state)
+
+    def timer():
+        time.sleep(int(os.getenv('MAX_SYSTEM_TIMEOUT')))
+        stop_stream()
+
+    Thread(target=timer).start()
 
 def stop_stream():
     global stream_process, streaming
@@ -386,6 +401,12 @@ def start_recording():
     state["streaming_and_recording"] = False
     state["recording"] = True
     save_state(state)
+
+    def timer():
+        time.sleep(int(os.getenv('MAX_SYSTEM_TIMEOUT')))
+        stop_recording()
+
+    Thread(target=timer).start()
 
 def stop_recording():
     global record_process, recording, remux
@@ -459,6 +480,12 @@ def start_stream_recording():
 
     stop_event.clear()  # Clear the stop event before starting the thread
     Thread(target=delayed_start_recording).start()
+
+    def timer():
+        time.sleep(int(os.getenv('MAX_SYSTEM_TIMEOUT')))
+        stop_stream_recording()
+
+    Thread(target=timer).start()
 
 def stop_stream_recording():
     global stream_record_process, stream_recording, stream_process, stop_event
@@ -562,6 +589,12 @@ def start_file_stream():
     state["streaming"] = False
     state["file_streaming"] = True
     save_state(state)
+
+    def timer():
+        time.sleep(int(os.getenv('MAX_SYSTEM_TIMEOUT')))
+        stop_file_stream()
+
+    Thread(target=timer).start()
 
 def stop_file_stream():
     global file_stream_process, file_streaming
