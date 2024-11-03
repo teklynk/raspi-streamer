@@ -52,6 +52,7 @@ STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
 STREAM_FILE = os.getenv('STREAM_FILE')  # Add STREAM_FILE variable
 FORMAT = os.getenv('FORMAT')
 PRESET = os.getenv('PRESET')
+MAX_SYSTEM_TIMEOUT = int(os.getenv('MAX_SYSTEM_TIMEOUT'))
 
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
@@ -282,6 +283,15 @@ def reinitialize_device():
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
+def timer(seconds):
+    end_time = time.time() + seconds
+    while True:
+        print(f"Elapsed time: {time.time() - start_time:.2f} seconds")
+        if time.time() > end_time:
+            print("Timer finished!")
+            break
+        time.sleep(0.1)
+
 def start_stream():
     global stream_process, streaming
 
@@ -291,9 +301,6 @@ def start_stream():
         return
 
     logging.debug("Starting stream...")
-
-    # Remove old ffmpeg log files
-    remove_ffmpeg_logs(current_directory)
 
     # Reinitialize the video device before starting the recording
     reinitialize_device()
@@ -324,6 +331,12 @@ def start_stream():
     state["streaming"] = True
     save_state(state)
 
+    def timer():
+        time.sleep(int(os.getenv('MAX_SYSTEM_TIMEOUT')))
+        stop_stream()
+
+    Thread(target=timer).start()
+
 def stop_stream():
     global stream_process, streaming
 
@@ -343,6 +356,9 @@ def stop_stream():
     state["streaming"] = False
     save_state(state)
 
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
+
     # Add a delay to ensure FFmpeg process and buffers are cleaned up
     time.sleep(1)
 
@@ -356,9 +372,6 @@ def start_recording():
 
     ensure_recordings_directory()
     logging.debug("Starting recording...")
-
-    # Remove old ffmpeg log files
-    remove_ffmpeg_logs(current_directory)
 
     # Reinitialize the video device before starting the recording
     reinitialize_device()
@@ -386,6 +399,12 @@ def start_recording():
     state["streaming_and_recording"] = False
     state["recording"] = True
     save_state(state)
+
+    def timer():
+        time.sleep(int(os.getenv('MAX_SYSTEM_TIMEOUT')))
+        stop_recording()
+
+    Thread(target=timer).start()
 
 def stop_recording():
     global record_process, recording, remux
@@ -415,6 +434,9 @@ def stop_recording():
     recording = False
     state["recording"] = False
     save_state(state)
+
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
 
     # Add a delay to ensure FFmpeg process and buffers are cleaned up
     time.sleep(1)
@@ -460,6 +482,12 @@ def start_stream_recording():
     stop_event.clear()  # Clear the stop event before starting the thread
     Thread(target=delayed_start_recording).start()
 
+    def timer():
+        time.sleep(int(os.getenv('MAX_SYSTEM_TIMEOUT')))
+        stop_stream_recording()
+
+    Thread(target=timer).start()
+
 def stop_stream_recording():
     global stream_record_process, stream_recording, stream_process, stop_event
 
@@ -495,6 +523,9 @@ def stop_stream_recording():
     state["streaming_and_recording"] = False
     save_state(state)
 
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
+
     # Add a delay to ensure FFmpeg process and buffers are cleaned up
     time.sleep(1)
 
@@ -509,9 +540,6 @@ def start_file_stream():
     if not STREAM_FILE:
         logging.error("STREAM_FILE is not set or is empty. Cannot start file streaming.")
         return
-
-    # Remove old ffmpeg log files
-    remove_ffmpeg_logs(current_directory)
 
     if os.path.isfile(STREAM_FILE) and not STREAM_FILE.endswith('.txt'):
         logging.debug(f"Streaming single file: {STREAM_FILE}")
@@ -563,6 +591,12 @@ def start_file_stream():
     state["file_streaming"] = True
     save_state(state)
 
+    def timer():
+        time.sleep(int(os.getenv('MAX_SYSTEM_TIMEOUT')))
+        stop_file_stream()
+
+    Thread(target=timer).start()
+
 def stop_file_stream():
     global file_stream_process, file_streaming
 
@@ -575,7 +609,9 @@ def stop_file_stream():
         file_stream_process.terminate()
         file_stream_process.wait()
         file_stream_process = None
-        time.sleep(1)  # Wait for 3 seconds
+        # Remove old ffmpeg log files
+        remove_ffmpeg_logs(current_directory)
+        time.sleep(1) 
     logging.debug("File stream stopped!")
     file_streaming = False
     state["file_streaming"] = False
@@ -594,6 +630,8 @@ def shutdown_pi():
         stop_file_stream()
     if stream_recording:
         stop_stream_recording()
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
     time.sleep(1)
     subprocess.call(['sudo', 'shutdown', '-r', 'now'])
 
@@ -607,6 +645,8 @@ def restart_service():
         stop_file_stream()
     if stream_recording:
         stop_stream_recording()
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
     # Reinitialize the video device before starting the recording
     reinitialize_device()
     time.sleep(1)
@@ -622,6 +662,8 @@ def poweroff_pi():
         stop_file_stream()
     if stream_recording:
         stop_stream_recording()
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
     time.sleep(1)
     subprocess.call(['sudo', 'shutdown', '-h', 'now'])
 
@@ -637,7 +679,7 @@ def update_env_file(data):
     load_dotenv()
     
     # Update global variables with new values
-    global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL, STREAM_FILE, FORMAT, PRESET
+    global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL, STREAM_FILE, FORMAT, PRESET, MAX_SYSTEM_TIMEOUT
     STREAM_KEY = os.getenv('STREAM_KEY')
     RTMP_SERVER = os.getenv('RTMP_SERVER')
     ALSA_AUDIO_SOURCE = os.getenv('ALSA_AUDIO_SOURCE')
@@ -651,6 +693,7 @@ def update_env_file(data):
     BUFFER_SIZE = BITRATE * 2
     FORMAT = os.getenv('FORMAT')
     PRESET = os.getenv('PRESET')
+    MAX_SYSTEM_TIMEOUT = int(os.getenv('MAX_SYSTEM_TIMEOUT'))
 
 @app.route('/')
 def index():
@@ -664,9 +707,10 @@ def index():
         'KEYFRAME_INTERVAL': os.getenv('KEYFRAME_INTERVAL'),
         'AUDIO_OFFSET': os.getenv('AUDIO_OFFSET'),
         'STREAM_M3U8_URL': os.getenv('STREAM_M3U8_URL'),
-        'STREAM_FILE': os.getenv('STREAM_FILE'),  # Add STREAM_FILE to config
+        'STREAM_FILE': os.getenv('STREAM_FILE'),
         'FORMAT': os.getenv('FORMAT'),
-        'PRESET': os.getenv('PRESET')
+        'PRESET': os.getenv('PRESET'),
+        'MAX_SYSTEM_TIMEOUT': os.getenv('MAX_SYSTEM_TIMEOUT')
     }
     state = load_state()
     return render_template('index.html', config=config, state=state)
