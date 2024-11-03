@@ -133,6 +133,20 @@
                         <input type="text" class="form-control form-control-lg" id="STREAM_FILE" name="STREAM_FILE" value="{{ config['STREAM_FILE'] }}" placeholder="/home/user/raspi-streamer/media/video.mp4">
                         <small>*.mp4 OR playlist.txt</small>
                     </div>
+                    <div class="form-group">
+                        <label for="MAX_SYSTEM_TIMEOUT">Max Duration:</label>                      
+                        <select class="form-control form-control-lg" id="MAX_SYSTEM_TIMEOUT" name="MAX_SYSTEM_TIMEOUT" required>
+                            <option value="1800" {% if config['MAX_SYSTEM_TIMEOUT'] == '1800' %}selected{% endif %}>30 minutes</option>
+                            <option value="3600" {% if config['MAX_SYSTEM_TIMEOUT'] == '3600' %}selected{% endif %}>1 Hour</option>
+                            <option value="7200" {% if config['MAX_SYSTEM_TIMEOUT'] == '7200' %}selected{% endif %}>2 Hour</option>
+                            <option value="10800" {% if config['MAX_SYSTEM_TIMEOUT'] == '10800' %}selected{% endif %}>3 Hour</option>
+                            <option value="14400" {% if config['MAX_SYSTEM_TIMEOUT'] == '14400' %}selected{% endif %}>4 Hour</option>
+                            <option value="18000" {% if config['MAX_SYSTEM_TIMEOUT'] == '18000' %}selected{% endif %}>5 Hour</option>
+                            <option value="21600" {% if config['MAX_SYSTEM_TIMEOUT'] == '21600' %}selected{% endif %}>6 Hour</option>
+                            <option value="25200" {% if config['MAX_SYSTEM_TIMEOUT'] == '25200' %}selected{% endif %}>7 Hour</option>
+                            <option value="28800" {% if config['MAX_SYSTEM_TIMEOUT'] == '28800' %}selected{% endif %}>8 Hour</option>
+                        </select>
+                    </div>
                     <div class="text-center mt-4 mb-5">
                         <button class="btn btn-lg btn-block btn-primary" type="submit">Update</button>
                     </div>
