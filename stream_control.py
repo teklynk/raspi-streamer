@@ -385,13 +385,6 @@ def start_recording():
         "-f", "mp4", f"recordings/recording_{int(time.time())}.mp4"  # Output to MP4 file
     ]
 
-    while True:
-        recording_start_time += 1
-        if recording_start_time > int(os.getenv('MAX_SYSTEM_TIMEOUT', 3600)):
-            stop_recording()
-            break
-        time.sleep(1)  # wait for 1 second
-
     record_process = subprocess.Popen(record_command)
     logging.debug("Recording started!")
     recording = True
@@ -399,6 +392,13 @@ def start_recording():
     state["streaming_and_recording"] = False
     state["recording"] = True
     save_state(state)
+
+    while True:
+        recording_start_time += 1
+        if recording_start_time > int(os.getenv('MAX_SYSTEM_TIMEOUT', 3600)):
+            stop_recording()
+            break
+        time.sleep(1)  # wait for 1 second
 
 def stop_recording():
     global record_process, recording, remux, recording_start_time
