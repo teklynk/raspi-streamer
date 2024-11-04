@@ -243,6 +243,9 @@ streaming = False
 file_stream_process = None
 file_streaming = False
 
+recording_start_time = None
+max_system_timeout = int(os.getenv('MAX_SYSTEM_TIMEOUT', 3600))
+
 state_file = 'state.json'
 
 default_state = {"streaming": False, "recording": False, "file_streaming": False, "streaming_and_recording": False}
@@ -283,17 +286,17 @@ def reinitialize_device():
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
-def timer(seconds):
-    end_time = time.time() + seconds
+def check_timer():
     while True:
-        print(f"Elapsed time: {time.time() - start_time:.2f} seconds")
-        if time.time() > end_time:
-            print("Timer finished!")
+        if recording_start_time is not None and time.time() - recording_start_time > max_system_timeout:
+            stop_recording()
+            stop_stream()
+            stop_stream_recording()
+            stop_file_stream()
             break
-        time.sleep(0.1)
 
 def start_stream():
-    global stream_process, streaming
+    global stream_process, streaming, recording_start_time
 
     state = load_state()
 
@@ -331,14 +334,11 @@ def start_stream():
     state["streaming"] = True
     save_state(state)
 
-    def timer():
-        time.sleep(int(os.getenv('MAX_SYSTEM_TIMEOUT')))
-        stop_stream()
-
-    Thread(target=timer).start()
+    if recording_start_time is None:
+        recording_start_time = time.time()
 
 def stop_stream():
-    global stream_process, streaming
+    global stream_process, streaming, recording_start_time
 
     state = load_state()
 
@@ -356,6 +356,11 @@ def stop_stream():
     state["streaming"] = False
     save_state(state)
 
+    if recording_start_time is not None:
+        elapsed_time = time.time() - recording_start_time
+        print(f"Recording stopped after {elapsed_time} seconds")
+        recording_start_time = None
+
     # Remove old ffmpeg log files
     remove_ffmpeg_logs(current_directory)
 
@@ -363,7 +368,7 @@ def stop_stream():
     time.sleep(1)
 
 def start_recording():
-    global record_process, recording
+    global record_process, recording, recording_start_time
 
     state = load_state()
 
@@ -400,14 +405,12 @@ def start_recording():
     state["recording"] = True
     save_state(state)
 
-    def timer():
-        time.sleep(int(os.getenv('MAX_SYSTEM_TIMEOUT')))
-        stop_recording()
+    if recording_start_time is None:
+        recording_start_time = time.time()
 
-    Thread(target=timer).start()
 
 def stop_recording():
-    global record_process, recording, remux
+    global record_process, recording, remux, recording_start_time
 
     state = load_state()
 
@@ -434,6 +437,11 @@ def stop_recording():
     recording = False
     state["recording"] = False
     save_state(state)
+
+    if recording_start_time is not None:
+        elapsed_time = time.time() - recording_start_time
+        print(f"Recording stopped after {elapsed_time} seconds")
+        recording_start_time = None
 
     # Remove old ffmpeg log files
     remove_ffmpeg_logs(current_directory)
@@ -482,14 +490,11 @@ def start_stream_recording():
     stop_event.clear()  # Clear the stop event before starting the thread
     Thread(target=delayed_start_recording).start()
 
-    def timer():
-        time.sleep(int(os.getenv('MAX_SYSTEM_TIMEOUT')))
-        stop_stream_recording()
-
-    Thread(target=timer).start()
+    if recording_start_time is None:
+        recording_start_time = time.time()
 
 def stop_stream_recording():
-    global stream_record_process, stream_recording, stream_process, stop_event
+    global stream_record_process, stream_recording, stream_process, stop_event, recording_start_time
 
     state = load_state()
 
@@ -523,6 +528,11 @@ def stop_stream_recording():
     state["streaming_and_recording"] = False
     save_state(state)
 
+    if recording_start_time is not None:
+        elapsed_time = time.time() - recording_start_time
+        print(f"Recording stopped after {elapsed_time} seconds")
+        recording_start_time = None
+
     # Remove old ffmpeg log files
     remove_ffmpeg_logs(current_directory)
 
@@ -530,7 +540,7 @@ def stop_stream_recording():
     time.sleep(1)
 
 def start_file_stream():
-    global file_stream_process, file_streaming
+    global file_stream_process, file_streaming, recording_start_time
 
     state = load_state()
 
@@ -591,14 +601,11 @@ def start_file_stream():
     state["file_streaming"] = True
     save_state(state)
 
-    def timer():
-        time.sleep(int(os.getenv('MAX_SYSTEM_TIMEOUT')))
-        stop_file_stream()
-
-    Thread(target=timer).start()
+    if recording_start_time is None:
+        recording_start_time = time.time()
 
 def stop_file_stream():
-    global file_stream_process, file_streaming
+    global file_stream_process, file_streaming, recording_start_time
 
     state = load_state()
 
@@ -616,6 +623,11 @@ def stop_file_stream():
     file_streaming = False
     state["file_streaming"] = False
     save_state(state)
+
+    if recording_start_time is not None:
+        elapsed_time = time.time() - recording_start_time
+        print(f"Recording stopped after {elapsed_time} seconds")
+        recording_start_time = None
 
     # Add a delay to ensure FFmpeg process and buffers are cleaned up
     time.sleep(1)
