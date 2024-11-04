@@ -315,6 +315,13 @@ def start_stream():
         "-f", "flv", f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
     ]
 
+    while True:
+        recording_start_time += 1
+        if recording_start_time > int(os.getenv('MAX_SYSTEM_TIMEOUT', 3600)):
+            stop_stream()
+            break
+        time.sleep(1)  # wait for 1 second
+
     stream_process = subprocess.Popen(stream_command)
     logging.debug("Stream started!")
     streaming = True
@@ -322,15 +329,6 @@ def start_stream():
     state["recording"] = False
     state["streaming"] = True
     save_state(state)
-
-    recording_start_time = 0
-
-    while True:
-        recording_start_time += 1
-        if recording_start_time > int(os.getenv('MAX_SYSTEM_TIMEOUT', 3600)):
-            stop_stream()
-            break
-        time.sleep(1)  # wait for 1 second
 
 def stop_stream():
     global stream_process, streaming, recording_start_time
@@ -350,8 +348,6 @@ def stop_stream():
     streaming = False
     state["streaming"] = False
     save_state(state)
-
-    recording_start_time = 0
 
     # Remove old ffmpeg log files
     remove_ffmpeg_logs(current_directory)
@@ -389,6 +385,13 @@ def start_recording():
         "-f", "mp4", f"recordings/recording_{int(time.time())}.mp4"  # Output to MP4 file
     ]
 
+    while True:
+        recording_start_time += 1
+        if recording_start_time > int(os.getenv('MAX_SYSTEM_TIMEOUT', 3600)):
+            stop_recording()
+            break
+        time.sleep(1)  # wait for 1 second
+
     record_process = subprocess.Popen(record_command)
     logging.debug("Recording started!")
     recording = True
@@ -396,15 +399,6 @@ def start_recording():
     state["streaming_and_recording"] = False
     state["recording"] = True
     save_state(state)
-
-    recording_start_time = 0
-
-    while True:
-        recording_start_time += 1
-        if recording_start_time > int(os.getenv('MAX_SYSTEM_TIMEOUT', 3600)):
-            stop_recording()
-            break
-        time.sleep(1)  # wait for 1 second
 
 def stop_recording():
     global record_process, recording, remux, recording_start_time
@@ -434,8 +428,6 @@ def stop_recording():
     recording = False
     state["recording"] = False
     save_state(state)
-
-    recording_start_time = 0
 
     # Remove old ffmpeg log files
     remove_ffmpeg_logs(current_directory)
@@ -471,6 +463,13 @@ def start_stream_recording():
     if not STREAM_M3U8_URL:
         logging.error("STREAM_M3U8_URL is not set or is empty. Cannot start recording.")
         return
+    
+    while True:
+        recording_start_time += 1
+        if recording_start_time > int(os.getenv('MAX_SYSTEM_TIMEOUT', 3600)):
+            stop_stream_recording()
+            break
+        time.sleep(1)  # wait for 1 second
 
     ensure_recordings_directory()
     logging.debug("Starting stream recording...")
@@ -483,15 +482,6 @@ def start_stream_recording():
 
     stop_event.clear()  # Clear the stop event before starting the thread
     Thread(target=delayed_start_recording).start()
-
-    recording_start_time = 0
-
-    while True:
-        recording_start_time += 1
-        if recording_start_time > int(os.getenv('MAX_SYSTEM_TIMEOUT', 3600)):
-            stop_stream_recording()
-            break
-        time.sleep(1)  # wait for 1 second
 
 def stop_stream_recording():
     global stream_record_process, stream_recording, stream_process, stop_event, recording_start_time
@@ -527,8 +517,6 @@ def stop_stream_recording():
     stream_recording = False
     state["streaming_and_recording"] = False
     save_state(state)
-
-    recording_start_time = 0
 
     # Remove old ffmpeg log files
     remove_ffmpeg_logs(current_directory)
@@ -589,6 +577,13 @@ def start_file_stream():
     else:
         logging.error(f"{STREAM_FILE} not found or invalid format. Cannot start file streaming.")
         return
+    
+    while True:
+        recording_start_time += 1
+        if recording_start_time > int(os.getenv('MAX_SYSTEM_TIMEOUT', 3600)):
+            stop_file_stream()
+            break
+        time.sleep(1)  # wait for 1 second
 
     file_stream_process = subprocess.Popen(file_stream_command)
     logging.debug("File stream started!")
@@ -597,15 +592,6 @@ def start_file_stream():
     state["streaming"] = False
     state["file_streaming"] = True
     save_state(state)
-
-    recording_start_time = 0
-
-    while True:
-        recording_start_time += 1
-        if recording_start_time > int(os.getenv('MAX_SYSTEM_TIMEOUT', 3600)):
-            stop_file_stream()
-            break
-        time.sleep(1)  # wait for 1 second
 
 def stop_file_stream():
     global file_stream_process, file_streaming, recording_start_time
@@ -626,8 +612,6 @@ def stop_file_stream():
     file_streaming = False
     state["file_streaming"] = False
     save_state(state)
-
-    recording_start_time = 0
 
     # Add a delay to ensure FFmpeg process and buffers are cleaned up
     time.sleep(1)
