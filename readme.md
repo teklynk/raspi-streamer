@@ -1,10 +1,13 @@
 # Project Overview: Raspberry Pi Streaming and Recording Setup
-- The project aims to provide easy streaming to a rtmp endpoint using a Raspberry Pi, USB capture card, and Web UI.
-- Seamless streaming to platforms like Twitch, Owncast, PeerTube, YouTube, with video and audio recording capabilities.
-- Simple setup: connect to the internet, plug in HDMI source from any device, and control with Start Stream and Stop Stream buttons.
-- Web UI for remote control from any web browser, allowing management of streams and recordings.
-- Comparable to professional-grade devices like LiveStream Broadcaster Pro and BoxCaster, but without high costs and subscription fees.
-- Ideal for live events, concerts, churches, conferences, and seminars when used with a professional camera.
+This project aims to do one thing well and that is to stream to a rtmp endpoint with very little setup and effort. 
+
+Transform a Raspberry Pi into a powerful yet simple and convenient streaming and recording device using a USB capture card and a Web UI. The compact setup allows for seamless streaming to platforms like Twitch, Owncast, PeerTube, YouTube, and recording captured video and audio.
+
+All you have to do is connect it to the internet, plug in your HDMI source from a console, Steam Deck, TV, or any device that can be captured via HDMI. When you are ready to stream, press the Start Stream button. Press the Stop Stream button when you are done. It can also record whatever is being captured with a different button.
+
+You can also control the Raspi-Streamer using the Web UI from any web browser. Just visit http://<ip_address_of_pi>:5000 from your mobile device connected to the same network to start, stop, and manage your streams and recordings remotely.
+
+I would compare this project to professional-grade devices like the [LiveStream Broadcaster Pro](https://livestream.com/broadcaster) or the [BoxCaster](https://www.boxcast.com/platform/boxcaster), but without the hefty price tag and subscription fees. This setup can be used with a professional camera to stream and/or record live events, making it ideal for concerts, churches, conferences, and seminars. Additionally, it can be completely wireless when connected to a cellular hotspot and battery pack.
 
 ## Key Features
 - __Streaming:__ Capture video via a USB capture device and stream it in real-time to an RTMP server, ensuring smooth and reliable video output.
