@@ -392,7 +392,8 @@ def start_recording():
     state["streaming"] = False
     state["streaming_and_recording"] = False
     state["recording"] = True
-    save_state(state)
+    # Create a new thread to save the state
+    Thread(target=save_state, args=(state,)).start()
 
     while True:
         time.sleep(1)  # wait for 1 second
@@ -430,6 +431,7 @@ def stop_recording():
     recording = False
     state["recording"] = False
     save_state(state)
+    Thread(target=save_state, args=(state,)).join()  # Wait for the thread to finish
 
     # Remove old ffmpeg log files
     remove_ffmpeg_logs(current_directory)
