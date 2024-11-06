@@ -292,9 +292,6 @@ def start_stream():
 
     logging.debug("Starting stream...")
 
-    # Remove old ffmpeg log files
-    remove_ffmpeg_logs(current_directory)
-
     # Reinitialize the video device before starting the recording
     reinitialize_device()
 
@@ -329,6 +326,9 @@ def stop_stream():
 
     state = load_state()
 
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
+
     if not state["streaming"] and not state["streaming_and_recording"]:
         logging.debug("No active stream to stop.")
         return
@@ -356,9 +356,6 @@ def start_recording():
 
     ensure_recordings_directory()
     logging.debug("Starting recording...")
-
-    # Remove old ffmpeg log files
-    remove_ffmpeg_logs(current_directory)
 
     # Reinitialize the video device before starting the recording
     reinitialize_device()
@@ -394,6 +391,9 @@ def stop_recording():
 
     if not state["recording"]:
         return
+
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
 
     if record_process:
         logging.debug("Stopping recording...")
@@ -472,6 +472,9 @@ def stop_stream_recording():
 
     stop_event.set()  # Signal the delayed start thread to stop
 
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
+
     if stream_record_process:
         logging.debug("Stopping recording...")
         stream_record_process.terminate()
@@ -507,9 +510,6 @@ def start_file_stream():
     if not STREAM_FILE:
         logging.error("STREAM_FILE is not set or is empty. Cannot start file streaming.")
         return
-
-    # Remove old ffmpeg log files
-    remove_ffmpeg_logs(current_directory)
 
     if os.path.isfile(STREAM_FILE) and not STREAM_FILE.endswith('.txt'):
         logging.debug(f"Streaming single file: {STREAM_FILE}")
@@ -569,6 +569,9 @@ def stop_file_stream():
     if not state["file_streaming"]:
         return
 
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
+
     if file_stream_process:
         file_stream_process.terminate()
         file_stream_process.wait()
@@ -592,6 +595,8 @@ def shutdown_pi():
         stop_file_stream()
     if stream_recording:
         stop_stream_recording()
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
     time.sleep(1)
     subprocess.call(['sudo', 'shutdown', '-r', 'now'])
 
@@ -607,6 +612,8 @@ def restart_service():
         stop_stream_recording()
     # Reinitialize the video device before starting the recording
     reinitialize_device()
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
     time.sleep(1)
     subprocess.call(['sudo', 'systemctl', 'restart', 'stream_control.service'])
 
@@ -620,6 +627,8 @@ def poweroff_pi():
         stop_file_stream()
     if stream_recording:
         stop_stream_recording()
+    # Remove old ffmpeg log files
+    remove_ffmpeg_logs(current_directory)
     time.sleep(1)
     subprocess.call(['sudo', 'shutdown', '-h', 'now'])
 
