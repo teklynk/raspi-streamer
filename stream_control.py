@@ -69,6 +69,7 @@ STREAM_FILE = os.getenv('STREAM_FILE')  # Add STREAM_FILE variable
 FORMAT = os.getenv('FORMAT')
 PRESET = os.getenv('PRESET')
 REPORT = os.getenv('REPORT')
+TIME_OUT = os.getenv('TIME_OUT')
 
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
@@ -388,9 +389,12 @@ def start_recording():
         record_command.insert(1, "-report")  # Insert the -report flag at index 1 in the command list if REPORT is true in the .env file
 
     record_process = subprocess.Popen(record_command)
-    thread = Thread(target=timer, args=(30,))
-    thread.start()
-    logging.debug("Timer started!")
+
+    if TIME_OUT:
+        timer_thread = Thread(target=timer, args=(int(TIME_OUT),))
+        timer_thread.start()
+        logging.debug(f"Timer started for: {TIME_OUT} seconds.")
+
     logging.debug("Recording started!")
     recording = True
     state["streaming"] = False
