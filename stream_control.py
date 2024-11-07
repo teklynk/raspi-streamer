@@ -68,7 +68,7 @@ def get_device_value():
         with open(device_file, "r") as file:
             return file.read().strip()
     else:
-        print("audio_device.txt file not found")
+        logging.debug("audio_device.txt file not found")
         exit(1)
 
 def get_audio_device(device_value):
@@ -86,8 +86,8 @@ def get_audio_device(device_value):
                 else:
                     return f"hw:{card},{device}"
             else:
-                print("Failed to parse card or device number from the line:")
-                print(line)
+                logging.debug("Failed to parse card or device number from the line:")
+                logging.debug(line)
     return None
 
 def update_env_file(audio_device):
@@ -115,9 +115,11 @@ device_value = get_device_value()
 audio_device = get_audio_device(device_value)
 if device_value:
     update_env_file(audio_device)
-    print(f"Updated .env file with ALSA_AUDIO_SOURCE={audio_device}")
+    logging.debug(f"Updated .env file with ALSA_AUDIO_SOURCE={audio_device}")
+    if device_value == 'hw:0,0':
+        logging.debug(f"ALSA_AUDIO_SOURCE={audio_device} is not valid. Expected: hw:1,0 or hw:2,0. No suitable audio device found.")
 else:
-    print("No suitable audio device found")
+    logging.debug("No suitable audio device found")
 
 # Define the output file
 SYS_INFO_FILE = "system_info.txt"
@@ -142,7 +144,7 @@ append_command_output(["arecord", "-l"], "arecord -l")
 # Run v4l2-ctl --list-formats-ext and append the output to the file
 append_command_output(["v4l2-ctl", "--list-formats-ext"], "v4l2-ctl --list-formats-ext")
 
-print(f"System information saved to {SYS_INFO_FILE}")
+logging.debug(f"System information saved to {SYS_INFO_FILE}")
 
 # Remove old ffmpeg logs
 def remove_ffmpeg_logs(directory):
@@ -156,9 +158,9 @@ def remove_ffmpeg_logs(directory):
     for log_file in log_files:
         try:
             os.remove(log_file)
-            print(f"Removed log file: {log_file}")
+            logging.debug(f"Removed log file: {log_file}")
         except Exception as e:
-            print(f"Error removing file {log_file}: {e}")
+            logging.debug(f"Error removing file {log_file}: {e}")
 
 def get_latest_ffmpeg_log(directory):
     # Create a pattern to match the ffmpeg log files
@@ -414,7 +416,7 @@ def stop_recording():
         os.remove(recording_file)
         # Rename the remuxed file to the original file name
         os.rename(remux_file, recording_file)
-        print(f"Successfully remuxed and replaced: {recording_file}")
+        logging.debug(f"Successfully remuxed and replaced: {recording_file}")
 
     logging.debug("Recording stopped!")
     recording = False
@@ -494,7 +496,7 @@ def stop_stream_recording():
         os.remove(recording_file)
         # Rename the remuxed file to the original file name
         os.rename(remux_file, recording_file)
-        print(f"Successfully remuxed and replaced: {recording_file}")
+        logging.debug(f"Successfully remuxed and replaced: {recording_file}")
 
     logging.debug("Stream and Recording stopped!")
     stream_recording = False
@@ -784,18 +786,18 @@ def start_stream_record_route():
 @app.route('/stop_stream_record', methods=['POST'])
 def stop_stream_record_route():
     try:
-        print("Calling stop_stream()")
+        logging.debug("Calling stop_stream()")
         stop_stream()
-        print("stop_stream() executed successfully")
+        logging.debug("stop_stream() executed successfully")
     except Exception as e:
-        print(f"Error in stop_stream(): {e}")
+        logging.debug(f"Error in stop_stream(): {e}")
 
     try:
-        print("Calling stop_stream_recording()")
+        logging.debug("Calling stop_stream_recording()")
         stop_stream_recording()
-        print("stop_stream_recording() executed successfully")
+        logging.debug("stop_stream_recording() executed successfully")
     except Exception as e:
-        print(f"Error in stop_stream_recording(): {e}")
+        logging.debug(f"Error in stop_stream_recording(): {e}")
 
     return jsonify({"message": "Stream and recording stopped."}), 200
 
