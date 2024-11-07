@@ -127,8 +127,6 @@ audio_device = get_audio_device(device_value)
 if device_value:
     update_env_file(audio_device)
     logging.debug(f"Updated .env file with ALSA_AUDIO_SOURCE={audio_device}")
-    if audio_device.lower() == 'hw:0,0':
-        logging.debug(f"ALSA_AUDIO_SOURCE={audio_device} is not valid. Expected: hw:1,0 or hw:2,0. No suitable audio device found.")
 else:
     logging.debug("No suitable audio device found")
 
