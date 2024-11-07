@@ -419,9 +419,7 @@ def stop_recording():
         record_process.wait()
         record_process = None
 
-        timer_thread.terminate()
-        timer_thread.wait()
-        timer_thread = None
+        timer_thread.cancel()
 
         # Remux the recording
         recording_file = glob.glob('recordings/recording_*.mp4')[-1]  # Get the latest recording file
