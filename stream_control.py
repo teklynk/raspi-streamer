@@ -69,7 +69,6 @@ STREAM_FILE = os.getenv('STREAM_FILE')  # Add STREAM_FILE variable
 FORMAT = os.getenv('FORMAT')
 PRESET = os.getenv('PRESET')
 REPORT = os.getenv('REPORT')
-TIME_OUT = os.getenv('TIME_OUT')
 
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
