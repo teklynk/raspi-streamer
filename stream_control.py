@@ -52,6 +52,7 @@ STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
 STREAM_FILE = os.getenv('STREAM_FILE')  # Add STREAM_FILE variable
 FORMAT = os.getenv('FORMAT')
 PRESET = os.getenv('PRESET')
+REPORT = os.getenv('REPORT')
 
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
@@ -297,7 +298,6 @@ def start_stream():
 
     stream_command = [
         "ffmpeg",
-        "-report",
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
         "-thread_queue_size", "1024",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
@@ -312,6 +312,9 @@ def start_stream():
         "-async", "1",  # Sync audio with video
         "-f", "flv", f"{RTMP_SERVER}{STREAM_KEY}"  # Output to RTMP server
     ]
+
+    if REPORT:
+        stream_command.insert(1, "-report")  # Insert the -report flag at index 1 in the command list if REPORT is true in the .env file
 
     stream_process = subprocess.Popen(stream_command)
     logging.debug("Stream started!")
@@ -362,7 +365,6 @@ def start_recording():
 
     record_command = [
         "ffmpeg",
-        "-report",
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
         "-thread_queue_size", "1024",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
@@ -375,6 +377,9 @@ def start_recording():
         "-async", "1",  # Sync audio with video
         "-f", "mp4", f"recordings/recording_{int(time.time())}.mp4"  # Output to MP4 file
     ]
+
+    if REPORT:
+        record_command.insert(1, "-report")  # Insert the -report flag at index 1 in the command list if REPORT is true in the .env file
 
     record_process = subprocess.Popen(record_command)
     logging.debug("Recording started!")
@@ -515,7 +520,6 @@ def start_file_stream():
         logging.debug(f"Streaming single file: {STREAM_FILE}")
         file_stream_command = [
             "ffmpeg",
-            "-report",
             "-re",  # Read input at native frame rate
             "-stream_loop", "-1",  # Loop the input file indefinitely
             "-i", str(STREAM_FILE),  # Input file
@@ -533,7 +537,6 @@ def start_file_stream():
         logging.debug(f"Streaming playlist file: {STREAM_FILE}")
         file_stream_command = [
             "ffmpeg",
-            "-report",
             "-re",  # Read input at native frame rate
             "-f", "concat",  # Use concat demuxer
             "-safe", "0",  # Allow unsafe file paths
@@ -552,6 +555,9 @@ def start_file_stream():
     else:
         logging.error(f"{STREAM_FILE} not found or invalid format. Cannot start file streaming.")
         return
+
+    if REPORT:
+        file_stream_command.insert(1, "-report")  # Insert the -report flag at index 1 in the command list if REPORT is true in the .env file
 
     file_stream_process = subprocess.Popen(file_stream_command)
     logging.debug("File stream started!")
