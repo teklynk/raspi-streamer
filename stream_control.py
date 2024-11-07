@@ -664,6 +664,7 @@ def update_env_file(data):
     BUFFER_SIZE = BITRATE * 2
     FORMAT = os.getenv('FORMAT')
     PRESET = os.getenv('PRESET')
+    REPORT = os.getenv('REPORT')
 
 @app.route('/')
 def index():
@@ -679,7 +680,8 @@ def index():
         'STREAM_M3U8_URL': os.getenv('STREAM_M3U8_URL'),
         'STREAM_FILE': os.getenv('STREAM_FILE'),  # Add STREAM_FILE to config
         'FORMAT': os.getenv('FORMAT'),
-        'PRESET': os.getenv('PRESET')
+        'PRESET': os.getenv('PRESET'),
+        'REPORT': os.getenv('REPORT')
     }
     state = load_state()
     return render_template('index.html', config=config, state=state)

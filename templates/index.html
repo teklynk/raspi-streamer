@@ -145,10 +145,12 @@
                     <label for="ffmpeglogTextarea">Log:</label>
                     <textarea class="form-control" id="logTextarea" name="logTextarea" rows="10" cols="80" readonly></textarea>
                 </div>
+                {% if config['REPORT'] %}
                 <div class="form-group mt-4">
                     <label for="logTextarea">FFMPEG Log:</label>
                     <textarea class="form-control" id="ffmpeglogTextarea" name="ffmpeglogTextarea" rows="10" cols="80" readonly></textarea>
                 </div>
+                {% endif %}
                 <div class="form-group mt-4">
                     <label for="logTextarea">System:</label>
                     <textarea class="form-control" id="systemTextarea" name="systemTextarea" rows="10" cols="80" readonly></textarea>
