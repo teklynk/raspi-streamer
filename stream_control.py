@@ -15,6 +15,17 @@ from threading import Thread, Event
 # Flask application
 app = Flask(__name__)
 
+# Configure logging
+logging.basicConfig(
+    filename=log_file_path,
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+# Disable werkzeug logging
+log = logging.getLogger('werkzeug')
+log.setLevel(logging.ERROR)
+
 # Truncate the stream_control.log file
 with open('stream_control.log', 'w'):
     pass
@@ -219,17 +230,6 @@ def remux(input_file, output_file):
         logging.debug(f"Remuxed file {input_file} to {output_file}")
     except subprocess.CalledProcessError as e:
         logging.error(f"Remuxing failed for {input_file}: {e}")
-
-# Configure logging
-logging.basicConfig(
-    filename=log_file_path,
-    level=logging.DEBUG,
-    format='%(asctime)s - %(levelname)s - %(message)s'
-)
-
-# Disable werkzeug logging
-log = logging.getLogger('werkzeug')
-log.setLevel(logging.ERROR)
 
 # Initialize variables
 streaming = False
