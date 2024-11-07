@@ -15,6 +15,11 @@ from threading import Thread, Event
 # Flask application
 app = Flask(__name__)
 
+# Determine the current working directory
+current_directory = os.path.dirname(os.path.abspath(__file__))
+log_file_path = os.path.join(current_directory, 'stream_control.log')
+sys_info_file_path = os.path.join(current_directory, 'system_info.txt')
+
 # Configure logging
 logging.basicConfig(
     filename=log_file_path,
@@ -67,11 +72,6 @@ REPORT = os.getenv('REPORT')
 
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
-
-# Determine the current working directory
-current_directory = os.path.dirname(os.path.abspath(__file__))
-log_file_path = os.path.join(current_directory, 'stream_control.log')
-sys_info_file_path = os.path.join(current_directory, 'system_info.txt')
 
 def get_device_value():
     device_file = "audio_device.txt"
