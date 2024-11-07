@@ -357,7 +357,7 @@ def stop_stream():
     time.sleep(1)
 
 def start_recording():
-    global record_process, recording
+    global record_process, recording, timer_thread
 
     state = load_state()
 
@@ -393,10 +393,7 @@ def start_recording():
     if TIME_OUT:
         timer_thread = Thread(target=timer, args=(int(TIME_OUT),))
         timer_thread.start()
-        
         logging.debug(f"Timer started for: {TIME_OUT} seconds.")
-        
-        timer_thread.join()  # Wait until the timer thread has finished
 
     logging.debug("Recording started!")
     recording = True
@@ -406,7 +403,7 @@ def start_recording():
     save_state(state)
 
 def stop_recording():
-    global record_process, recording, remux
+    global record_process, recording, remux, timer_thread
 
     state = load_state()
 
@@ -422,6 +419,10 @@ def stop_recording():
         record_process.wait()
         record_process = None
 
+        timer_thread.terminate()
+        timer_thread.wait()
+        timer_thread = None
+
         # Remux the recording
         recording_file = glob.glob('recordings/recording_*.mp4')[-1]  # Get the latest recording file
         remux_file = f"recordings/recording_{int(time.time())}_remuxed.mp4"
@@ -433,6 +434,7 @@ def stop_recording():
         logging.debug(f"Successfully remuxed and replaced: {recording_file}")
 
     logging.debug("Recording stopped!")
+    
     recording = False
     state["recording"] = False
     save_state(state)
