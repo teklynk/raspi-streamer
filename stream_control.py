@@ -391,7 +391,7 @@ def start_recording():
     record_process = subprocess.Popen(record_command)
 
     if TIME_OUT:
-        timer_thread = threading.Thread(target=timer, args=(int(TIME_OUT),))
+        timer_thread = Thread(target=timer, args=(int(TIME_OUT),))
         timer_thread.start()
         
         logging.debug(f"Timer started for: {TIME_OUT} seconds.")
