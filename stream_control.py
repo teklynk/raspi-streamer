@@ -283,21 +283,6 @@ def reinitialize_device():
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
-def start_timer(timeout):
-    command = f"sleep {timeout} && echo 'Timer finished.'"
-    process = subprocess.Popen(command, shell=True)
-    return process
-
-def timer(timeout):
-    global is_recording, start_time
-    start_time = int(time.time())
-    is_recording = True
-    process = start_timer(timeout)
-    try:
-        process.wait()
-    except:
-        pass  # Process was terminated by stop_recording()
-
 def start_stream():
     global stream_process, streaming
 
@@ -403,7 +388,6 @@ def start_recording():
     state["streaming_and_recording"] = False
     state["recording"] = True
     save_state(state)
-    timer(30)
 
 def stop_recording():
     global record_process, recording, remux
