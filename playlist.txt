@@ -1,0 +1,4 @@
+file '/home/user/raspi-streamer/media/video1.mkv'
+file '/home/user/raspi-streamer/media/video2.mkv'
+file '/home/user/raspi-streamer/media/video3.mkv'
+file '/home/user/raspi-streamer/media/video4.mkv'
