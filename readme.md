@@ -1,3 +1,7 @@
+<div style="text-align:center;margin:4px;display:block;">
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/static/assets/icons/android-chrome-256x256.png?raw=true" />
+</div>
+
 # Project Overview: Raspberry Pi Streaming and Recording Setup
 - The project aims to provide easy streaming to a rtmp endpoint using a Raspberry Pi, USB capture card, and Web UI.
 - Seamless streaming to platforms like Twitch, Owncast, PeerTube, YouTube, with video and audio recording capabilities.
