@@ -329,9 +329,6 @@ def stop_stream():
 
     state = load_state()
 
-    # Remove old ffmpeg log files
-    remove_ffmpeg_logs(current_directory)
-
     if not state["streaming"] and not state["streaming_and_recording"]:
         logging.debug("No active stream to stop.")
         return
@@ -397,9 +394,6 @@ def stop_recording():
 
     if not state["recording"]:
         return
-
-    # Remove old ffmpeg log files
-    remove_ffmpeg_logs(current_directory)
 
     if record_process:
         logging.debug("Stopping recording...")
@@ -478,9 +472,6 @@ def stop_stream_recording():
         return
 
     stop_event.set()  # Signal the delayed start thread to stop
-
-    # Remove old ffmpeg log files
-    remove_ffmpeg_logs(current_directory)
 
     if stream_record_process:
         logging.debug("Stopping recording...")
@@ -576,9 +567,6 @@ def stop_file_stream():
 
     if not state["file_streaming"]:
         return
-
-    # Remove old ffmpeg log files
-    remove_ffmpeg_logs(current_directory)
 
     if file_stream_process:
         file_stream_process.terminate()
