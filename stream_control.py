@@ -509,6 +509,9 @@ def start_file_stream():
         logging.error("STREAM_FILE is not set or is empty. Cannot start file streaming.")
         return
 
+    # Define the subtitle file path
+    subtitle_file = os.path.splitext(STREAM_FILE)[0] + '.srt'
+
     if os.path.isfile(STREAM_FILE) and not STREAM_FILE.endswith('.txt'):
         logging.debug(f"Streaming single file: {STREAM_FILE}")
         file_stream_command = [
@@ -526,6 +529,8 @@ def start_file_stream():
             "-f", "flv",  # Output format
             f"{RTMP_SERVER}{STREAM_KEY}"  # RTMP server URL and stream key
         ]
+        if os.path.isfile(subtitle_file):
+            file_stream_command.extend(["-vf", f"subtitles={subtitle_file}"])
     elif STREAM_FILE.endswith('.txt') and os.path.isfile(STREAM_FILE):
         logging.debug(f"Streaming playlist file: {STREAM_FILE}")
         file_stream_command = [
@@ -545,6 +550,8 @@ def start_file_stream():
             "-f", "flv",  # Output format
             f"{RTMP_SERVER}{STREAM_KEY}"  # RTMP server URL and stream key
         ]
+        if os.path.isfile(subtitle_file):
+            file_stream_command.extend(["-vf", f"subtitles={subtitle_file}"])
     else:
         logging.error(f"{STREAM_FILE} not found or invalid format. Cannot start file streaming.")
         return
