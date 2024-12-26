@@ -531,6 +531,7 @@ def start_file_stream():
         ]
         if os.path.isfile(subtitle_file):
             file_stream_command.extend(["-vf", f"subtitles={subtitle_file}"])
+        logging.debug(f"File stream command: {file_stream_command}")
     elif STREAM_FILE.endswith('.txt') and os.path.isfile(STREAM_FILE):
         logging.debug(f"Streaming playlist file: {STREAM_FILE}")
         file_stream_command = [
