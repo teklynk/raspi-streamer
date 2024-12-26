@@ -519,6 +519,10 @@ def start_file_stream():
             "-re",  # Read input at native frame rate
             "-stream_loop", "-1",  # Loop the input file indefinitely
             "-i", str(STREAM_FILE),  # Input file
+        ]
+        if os.path.isfile(subtitle_file):
+            file_stream_command.extend(["-vf", f"subtitles={subtitle_file}"])
+        file_stream_command.extend([
             "-c:v", "copy",  # Copy the video codec
             "-c:a", "aac",  # Audio codec
             "-strict", "-2",  # Allow experimental codecs
@@ -528,10 +532,7 @@ def start_file_stream():
             "-bufsize", "2M",  # Set buffer size for the stream
             "-f", "flv",  # Output format
             f"{RTMP_SERVER}{STREAM_KEY}"  # RTMP server URL and stream key
-        ]
-        if os.path.isfile(subtitle_file):
-            file_stream_command.extend(["-vf", f"subtitles={subtitle_file}"])
-        logging.debug(f"File stream command: {file_stream_command}")
+        ])
     elif STREAM_FILE.endswith('.txt') and os.path.isfile(STREAM_FILE):
         logging.debug(f"Streaming playlist file: {STREAM_FILE}")
         file_stream_command = [
@@ -541,6 +542,10 @@ def start_file_stream():
             "-safe", "0",  # Allow unsafe file paths
             "-stream_loop", "-1",  # Loop the playlist indefinitely
             "-i", str(STREAM_FILE),  # Input playlist file
+        ]
+        if os.path.isfile(subtitle_file):
+            file_stream_command.extend(["-vf", f"subtitles={subtitle_file}"])
+        file_stream_command.extend([
             "-c:v", "copy",  # Copy the video codec
             "-c:a", "aac",  # Audio codec
             "-strict", "-2",  # Allow experimental codecs
@@ -550,9 +555,7 @@ def start_file_stream():
             "-bufsize", "2M",  # Set buffer size for the stream
             "-f", "flv",  # Output format
             f"{RTMP_SERVER}{STREAM_KEY}"  # RTMP server URL and stream key
-        ]
-        if os.path.isfile(subtitle_file):
-            file_stream_command.extend(["-vf", f"subtitles={subtitle_file}"])
+        ])
     else:
         logging.error(f"{STREAM_FILE} not found or invalid format. Cannot start file streaming.")
         return
