@@ -555,8 +555,9 @@ def start_file_stream():
     if REPORT:
         file_stream_command.insert(1, "-report")  # Insert the -report flag at index 1 in the command list if REPORT is true in the .env file
 
-    if subtitle_file:
-        file_stream_command.insert(6, ["-vf", f"subtitles={subtitle_file}"]) 
+    if os.path.isfile(subtitle_file):
+        file_stream_command.insert(7, "-vf")
+        file_stream_command.insert(8, f"subtitles={subtitle_file}")
 
     file_stream_process = subprocess.Popen(file_stream_command)
     logging.debug("File stream started!")
