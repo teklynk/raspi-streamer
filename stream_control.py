@@ -509,9 +509,6 @@ def start_file_stream():
         logging.error("STREAM_FILE is not set or is empty. Cannot start file streaming.")
         return
 
-    # Define the subtitle file path
-    subtitle_file = os.path.splitext(STREAM_FILE)[0] + '.srt'
-
     if os.path.isfile(STREAM_FILE) and not STREAM_FILE.endswith('.txt'):
         logging.debug(f"Streaming single file: {STREAM_FILE}")
         file_stream_command = [
@@ -555,13 +552,8 @@ def start_file_stream():
     if REPORT:
         file_stream_command.insert(1, "-report")  # Insert the -report flag at index 1 in the command list if REPORT is true in the .env file
 
-    if os.path.isfile(subtitle_file):
-        file_stream_command.insert(7, "-vf")
-        file_stream_command.insert(8, f"subtitles={subtitle_file}")
-
     file_stream_process = subprocess.Popen(file_stream_command)
     logging.debug("File stream started!")
-    logging.debug(f"File stream command: {file_stream_command}")
     file_streaming = True
     state["recording"] = False
     state["streaming"] = False
