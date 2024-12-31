@@ -9,10 +9,18 @@ convert_file() {
     # Create the output directory if it doesn't exist
     mkdir -p "$output_dir"
 
-    # Convert video using ffmpeg
-    #ffmpeg -i "$input_file" -c:v libx264 -preset ultrafast -crf 23 -c:a aac -b:a 160k "$output_file"
-    #ffmpeg -i "$input_file" -vf scale=1280:-2 -c:v libx264 -preset slow -crf 23 -c:a aac -b:a 96k "$output_file"
-    ffmpeg -i "$input_file" -vf scale=1280:-2 -c:v libx264 -preset veryfast -crf 23 -c:a aac -b:a 64k "$output_file"
+    # Convert video using ffmpeg - Burn in subtitles if .srt file exists
+    if [ -f "$input_file" ]; then
+      filename_no_ext="${input_file%.*}"
+      if [ -f "$filename_no_ext.srt" ]; then
+        ffmpeg -i "$input_file" -vf "scale=1280:-2, subtitles=$filename_no_ext.srt" -c:v libx264 -preset veryfast -crf 23 -c:a aac -b:a 96k "$output_file"
+      else
+        ffmpeg -i "$input_file" -vf "scale=1280:-2" -c:v libx264 -preset veryfast -crf 23 -c:a aac -b:a 96k "$output_file"
+      fi
+    else
+      echo "Error: Input file not found."
+    fi
+    
     echo "Conversion complete. Output saved to $output_file"
 }
 
