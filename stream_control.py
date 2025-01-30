@@ -68,6 +68,7 @@ STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
 STREAM_FILE = os.getenv('STREAM_FILE')  # Add STREAM_FILE variable
 FORMAT = os.getenv('FORMAT')
 PRESET = os.getenv('PRESET')
+REPORT = os.getenv('REPORT')
 
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
