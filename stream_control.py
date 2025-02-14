@@ -511,8 +511,8 @@ def stop_stream_recording():
         stream_record_process = None
 
         # Remux the recording
-        recording_file = glob.glob('recordings/recording_*.mp4')[-1]  # Get the latest recording file
-        remux_file = f"recordings/recording_{int(time.time())}_remuxed.mp4"
+        recording_file = glob.glob('recordings/stream_*.mp4')[-1]  # Get the latest recording file
+        remux_file = f"recordings/stream_{int(time.time())}_remuxed.mp4"
         remux(recording_file, remux_file)
         # Delete the original recording file
         os.remove(recording_file)
