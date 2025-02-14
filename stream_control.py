@@ -292,20 +292,21 @@ def list_recordings():
         # Get all files in the directory
         files = []
         for filename in os.listdir(recordings_dir):
-            file_path = os.path.join(recordings_dir, filename)
-            # Get file details
-            file_stats = os.stat(file_path)
-            modification_date = file_stats.st_mtime  # Modification time as timestamp
-            size = file_stats.st_size                # Size in bytes
-            
-            # Convert modification date to readable format
-            modification_date_str = str(modification_date)
-            
-            files.append({
-                'filename': filename,
-                'size': size,
-                'modified': modification_date_str
-            })
+            if not filename == ".gitkeep":
+                file_path = os.path.join(recordings_dir, filename)
+                # Get file details
+                file_stats = os.stat(file_path)
+                modification_date = file_stats.st_mtime  # Modification time as timestamp
+                size = file_stats.st_size                # Size in bytes
+                
+                # Convert modification date to readable format
+                modification_date_str = str(modification_date)
+                
+                files.append({
+                    'filename': filename,
+                    'size': size,
+                    'modified': modification_date_str
+                })
         
         return files
 
