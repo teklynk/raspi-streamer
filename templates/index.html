@@ -36,6 +36,9 @@
             <li class="nav-item">
                 <a class="nav-link" id="system-tab" data-toggle="tab" href="#System" role="tab" aria-controls="System" aria-selected="false">System</a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" id="recordings-tab" data-toggle="tab" href="#Recordings" role="tab" aria-controls="Recordings" aria-selected="false">Recordings</a>
+            </li>
         </ul>
 
         <div class="tab-content mt-4">
@@ -172,6 +175,29 @@
                     <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
                 </div>
             </div>
+            <div class="tab-pane fade mb-4" id="Recordings" role="tabpanel" aria-labelledby="recordings-tab">
+                {% if recordings %}
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Filename</th>
+                                <th>Size (bytes)</th>
+                                <th>Modified</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for recording in recordings %}
+                                <tr>
+                                    <td>{{ recording.filename }}</td>
+                                    <td>{{ recording.size }}</td>
+                                    <td>{{ recording.modified | datetime }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No recordings found.</p>
+                {% endif %}
             </div>
         </div>
         <div class="text-center mt-4">

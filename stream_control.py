@@ -283,6 +283,38 @@ def reinitialize_device():
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
+def list_recordings():
+    # Define the directory path
+    recordings_dir = '/recordings'
+    
+    # Check if the directory exists
+    if not os.path.exists(recordings_dir):
+        return f"Directory '{recordings_dir}' does not exist."
+    
+    try:
+        # Get all files in the directory
+        files = []
+        for filename in os.listdir(recordings_dir):
+            file_path = os.path.join(recordings_dir, filename)
+            # Get file details
+            file_stats = os.stat(file_path)
+            modification_date = file_stats.st_mtime  # Modification time as timestamp
+            size = file_stats.st_size                # Size in bytes
+            
+            # Convert modification date to readable format
+            modification_date_str = str(modification_date)
+            
+            files.append({
+                'filename': filename,
+                'size': size,
+                'modified': modification_date_str
+            })
+        
+        return files
+    
+    except Exception as e:
+        return f"Error accessing directory: {str(e)}"
+
 def start_stream():
     global stream_process, streaming
 
@@ -674,7 +706,8 @@ def index():
         'REPORT': os.getenv('REPORT')
     }
     state = load_state()
-    return render_template('index.html', config=config, state=state)
+    recordings=list_recordings()
+    return render_template('index.html', config=config, state=state, recordings=recordings)
 
 @app.route('/load_state', methods=['GET'])
 def load_state_endpoint():
