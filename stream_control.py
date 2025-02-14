@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify
 from flask_basicauth import BasicAuth
 from threading import Thread, Event
+from datetime import datetime
 
 # Flask application
 app = Flask(__name__)
@@ -300,7 +301,7 @@ def list_recordings():
                 size = file_stats.st_size                # Size in bytes
                 
                 # Convert modification date to readable format
-                modification_date_str = datetime.utcfromtimestamp(filename.modification_date).strftime("%Y-%m-%d %H:%M:%S")
+                modification_date_str = datetime.utcfromtimestamp(modification_date).strftime("%Y-%m-%d %H:%M:%S")
                 
                 files.append({
                     'filename': filename,
