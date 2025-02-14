@@ -8,7 +8,7 @@ import logging
 import glob
 import psutil
 from dotenv import load_dotenv
-from flask import Flask, request, render_template, jsonify
+from flask import Flask, request, render_template, jsonify, send_file
 from flask_basicauth import BasicAuth
 from threading import Thread, Event
 from datetime import datetime
@@ -789,12 +789,11 @@ def update_config():
 
 @app.route('/recordings/<filename>')
 def serve_recording(filename):
-    # Assuming 'recordings' directory is at the same level as your app.py
     file_path = os.path.join('recordings', filename)
     if os.path.exists(file_path):
-        return send_file(file_path, mimetype='video/mp4')  # Adjust MIME type as needed
+        return send_file(file_path, mimetype='video/mp4')
     else:
-        abort(404)  # Handle case where file doesn't exist
+        abort(404)
 
 @app.route('/start_stream', methods=['POST'])
 def start_stream_route():
