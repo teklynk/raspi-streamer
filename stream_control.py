@@ -284,12 +284,9 @@ def reinitialize_device():
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
 def list_recordings():
-    # Define the directory path
-    recordings_dir = '/recordings'
-    
-    # Check if the directory exists
-    if not os.path.exists(recordings_dir):
-        return f"Directory '{recordings_dir}' does not exist."
+    ensure_recordings_directory()
+
+    recordings_dir = "recordings"
     
     try:
         # Get all files in the directory
