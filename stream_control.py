@@ -787,6 +787,15 @@ def update_config():
     Thread(target=restart_service).start()
     return jsonify({"message": "Config updated successfully. Restarting service and reloading the browser window."}), 200
 
+@app.route('/recordings/<filename>')
+def serve_recording(filename):
+    # Assuming 'recordings' directory is at the same level as your app.py
+    file_path = os.path.join('recordings', filename)
+    if os.path.exists(file_path):
+        return send_file(file_path, mimetype='video/mp4')  # Adjust MIME type as needed
+    else:
+        abort(404)  # Handle case where file doesn't exist
+
 @app.route('/start_stream', methods=['POST'])
 def start_stream_route():
     start_stream()
