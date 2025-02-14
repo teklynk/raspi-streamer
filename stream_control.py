@@ -311,9 +311,9 @@ def list_recordings():
             })
         
         return files
-    
+
     except Exception as e:
-        return f"Error accessing directory: {str(e)}"
+        logging.debug(f"Error accessing directory: {e}")
 
 def start_stream():
     global stream_process, streaming
@@ -706,7 +706,7 @@ def index():
         'REPORT': os.getenv('REPORT')
     }
     state = load_state()
-    recordings=list_recordings()
+    recordings = list_recordings()
     return render_template('index.html', config=config, state=state, recordings=recordings)
 
 @app.route('/load_state', methods=['GET'])
