@@ -453,7 +453,9 @@
                 .then(data => console.log(data))
                 .catch(error => console.error(error));
 
-                setTimeout(location.reload(), 2000);
+                setTimeout(() => {
+                    window.location.href = window.location.href;
+                }, 2000);
             }
         }
 
