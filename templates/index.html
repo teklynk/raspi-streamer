@@ -249,7 +249,7 @@
             $('a[data-toggle="tab"]').on("click", function () {
                 let newUrl;
                 const hash = $(this).attr("href");
-                newUrl = tabUrl.replace(/#.*/, "#") + hash;
+                newUrl = tabUrl.replace(/#.*$/, "") + hash;
                 history.replaceState(null, null, newUrl);
             });
         });
