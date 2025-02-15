@@ -176,20 +176,19 @@
                 </div>
             </div>
             <div class="tab-pane fade mb-4" id="Recordings" role="tabpanel" aria-labelledby="recordings-tab">
+                {% if recordings %}
                 <div class="embed-responsive embed-responsive-16by9">
                     <video id="videoElement" class="" controls>
                         <source id="videoSource" src="about:blank" type="video/mp4">
                     </video>
                 </div>
                 <div class="text-center p-2" id="fileName">&nbsp;</div>
-                {% if recordings %}
                 <div class="table-responsive">
                     <table class="table table-dark table-hover">
                         <thead class="bg-dark">
                             <tr>
                                 <th scope="col">Filename</th>
                                 <th scope="col">Size (bytes)</th>
-                                <th scope="col">Created</th>
                                 <th scope="col">Actions</th>
                             </tr>
                         </thead>
@@ -198,7 +197,6 @@
                                 <tr>
                                     <td>{{ recording.filename }}</td>
                                     <td>{{ recording.size }}</td>
-                                    <td>{{ recording.created }}</td>
                                     <td><span class="videoButton btn btn-link" data-id="{{ url_for('serve_recording', filename=recording.filename) }}">Play</span>&nbsp;|&nbsp;<a class="btn btn-link" href="{{ url_for('serve_recording', filename=recording.filename) }}" download="{{ url_for('serve_recording', filename=recording.filename) }}">Download</a></td>
                                 </tr>
                             {% endfor %}
