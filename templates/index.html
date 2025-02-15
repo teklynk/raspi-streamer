@@ -301,7 +301,6 @@
                 }
                 return response.json();
             })
-            .then(data => updateButtons(data))
             .then(() => {
                 window.location.reload(); // Refresh the browser window
             })
