@@ -412,7 +412,6 @@
         // Update the log every 5 seconds
         setInterval(updateLog, 5000);
 
-        {% if config['REPORT'] %}
         function updateFfmpegLog() {
             fetch('/get_ffmpeg_log')
                 .then(response => response.json())
@@ -430,7 +429,6 @@
 
         // Update the ffmpeg log every 5 seconds
         setInterval(updateFfmpegLog, 5000);
-        {% endif %}
 
         function get_sys_info() {
             fetch('/get_sys_info')
