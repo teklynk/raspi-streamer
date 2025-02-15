@@ -198,7 +198,7 @@
                                 <tr>
                                     <td>{{ recording.filename }}</td>
                                     <td>{{ recording.size }}</td>
-                                    <td>{{ recording.modified }}</td>
+                                    <td>{{ recording.created }}</td>
                                     <td><span class="videoButton btn btn-link" data-id="{{ url_for('serve_recording', filename=recording.filename) }}">Play</span>&nbsp;|&nbsp;<a class="btn btn-link" href="{{ url_for('serve_recording', filename=recording.filename) }}" download="{{ url_for('serve_recording', filename=recording.filename) }}">Download</a></td>
                                 </tr>
                             {% endfor %}
