@@ -204,9 +204,11 @@
                                     <td>{{ recording.size }}</td>
                                     <td>{{ recording.modified }}</td>
                                     <td>
-                                        <span class="videoButton p-2 cursor" data-id="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-play"></i></span>
-                                        <span class="playButton p-2 cursor"><a href="{{ url_for('serve_recording', filename=recording.filename) }}" download="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-download"></i></a></span>
-                                        <span class="deleteButton p-2 cursor" onclick="confirmDelete('recordings/', '{{ recording.filename }}')"><i class="fa-solid fa-trash"></i></span>
+                                        <span class="recordingActions">
+                                            <span class="videoButton p-2 cursor" data-id="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-play"></i></span>
+                                            <span class="playButton p-2 cursor"><a href="{{ url_for('serve_recording', filename=recording.filename) }}" download="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-download"></i></a></span>
+                                            <span class="deleteButton p-2 cursor" onclick="confirmDelete('recordings/', '{{ recording.filename }}')"><i class="fa-solid fa-trash"></i></span>
+                                        </span>
                                     </td>
                                 </tr>
                             {% endfor %}
@@ -379,6 +381,14 @@
                     buttons[buttonKey].disabled = true;
                 } else {
                     buttons[buttonKey].disabled = false;
+                }
+                // hide recordings tab if recording, streaming, stream-recording...
+                if (buttons[buttonKey].disabled === true) {
+                    console.log(buttonKey + ' is disabled. Hide recording options');
+                    $('.recordingActions').addClass('hide');
+                } else {
+                    console.log(buttonKey + ' is disabled. Hide recording options');
+                    $('.recordingActions').removeClass('hide');
                 }
             }
         }
