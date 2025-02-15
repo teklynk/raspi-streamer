@@ -302,14 +302,15 @@
                 return response.json();
             })
             .then(data => updateButtons(data))
+            .then(
+                setTimeout(() => {
+                    window.location.reload(); // Refresh the browser window
+                },1000)
+            )
             .catch(error => {
                 console.error('Error:', error);
                 alert('Failed to toggle ' + action + '.');
             });
-
-            setTimeout(() => {
-                window.location.reload(); // Refresh the browser window
-            },1000);
         }
 
         document.getElementById("show_key").addEventListener("click", function (e) {
