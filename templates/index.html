@@ -437,11 +437,13 @@
                 .catch(error => console.error(error));
 
                 location.reload();
-                setTimeout(() => {
-                    let activeTab = $('.nav-pills li a.active');
-                    let tabId = activeTab.attr('id');
+
+                let url = new URL(window.location.href);
+                let tabId = url.hash.substring(1);
+                
+                if (tabId) {
                     $('#' + tabId).tab('show');
-                }, 100);
+                }
             }
         }
 
