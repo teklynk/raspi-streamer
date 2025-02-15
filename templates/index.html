@@ -436,14 +436,15 @@
                 .then(data => console.log(data))
                 .catch(error => console.error(error));
 
-                location.reload();
+                location.href = location.href;
+            }
+        }
 
-                let url = new URL(window.location.href);
-                let tabId = url.hash.substring(1);
-                
-                if (tabId) {
-                    $('#' + tabId).tab('show');
-                }
+        function selectTabAfterReload() {
+            let url = window.location.href;
+            let tabId = url.split('#')[1];
+            if (tabId) {
+                $('#' + tabId).tab('show');
             }
         }
 
