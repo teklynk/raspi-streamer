@@ -235,12 +235,23 @@
                 .then(response => response.json())
                 .then(data => updateButtons(data))
                 .catch(error => console.error('Error loading state:', error));
+
+                let tabUrl = location.href.replace(/\/$/, "");
+                if (location.hash) {
+                    const hash = tabUrl.split("#");
+                    $('a[href="#' + hash[1] + '"]').tab("show");
+                    tabUrl = location.href.replace(/#/, "#");
+                    history.replaceState(null, null, tabUrl);
+                }
+                $('a[data-toggle="tab"]').on("click", function () {
+                    let newUrl;
+                    const hash = $(this).attr("href");
+                    newUrl = url.split("#")[0] + hash;
+                    newUrl += "/";
+                    history.replaceState(null, null, newUrl);
+                });
         });
 
-        window.addEventListener('load', function(){
-            selectTabAfterReload();
-        });
-        
         document.getElementById('configForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const formData = new FormData(event.target);
@@ -441,14 +452,6 @@
                 .catch(error => console.error(error));
 
                 location.href = location.href;
-            }
-        }
-
-        function selectTabAfterReload() {
-            let url = window.location.href;
-            let tabId = url.split('#')[1];
-            if (tabId) {
-                $('#' + tabId).tab('show');
             }
         }
 
