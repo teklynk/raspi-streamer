@@ -298,16 +298,15 @@ def list_recordings():
                 # Get file details
                 file_stats = os.stat(file_path)
                 modification_date = file_stats.st_mtime  # Modification time as timestamp
-                creation_date = os.path.getctime(file_path)
                 size = file_stats.st_size                # Size in bytes
                 
                 # Convert modification date to readable format
-                creation_date_str = datetime.utcfromtimestamp(creation_date).strftime("%Y-%m-%d %H:%M:%S")
+                modification_date_str = datetime.utcfromtimestamp(modification_date).strftime("%Y-%m-%d %H:%M:%S")
                 
                 files.append({
                     'filename': filename,
                     'size': size,
-                    'created': creation_date_str
+                    'modified': modification_date_str
                 })
         
         return files
