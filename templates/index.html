@@ -272,7 +272,7 @@
                 alert(data.message);
                 setTimeout(() => {
                     window.location.reload(); // Refresh the browser window
-                },3000); // 3000 milliseconds = 3 seconds
+                },1000);
             })
             .catch(error => console.error('Error:', error));
         });
@@ -306,6 +306,10 @@
                 console.error('Error:', error);
                 alert('Failed to toggle ' + action + '.');
             });
+
+            setTimeout(() => {
+                window.location.reload(); // Refresh the browser window
+            },1000);
         }
 
         document.getElementById("show_key").addEventListener("click", function (e) {
