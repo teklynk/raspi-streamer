@@ -419,8 +419,8 @@
         document.querySelectorAll('.videoButton').forEach(button => {
             button.addEventListener('click', function() {
                 let video = document.getElementById('videoElement');
-                let videoSource = './recordings/' + document.getElementById('videoSource');
-                let newSrc = this.getAttribute('data-id');
+                let videoSource = document.getElementById('videoSource');
+                let newSrc = './recordings/' + this.getAttribute('data-id');
                 videoSource.setAttribute('src', newSrc);
                 video.load();
                 video.play();
