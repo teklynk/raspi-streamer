@@ -237,6 +237,7 @@
                 .catch(error => console.error('Error loading state:', error));
         });
 
+        // adds tab id to url so that we can deep link to it with redirects and reloads.
         $(document).ready(() => {
             let tabUrl = location.href.replace(/\/$/, "");
             if (location.hash) {
@@ -248,8 +249,7 @@
             $('a[data-toggle="tab"]').on("click", function () {
                 let newUrl;
                 const hash = $(this).attr("href");
-                newUrl = url.split("#")[0] + hash;
-                newUrl += "/";
+                newUrl = tabUrl + "#" + hash.replace(/^#/, "");
                 history.replaceState(null, null, newUrl);
             });
         });
