@@ -200,7 +200,7 @@
                                     <td>{{ recording.filename }}</td>
                                     <td>{{ recording.size }}</td>
                                     <td>{{ recording.modified }}</td>
-                                    <td><span class="videoButton p-2" data-id="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-play"></i></span><span class="p-2"><a href="{{ url_for('serve_recording', filename=recording.filename) }}" download="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-download"></i></a></td>
+                                    <td><span class="videoButton p-2" data-id="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-play"></i></span><span class="p-2"><a href="{{ url_for('serve_recording', filename=recording.filename) }}" download="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-download"></i></a><span class="p-2"><i class="fa-solid fa-trash delete-button" data-directory="/recordings" data-filename="{{ recording.filename }}"></i></span></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -415,6 +415,23 @@
                 })
                 .catch(error => console.error('Error fetching stats:', error));
         }
+
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('delete-button')) {
+                const directory = e.target.dataset.directory;
+                const filename = e.target.dataset.filename;
+                fetch('/delete_file', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: `directory=${directory}&filename=${filename}`
+                })
+                .then(response => response.json())
+                .then(data => console.log(data))
+                .catch(error => console.error(error));
+            }
+        });
 
         document.querySelectorAll('.videoButton').forEach(button => {
             button.addEventListener('click', function() {

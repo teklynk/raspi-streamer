@@ -314,6 +314,18 @@ def list_recordings():
     except Exception as e:
         logging.debug(f"Error accessing directory: {e}")
 
+def delete_file(directory, filename):
+    try:
+        file_path = os.path.join(directory, filename)
+        os.remove(file_path)
+        return jsonify({"message": f"File '{filename}' deleted successfully from '{directory}'."})
+    except FileNotFoundError:
+        return jsonify({"error": f"File '{filename}' not found in '{directory}'."}), 404
+    except PermissionError:
+        return jsonify({"error": f"Permission denied to delete file '{filename}' in '{directory}'."}), 403
+    except Exception as e:
+        return jsonify({"error": f"Error deleting file: {e}"}), 500
+
 def start_stream():
     global stream_process, streaming
 
@@ -707,6 +719,12 @@ def index():
     state = load_state()
     recordings = list_recordings()
     return render_template('index.html', config=config, state=state, recordings=recordings)
+
+@app.route('/delete_file', methods=['POST'])
+def delete_file_route():
+    directory = request.form['directory']
+    filename = request.form['filename']
+    return delete_file(directory, filename)
 
 @app.route('/load_state', methods=['GET'])
 def load_state_endpoint():
