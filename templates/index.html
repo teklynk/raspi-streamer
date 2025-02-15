@@ -203,7 +203,7 @@
                                     <td>
                                         <span class="videoButton p-2 cursor" data-id="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-play"></i></span>
                                         <span class="playButton p-2 cursor"><a href="{{ url_for('serve_recording', filename=recording.filename) }}" download="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-download"></i></a></span>
-                                        <span class="deleteButton p-2 cursor" onclick="confirmDelete('recordings/', '{{ recording.filename }}')"><i class="fa-trash"></i></span>
+                                        <span class="deleteButton p-2 cursor" onclick="confirmDelete('recordings/', '{{ recording.filename }}')"><i class="fa-solid fa-trash"></i></span>
                                     </td>
                                 </tr>
                             {% endfor %}
