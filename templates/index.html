@@ -417,7 +417,7 @@
                 let video = document.getElementById('videoElement');
                 let videoSource = document.getElementById('videoSource');
                 let newSrc = this.getAttribute('data-id');
-                let title = document.querySelector('fileName');
+                let title = document.getElementById('fileName');
                 title.textContent = newSrc;
                 videoSource.setAttribute('src', newSrc);
                 
