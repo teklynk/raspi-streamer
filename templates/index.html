@@ -237,6 +237,10 @@
                 .catch(error => console.error('Error loading state:', error));
         });
 
+        window.addEventListener('load', function(){
+            selectTabAfterReload();
+        });
+        
         document.getElementById('configForm').addEventListener('submit', function(event) {
             event.preventDefault();
             const formData = new FormData(event.target);
