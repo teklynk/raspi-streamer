@@ -19,6 +19,9 @@
         .btn-group-lg>.btn, .btn-lg {
             font-size: 1.75rem !important;
         }
+        .cursor {
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -432,6 +435,13 @@
                 .then(response => response.json())
                 .then(data => console.log(data))
                 .catch(error => console.error(error));
+
+                location.reload();
+                setTimeout(() => {
+                    let activeTab = $('.nav-pills li a.active');
+                    let tabId = activeTab.attr('id');
+                    $('#' + tabId).tab('show');
+                }, 100);
             }
         }
 
