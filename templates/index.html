@@ -176,16 +176,12 @@
                 </div>
             </div>
             <div class="tab-pane fade mb-4" id="Recordings" role="tabpanel" aria-labelledby="recordings-tab">
-                <div class="container">
-                    <div class="row">
-                      <div class="col-lg-12 col-md-12">
-                          <video id="videoElement" controls>
-                            <source id="videoSource" src="about:blank" type="video/mp4">
-                          </video>
-                      </div>
-                      <div class="col-lg-12 col-md-12 text-center d-block" id="file-name"></div>
-                    </div>
-                  </div>
+                <div class="embed-responsive embed-responsive-16by9">
+                    <video id="videoElement" controls>
+                    <source id="videoSource" src="about:blank" type="video/mp4">
+                    </video>
+                </div>
+                <div class="col-lg-12 col-md-12 text-center d-block" id="fileName"></div>
                 {% if recordings %}
                     <table class="table table-dark table-hover">
                         <thead>
@@ -421,7 +417,10 @@
                 let video = document.getElementById('videoElement');
                 let videoSource = document.getElementById('videoSource');
                 let newSrc = this.getAttribute('data-id');
+                let title = document.querySelector('fileName');
+                title.textContent = newSrc;
                 videoSource.setAttribute('src', newSrc);
+                
                 video.load();
                 video.play();
             });
