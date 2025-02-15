@@ -302,11 +302,9 @@
                 return response.json();
             })
             .then(data => updateButtons(data))
-            .then(
-                setTimeout(() => {
-                    window.location.reload(); // Refresh the browser window
-                },1000)
-            )
+            .then(() => {
+                window.location.reload(); // Refresh the browser window
+            })
             .catch(error => {
                 console.error('Error:', error);
                 alert('Failed to toggle ' + action + '.');
