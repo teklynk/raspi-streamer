@@ -329,12 +329,21 @@
         // When the page reloads it will supdateButtons() and et the state to 'Start Recording'
         document.addEventListener("DOMContentLoaded", function() {
             const recordButton = document.querySelector('#record_button');
+            const recordStreamButton = document.querySelector('#record_button');
             const buttons = document.querySelectorAll('button');
             
             recordButton.addEventListener("click", function() {
-                if (recordButton.textContent === 'Stop Recording') {
+                if (recordButton.textContent === 'Stop Record') {
                     recordButton.textContent = 'Finalizing Recording...';
+                } else {
+                    recordButton.textContent = 'Starting...';
                 }
+                if (recordStreamButton.textContent === 'Stop Record Stream') {
+                    recordStreamButton.textContent = 'Finalizing Recording...';
+                } else {
+                    recordStreamButton.textContent = 'Starting...';
+                }
+                // Disable ALL buttons
                 buttons.forEach(button => {
                     button.disabled = true;
                 });
