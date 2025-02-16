@@ -417,11 +417,11 @@
                 } else {
                     buttons[buttonKey].disabled = false;
                 }
-                // hide recordings tab if recording, streaming, stream-recording...
+                // hide recordings actions if recording, streaming, stream-recording...
                 if (buttons[buttonKey].disabled === true) {
-                    $('.recordingActions').addClass('hide');
+                    document.querySelector('.recordingActions').classList.add('hide');
                 } else {
-                    $('.recordingActions').removeClass('hide');
+                    document.querySelector('.recordingActions').classList.remove('hide');
                 }
             }
         }
