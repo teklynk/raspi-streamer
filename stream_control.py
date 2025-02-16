@@ -277,10 +277,8 @@ def reinitialize_device():
     try:
         logging.debug("Reloading uvcvideo module...")
         subprocess.run(["sudo", "modprobe", "-r", "uvcvideo"], check=True)
-        time.sleep(1)  # Add a delay to ensure the module is removed
         subprocess.run(["sudo", "modprobe", "uvcvideo"], check=True)
         logging.debug("uvcvideo module reloaded.")
-        time.sleep(1)  # Add a delay to ensure the device is initialized
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
@@ -386,9 +384,6 @@ def stop_stream():
     state["streaming"] = False
     save_state(state)
 
-    # Add a delay to ensure FFmpeg process and buffers are cleaned up
-    time.sleep(1)
-
 def start_recording():
     global record_process, recording
 
@@ -446,6 +441,7 @@ def stop_recording():
 
         # Remux the recording
         recording_file = glob.glob('recordings/recording_*.mp4')[-1]  # Get the latest recording file
+        logging.debug("Remuxing recording...")
         remux_file = f"recordings/recording_{int(time.time())}_remuxed.mp4"
         remux(recording_file, remux_file)
         # Delete the original recording file
@@ -459,9 +455,6 @@ def stop_recording():
     recording = False
     state["recording"] = False
     save_state(state)
-
-    # Add a delay to ensure FFmpeg process and buffers are cleaned up
-    time.sleep(1)
 
 def delayed_start_recording():
     for _ in range(30):
@@ -524,6 +517,7 @@ def stop_stream_recording():
 
         # Remux the recording
         recording_file = glob.glob('recordings/stream_*.mp4')[-1]  # Get the latest recording file
+        logging.debug("Remuxing recording...")
         remux_file = f"recordings/stream_{int(time.time())}_remuxed.mp4"
         remux(recording_file, remux_file)
         # Delete the original recording file
@@ -536,9 +530,6 @@ def stop_stream_recording():
     stream_recording = False
     state["streaming_and_recording"] = False
     save_state(state)
-
-    # Add a delay to ensure FFmpeg process and buffers are cleaned up
-    time.sleep(1)
 
 def start_file_stream():
     global file_stream_process, file_streaming
@@ -615,14 +606,10 @@ def stop_file_stream():
         file_stream_process.terminate()
         file_stream_process.wait()
         file_stream_process = None
-        time.sleep(1)  # Wait for 3 seconds
     logging.debug("File stream stopped!")
     file_streaming = False
     state["file_streaming"] = False
     save_state(state)
-
-    # Add a delay to ensure FFmpeg process and buffers are cleaned up
-    time.sleep(1)
 
 def shutdown_pi():
     logging.debug("Rebooting...")
@@ -636,7 +623,6 @@ def shutdown_pi():
         stop_stream_recording()
     # Remove old ffmpeg log files
     remove_ffmpeg_logs(current_directory)
-    time.sleep(1)
     subprocess.call(['sudo', 'shutdown', '-r', 'now'])
 
 def restart_service():
@@ -653,7 +639,6 @@ def restart_service():
     reinitialize_device()
     # Remove old ffmpeg log files
     remove_ffmpeg_logs(current_directory)
-    time.sleep(1)
     subprocess.call(['sudo', 'systemctl', 'restart', 'stream_control.service'])
 
 def poweroff_pi():
@@ -668,7 +653,6 @@ def poweroff_pi():
         stop_stream_recording()
     # Remove old ffmpeg log files
     remove_ffmpeg_logs(current_directory)
-    time.sleep(1)
     subprocess.call(['sudo', 'shutdown', '-h', 'now'])
 
 # Function to update the .env file
