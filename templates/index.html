@@ -328,8 +328,8 @@
         // Disable buttons until recording has finished remux process. 
         // When the page reloads it will supdateButtons() and et the state to 'Start Recording'
         document.addEventListener("DOMContentLoaded", function() {
-            const recordButton = document.querySelector('#record_button');
-            const recordStreamButton = document.querySelector('#record_button');
+            const recordButton = document.getElementById('record_button');
+            const recordStreamButton = document.getElementById('stream_record_button');
             const buttons = document.querySelectorAll('button');
             
             recordButton.addEventListener("click", function() {
