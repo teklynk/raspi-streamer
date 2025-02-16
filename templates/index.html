@@ -332,7 +332,9 @@
             const buttons = document.querySelectorAll('button');
             
             recordButton.addEventListener("click", function() {
-                recordButton.textContent = 'Finalizing Recording...';
+                if (recordButton.textContent === 'Stop Recording') {
+                    recordButton.textContent = 'Finalizing Recording...';
+                }
                 buttons.forEach(button => {
                     button.disabled = true;
                 });
@@ -399,11 +401,11 @@
                 } else {
                     buttons[buttonKey].disabled = false;
                 }
-                // hide recordings tab actions if recording, streaming, stream-recording...
-                if (button.disabled) {
-                    recordingActions.classList.add('hide');
+                // hide recordings tab if recording, streaming, stream-recording...
+                if (buttons[buttonKey].disabled === true) {
+                    $('.recordingActions').addClass('hide');
                 } else {
-                    recordingActions.classList.remove('hide');
+                    $('.recordingActions').removeClass('hide');
                 }
             }
         }
