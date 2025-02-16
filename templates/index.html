@@ -243,24 +243,19 @@
         });
 
         // adds tab id to url so that we can deep link to it with redirects and reloads.
-        document.addEventListener("DOMContentLoaded", function() {
-        const tabUrl = location.href.replace(/\/$/, "");
-        if (location.hash) {
-            let hash = tabUrl.split("#");
-            let tabElement = document.querySelector('a[href="#' + hash[1] + '"]');
-            tabElement.tab("show"); // Note: this assumes 'tab' is a method on the element
-            tabUrl = location.href.replace(/#/, "#");
-            history.replaceState(null, null, tabUrl);
-        }
-        
-        const tabElements = document.querySelectorAll('a[data-toggle="tab"]');
-            tabElements.forEach(function(tabElement) {
-                tabElement.addEventListener("click", function() {
-                    let newUrl;
-                    let hash = tabElement.getAttribute("href");
-                    newUrl = tabUrl.replace(/#.*$/, "") + hash;
-                    history.replaceState(null, null, newUrl);
-                });
+        $(document).ready(() => {
+            let tabUrl = location.href.replace(/\/$/, "");
+            if (location.hash) {
+                const hash = tabUrl.split("#");
+                $('a[href="#' + hash[1] + '"]').tab("show");
+                tabUrl = location.href.replace(/#/, "#");
+                history.replaceState(null, null, tabUrl);
+            }
+            $('a[data-toggle="tab"]').on("click", function () {
+                let newUrl;
+                const hash = $(this).attr("href");
+                newUrl = tabUrl.replace(/#.*$/, "") + hash;
+                history.replaceState(null, null, newUrl);
             });
         });
 
