@@ -19,7 +19,7 @@
         .btn-group-lg>.btn, .btn-lg {
             font-size: 1.75rem !important;
         }
-        .cursor {
+        .cursor-pointer {
             cursor: pointer;
         }
         .hide {
@@ -208,9 +208,9 @@
                                     <td>{{ recording.modified }}</td>
                                     <td>
                                         <span class="recordingActions">
-                                            <span class="videoButton p-2 cursor" data-id="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-play"></i></span>
-                                            <span class="playButton p-2 cursor"><a href="{{ url_for('serve_recording', filename=recording.filename) }}" download="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-download"></i></a></span>
-                                            <span class="deleteButton p-2 cursor" onclick="confirmDelete('recordings/', '{{ recording.filename }}')"><i class="fa-solid fa-trash"></i></span>
+                                            <span class="videoButton p-2 cursor-pointer" data-id="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-play"></i></span>
+                                            <span class="playButton p-2 cursor-pointer"><a href="{{ url_for('serve_recording', filename=recording.filename) }}" download="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-download"></i></a></span>
+                                            <span class="deleteButton p-2 cursor-pointer" onclick="confirmDelete('recordings/', '{{ recording.filename }}')"><i class="fa-solid fa-trash text-danger"></i></span>
                                         </span>
                                     </td>
                                 </tr>
@@ -243,19 +243,24 @@
         });
 
         // adds tab id to url so that we can deep link to it with redirects and reloads.
-        $(document).ready(() => {
-            let tabUrl = location.href.replace(/\/$/, "");
-            if (location.hash) {
-                const hash = tabUrl.split("#");
-                $('a[href="#' + hash[1] + '"]').tab("show");
-                tabUrl = location.href.replace(/#/, "#");
-                history.replaceState(null, null, tabUrl);
-            }
-            $('a[data-toggle="tab"]').on("click", function () {
-                let newUrl;
-                const hash = $(this).attr("href");
-                newUrl = tabUrl.replace(/#.*$/, "") + hash;
-                history.replaceState(null, null, newUrl);
+        document.addEventListener("DOMContentLoaded", function() {
+        const tabUrl = location.href.replace(/\/$/, "");
+        if (location.hash) {
+            let hash = tabUrl.split("#");
+            let tabElement = document.querySelector('a[href="#' + hash[1] + '"]');
+            tabElement.tab("show"); // Note: this assumes 'tab' is a method on the element
+            tabUrl = location.href.replace(/#/, "#");
+            history.replaceState(null, null, tabUrl);
+        }
+        
+        const tabElements = document.querySelectorAll('a[data-toggle="tab"]');
+            tabElements.forEach(function(tabElement) {
+                tabElement.addEventListener("click", function() {
+                    let newUrl;
+                    let hash = tabElement.getAttribute("href");
+                    newUrl = tabUrl.replace(/#.*$/, "") + hash;
+                    history.replaceState(null, null, newUrl);
+                });
             });
         });
 
@@ -325,6 +330,20 @@
             }
         }, false);
 
+        // Disable buttons until recording has finished remux process. 
+        // When the page reloads it will supdateButtons() and et the state to 'Start Recording'
+        document.addEventListener("DOMContentLoaded", function() {
+            const recordButton = document.querySelector('#record_button');
+            const buttons = document.querySelectorAll('button');
+            
+            recordButton.addEventListener("click", function() {
+                recordButton.textContent = 'Finalizing Recording...';
+                buttons.forEach(button => {
+                    button.disabled = true;
+                });
+            });
+        });
+        
         function updateButtons(state) {
             const buttons = {
                 stream: document.getElementById('stream_button'),
@@ -385,11 +404,11 @@
                 } else {
                     buttons[buttonKey].disabled = false;
                 }
-                // hide recordings tab if recording, streaming, stream-recording...
-                if (buttons[buttonKey].disabled === true) {
-                    $('.recordingActions').addClass('hide');
+                // hide recordings tab actions if recording, streaming, stream-recording...
+                if (button.disabled) {
+                    recordingActions.classList.add('hide');
                 } else {
-                    $('.recordingActions').removeClass('hide');
+                    recordingActions.classList.remove('hide');
                 }
             }
         }
@@ -494,9 +513,6 @@
             updateLog();
             get_sys_info();
         });
-    
-        // Activate the default tab
-        $('#defaultTab').tab('show');
 
     </script>
 </body>
