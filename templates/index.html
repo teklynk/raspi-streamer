@@ -338,7 +338,14 @@
                 } else {
                     recordButton.textContent = 'Starting...';
                 }
-                if (recordStreamButton.textContent === 'Stop Record Stream') {
+                // Disable ALL buttons
+                buttons.forEach(button => {
+                    button.disabled = true;
+                });
+            });
+            
+            recordStreamButton.addEventListener("click", function() {
+                if (recordStreamButton.textContent === 'Stop Stream Record') {
                     recordStreamButton.textContent = 'Finalizing Recording...';
                 } else {
                     recordStreamButton.textContent = 'Starting...';
