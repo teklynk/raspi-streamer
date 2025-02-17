@@ -342,6 +342,13 @@
                 buttons.forEach(button => {
                     button.disabled = true;
                 });
+
+                // hide recordings actions if recording, streaming, stream-recording...
+                if (buttons.disabled === true) {
+                    document.querySelector('.recordingActions').classList.add('hide');
+                } else {
+                    document.querySelector('.recordingActions').classList.remove('hide');
+                }
             });
 
             recordStreamButton.addEventListener("click", function() {
@@ -416,12 +423,6 @@
                     buttons[buttonKey].disabled = true;
                 } else {
                     buttons[buttonKey].disabled = false;
-                }
-                // hide recordings actions if recording, streaming, stream-recording...
-                if (buttons.disabled === true) {
-                    document.querySelector('.recordingActions').classList.add('hide');
-                } else {
-                    document.querySelector('.recordingActions').classList.remove('hide');
                 }
             }
         }
