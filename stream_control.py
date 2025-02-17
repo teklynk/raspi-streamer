@@ -932,7 +932,7 @@ def get_sys_info():
 def get_disk_usage():
     usage_data = disk_usage()
     try:
-        return jsonify({'info': usage_data})
+        return jsonify(usage_data)
     except Exception as e:
         return jsonify({'error': str(e)})
 
