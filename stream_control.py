@@ -317,7 +317,7 @@ def disk_usage():
                 }
                 break
         
-        return jsonify(disk_usage_data)
+        return disk_usage_data
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -930,9 +930,9 @@ def get_sys_info():
 
 @app.route('/get_disk_usage')
 def get_disk_usage():
-    disk_usage_data = disk_usage()
+    usage_data = disk_usage()
     try:
-        return jsonify({'info': disk_usage_data})
+        return jsonify({'info': usage_data})
     except Exception as e:
         return jsonify({'error': str(e)})
 
