@@ -529,8 +529,17 @@
                 let title = document.getElementById('fileName');
                 let videoPlayer = document.getElementById('videoPlayer');
                 let rowTr = this.closest('tr');
+
                 videoPlayer.classList.remove('hide');
-                rowTr.style.backgroundColor = 'pink';
+
+                let activeRows = document.querySelectorAll('.row-active');
+
+                activeRows.forEach(function(row) {
+                    row.classList.remove('row-active');
+                });
+
+                rowTr.classList.add('row-active');
+
                 title.textContent = newSrc;
                 videoSource.setAttribute('src', newSrc);
                 video.load();
