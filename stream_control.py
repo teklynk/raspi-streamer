@@ -285,6 +285,42 @@ def reinitialize_device():
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
+def disk_space():
+    try:
+        # Run the shell command to get partition information
+        output = subprocess.run(['df', '-h', '|', 'grep', '/dev/sda1'], 
+        capture_output=True, text=True, check=True)
+        
+        # Parse the output
+        lines = output.stdout.split('\n')
+        for line in lines:
+            if '/dev/sda1' in line:
+                parts = line.split()
+                filesystem = parts[0]
+                size = parts[2]
+                used = parts[3]
+                available = parts[4]
+                use_percentage = parts[5].rstrip('%')
+                mounted_on = parts[-1]
+                
+        # Return the data as plain text
+        disk_usage_data = {
+            "disk_filesystem": filesystem,
+            "disk_size": size,
+            "disk_used": used,
+            "disk_available": available
+        }
+
+        return jsonify(disk_usage_data)
+
+    except subprocess.CalledProcessError as e:
+        error_data = {
+            "error": "Error occurred while executing the command",
+            "details": str(e)
+        }
+
+        return jsonify(error_data), 500
+
 def convert_size(size_bytes):
     if size_bytes == 0:
         return '0 B'
@@ -897,6 +933,13 @@ def get_sys_info():
         with open(sys_info_file_path, 'r') as file:
             sys_info_content = file.read()
         return jsonify({'info': sys_info_content})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/get_disk_usage')
+def get_disk_usage():
+    try:
+        return jsonify({'info': disk_usage_data})
     except Exception as e:
         return jsonify({'error': str(e)})
 
