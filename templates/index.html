@@ -358,6 +358,7 @@
         });
         
         function updateButtons(state) {
+            const recordingActions = document.querySelectorAll('.recordingActions');
             const buttons = {
                 stream: document.getElementById('stream_button'),
                 stream_record: document.getElementById('stream_record_button'),
@@ -379,12 +380,10 @@
                 buttons.stream_record.classList.remove('btn-success');
                 buttons.stream_record.classList.add('btn-danger');
                 buttons.stream_record.innerText = 'Stop Stream & Record';
-                document.querySelector('.recordingActions').classList.add('hide');
             } else {
                 buttons.stream_record.classList.remove('btn-danger');
                 buttons.stream_record.classList.add('btn-success');
                 buttons.stream_record.innerText = 'Start Stream & Record';
-                document.querySelector('.recordingActions').classList.remove('hide');
             }
 
             if (state.recording) {
@@ -410,17 +409,17 @@
             for (const buttonKey in buttons) {
                 if (buttonKey !== 'stream_record' && state.streaming_and_recording) {
                     buttons[buttonKey].disabled = true;
-                    document.querySelector('.recordingActions').classList.add('hide');
+                    recordingActions.forEach(action => action.classList.add('hide'));
                 } else if (buttonKey !== 'stream' && state.streaming) {
                     buttons[buttonKey].disabled = true;
                 } else if (buttonKey !== 'record' && state.recording) {
                     buttons[buttonKey].disabled = true;
-                    document.querySelector('.recordingActions').classList.add('hide');
+                    recordingActions.forEach(action => action.classList.add('hide'));
                 } else if (buttonKey !== 'file_stream' && state.file_streaming) {
                     buttons[buttonKey].disabled = true;
                 } else {
                     buttons[buttonKey].disabled = false;
-                    document.querySelector('.recordingActions').classList.remove('hide');
+                    recordingActions.forEach(action => action.classList.remove('hide'));
                 }
             }
         }
