@@ -527,8 +527,10 @@
                 let videoSource = document.getElementById('videoSource');
                 let newSrc = this.getAttribute('data-id');
                 let title = document.getElementById('fileName');
-                let videoPlayer = document.getElementById('videoPlayer')
+                let videoPlayer = document.getElementById('videoPlayer');
+                let rowTr = this.closest('tr');
                 videoPlayer.classList.remove('hide');
+                tr.style.backgroundColor = 'pink';
                 title.textContent = newSrc;
                 videoSource.setAttribute('src', newSrc);
                 video.load();
