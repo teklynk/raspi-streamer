@@ -188,7 +188,7 @@
             </div>
             <div class="tab-pane fade mb-4" id="Recordings" role="tabpanel" aria-labelledby="recordings-tab">
                 {% if recordings %}
-                <div class="embed-responsive embed-responsive-16by9">
+                <div class="embed-responsive embed-responsive-16by9 hide" id="videoPlayer">
                     <video id="videoElement" class="" controls>
                         <source id="videoSource" src="about:blank" type="video/mp4">
                     </video>
@@ -527,6 +527,8 @@
                 let videoSource = document.getElementById('videoSource');
                 let newSrc = this.getAttribute('data-id');
                 let title = document.getElementById('fileName');
+                let videoPlayer = document.getElementById('videoPlayer')
+                videoPlayer.classList.remove('hide');
                 title.textContent = newSrc;
                 videoSource.setAttribute('src', newSrc);
                 video.load();
