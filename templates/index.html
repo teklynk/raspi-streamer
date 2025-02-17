@@ -418,7 +418,7 @@
                     buttons[buttonKey].disabled = false;
                 }
                 // hide recordings actions if recording, streaming, stream-recording...
-                if (buttons[buttonKey].disabled === true) {
+                if (buttons.disabled === true) {
                     document.querySelector('.recordingActions').classList.add('hide');
                 } else {
                     document.querySelector('.recordingActions').classList.remove('hide');
