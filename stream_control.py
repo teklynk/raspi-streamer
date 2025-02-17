@@ -220,9 +220,12 @@ def remux(input_file, output_file):
     try:
         remux_command = [
             "ffmpeg",
+            "-y",  # Overwrite output file without prompt
             "-i", input_file,  # Input file
             "-c", "copy",  # Copy both audio and video streams
             "-f", "mp4",  # Output format
+            "-nostats",  # Disable statistics display
+            "-threads", "4",  # Use 4 threads for encoding
             output_file  # Output file
         ]
         subprocess.run(remux_command, check=True)

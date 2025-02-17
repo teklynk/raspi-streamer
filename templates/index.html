@@ -208,9 +208,9 @@
                                     <td>{{ recording.modified }}</td>
                                     <td>
                                         <span class="recordingActions">
-                                            <span class="videoButton p-2 cursor-pointer" data-id="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-play"></i></span>
-                                            <span class="playButton p-2 cursor-pointer"><a href="{{ url_for('serve_recording', filename=recording.filename) }}" download="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-download"></i></a></span>
-                                            <span class="deleteButton p-2 cursor-pointer" onclick="confirmDelete('recordings/', '{{ recording.filename }}')"><i class="fa-solid fa-trash text-danger"></i></span>
+                                            <span class="videoButton p-2 cursor-pointer" data-id="{{ url_for('serve_recording', filename=recording.filename) }}" title="Play"><i class="fa-solid fa-play"></i></span>
+                                            <span class="playButton p-2 cursor-pointer"><a href="{{ url_for('serve_recording', filename=recording.filename) }}" title="Download" download="{{ url_for('serve_recording', filename=recording.filename) }}"><i class="fa-solid fa-download"></i></a></span>
+                                            <span class="deleteButton p-2 cursor-pointer" onclick="confirmDelete('recordings/', '{{ recording.filename }}')" title="Delete"><i class="fa-solid fa-trash text-danger"></i></span>
                                         </span>
                                     </td>
                                 </tr>
