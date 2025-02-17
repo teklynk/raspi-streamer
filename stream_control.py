@@ -288,13 +288,13 @@ def reinitialize_device():
 def disk_space():
     try:
         # Run the shell command to get partition information
-        output = subprocess.run(['df', '-h', '|', 'grep', '/dev/sda1'], 
+        output = subprocess.run(['df', '-h', '|', 'grep', '/dev/mmcblk0p2'], 
         capture_output=True, text=True, check=True)
         
         # Parse the output
         lines = output.stdout.split('\n')
         for line in lines:
-            if '/dev/sda1' in line:
+            if '/dev/mmcblk0p2' in line:
                 parts = line.split()
                 filesystem = parts[0]
                 size = parts[2]

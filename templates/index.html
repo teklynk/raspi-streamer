@@ -533,7 +533,10 @@
         });
 
         setInterval(fetchStats, 5000);
-        fetchStats(); // Initial call to fetch stats immediately
+        fetchStats(); // Initial call
+
+        setInterval(fetchDiskUsage, 5000);
+        fetchDiskUsage(); // Initial call
 
         document.addEventListener('DOMContentLoaded', function() {
             // Load log data
