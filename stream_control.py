@@ -285,41 +285,42 @@ def reinitialize_device():
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
-def disk_space():
+def disk_usage():
     try:
-        # Run the shell command to get partition information
-        output = subprocess.run(['df', '-h', '|', 'grep', '/dev/mmcblk0p2'], 
-        capture_output=True, text=True, check=True)
+        # Run df -h and capture the output
+        result = subprocess.run(['df', '-h'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
-        # Parse the output
-        lines = output.stdout.split('\n')
-        for line in lines:
-            if '/dev/mmcblk0p2' in line:
-                parts = line.split()
+        if result.returncode != 0:
+            raise Exception("Error getting disk usage: " + result.stderr.decode())
+            
+        output = result.stdout.decode()
+        
+        # Parse the output (assuming you want the first line after the header)
+        lines = output.split('\n')
+        for i in range(1, len(lines)):
+            parts = lines[i].split()
+            if len(parts) > 5:
                 filesystem = parts[0]
-                size = parts[2]
-                used = parts[3]
-                available = parts[4]
-                use_percentage = parts[5].rstrip('%')
-                mounted_on = parts[-1]
+                size = parts[1]
+                used = parts[2]
+                available = parts[3]
+                use_percentage = parts[4]
+                mounted_on = parts[5]
                 
-        # Return the data as plain text
-        disk_usage_data = {
-            "disk_filesystem": filesystem,
-            "disk_size": size,
-            "disk_used": used,
-            "disk_available": use_percentage
-        }
-
+                disk_usage_data = {
+                    "filesystem": filesystem,
+                    "size": size,
+                    "used": used,
+                    "available": available,
+                    "use_percentage": use_percentage + "%",
+                    "mounted_on": mounted_on
+                }
+                break
+        
         return jsonify(disk_usage_data)
-
-    except subprocess.CalledProcessError as e:
-        error_data = {
-            "error": "Error occurred while executing the command",
-            "details": str(e)
-        }
-
-        return jsonify(error_data), 500
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 def convert_size(size_bytes):
     if size_bytes == 0:
@@ -918,15 +919,6 @@ def restart_route():
     restart_service()
     return jsonify({"message": "Restarting service..."}), 200
 
-@app.route('/get_log')
-def get_log():
-    try:
-        last_100_lines = get_last_n_lines(log_file_path, 100)
-        log_content = ''.join(last_100_lines)
-        return jsonify({'log': log_content})
-    except Exception as e:
-        return jsonify({'error': str(e)})
-
 @app.route('/get_sys_info')
 def get_sys_info():
     try:
@@ -938,8 +930,18 @@ def get_sys_info():
 
 @app.route('/get_disk_usage')
 def get_disk_usage():
+    disk_usage_data = disk_usage()
     try:
         return jsonify({'info': disk_usage_data})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/get_log')
+def get_log():
+    try:
+        last_100_lines = get_last_n_lines(log_file_path, 100)
+        log_content = ''.join(last_100_lines)
+        return jsonify({'log': log_content})
     except Exception as e:
         return jsonify({'error': str(e)})
 
