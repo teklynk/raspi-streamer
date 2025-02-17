@@ -226,7 +226,7 @@ def disk_usage():
             
         output = result.stdout.decode()
         
-        # Parse the output (assuming you want the first line after the header)
+        # Parse the output (assuming you want the second partition)
         lines = output.split('\n')
         for i in range(1, len(lines)):
             parts = lines[i].split()
@@ -238,17 +238,20 @@ def disk_usage():
                 use_percentage = parts[4]
                 mounted_on = parts[5]
                 
-                disk_usage_data = {
-                    "filesystem": filesystem,
-                    "size": size,
-                    "used": used,
-                    "available": available,
-                    "use_percentage": use_percentage + "%",
-                    "mounted_on": mounted_on
-                }
-                break
+                # Check if the filesystem matches /dev/mmcblk0p2
+                if filesystem == '/dev/mmcblk0p2':
+                    disk_usage_data = {
+                        "filesystem": filesystem,
+                        "size": size,
+                        "used": used,
+                        "available": available,
+                        "use_percentage": use_percentage + "%",
+                        "mounted_on": mounted_on
+                    }
+                    return jsonify(disk_usage_data)
         
-        return disk_usage_data
+        # If the partition is not found, raise an error
+        raise Exception("Partition /dev/mmcblk0p2 not found in df -h output")
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
