@@ -216,6 +216,43 @@ def display_usage():
     usage_json = json.dumps(usage_data, indent=4)
     return usage_json
 
+def disk_usage():
+    try:
+        # Run df -h and capture the output
+        result = subprocess.run(['df', '-h', '|', 'grep', '/dev/mmcblk0p2'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
+        if result.returncode != 0:
+            raise Exception("Error getting disk usage: " + result.stderr.decode())
+            
+        output = result.stdout.decode()
+        
+        # Parse the output (assuming you want the first line after the header)
+        lines = output.split('\n')
+        for i in range(1, len(lines)):
+            parts = lines[i].split()
+            if len(parts) > 5:
+                filesystem = parts[0]
+                size = parts[1]
+                used = parts[2]
+                available = parts[3]
+                use_percentage = parts[4]
+                mounted_on = parts[5]
+                
+                disk_usage_data = {
+                    "filesystem": filesystem,
+                    "size": size,
+                    "used": used,
+                    "available": available,
+                    "use_percentage": use_percentage + "%",
+                    "mounted_on": mounted_on
+                }
+                break
+        
+        return disk_usage_data
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 def remux(input_file, output_file):
     try:
         remux_command = [
@@ -284,43 +321,6 @@ def reinitialize_device():
         logging.debug("uvcvideo module reloaded.")
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
-
-def disk_usage():
-    try:
-        # Run df -h and capture the output
-        result = subprocess.run(['df', '-h'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        
-        if result.returncode != 0:
-            raise Exception("Error getting disk usage: " + result.stderr.decode())
-            
-        output = result.stdout.decode()
-        
-        # Parse the output (assuming you want the first line after the header)
-        lines = output.split('\n')
-        for i in range(1, len(lines)):
-            parts = lines[i].split()
-            if len(parts) > 5:
-                filesystem = parts[0]
-                size = parts[1]
-                used = parts[2]
-                available = parts[3]
-                use_percentage = parts[4]
-                mounted_on = parts[5]
-                
-                disk_usage_data = {
-                    "filesystem": filesystem,
-                    "size": size,
-                    "used": used,
-                    "available": available,
-                    "use_percentage": use_percentage + "%",
-                    "mounted_on": mounted_on
-                }
-                break
-        
-        return disk_usage_data
-    
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
 
 def convert_size(size_bytes):
     if size_bytes == 0:
