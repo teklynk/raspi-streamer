@@ -240,7 +240,7 @@ def disk_usage():
                 
                 # Check if the filesystem matches /dev/mmcblk0p2
                 if filesystem == '/dev/mmcblk0p2':
-                    disk_usage_data = {
+                    return {
                         "filesystem": filesystem,
                         "size": size,
                         "used": used,
@@ -248,10 +248,9 @@ def disk_usage():
                         "use_percentage": use_percentage + "%",
                         "mounted_on": mounted_on
                     }
-                    return jsonify(disk_usage_data)
         
-        # If the partition is not found, raise an error
-        raise Exception("Partition /dev/mmcblk0p2 not found in df -h output")
+    except Exception as e:
+        return {'error': str(e)}
     
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -934,10 +933,11 @@ def get_sys_info():
 @app.route('/get_disk_usage')
 def get_disk_usage():
     usage_data = disk_usage()
-    try:
-        return jsonify(usage_data)
-    except Exception as e:
-        return jsonify({'error': str(e)})
+    # Check if the result is an error message
+    if 'error' in usage_data:
+        return jsonify(usage_data), 500
+    else:
+        return jsonify(usage_data), 200
 
 @app.route('/get_log')
 def get_log():
