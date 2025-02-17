@@ -342,13 +342,6 @@
                 buttons.forEach(button => {
                     button.disabled = true;
                 });
-
-                // hide recordings actions if recording, streaming, stream-recording...
-                if (buttons.disabled === true) {
-                    document.querySelector('.recordingActions').classList.add('hide');
-                } else {
-                    document.querySelector('.recordingActions').classList.remove('hide');
-                }
             });
 
             recordStreamButton.addEventListener("click", function() {
@@ -386,20 +379,24 @@
                 buttons.stream_record.classList.remove('btn-success');
                 buttons.stream_record.classList.add('btn-danger');
                 buttons.stream_record.innerText = 'Stop Stream & Record';
+                document.querySelector('.recordingActions').classList.add('hide');
             } else {
                 buttons.stream_record.classList.remove('btn-danger');
                 buttons.stream_record.classList.add('btn-success');
                 buttons.stream_record.innerText = 'Start Stream & Record';
+                document.querySelector('.recordingActions').classList.remove('hide');
             }
 
             if (state.recording) {
                 buttons.record.classList.remove('btn-success');
                 buttons.record.classList.add('btn-danger');
                 buttons.record.innerText = 'Stop Record';
+                document.querySelector('.recordingActions').classList.add('hide');
             } else {
                 buttons.record.classList.remove('btn-danger');
                 buttons.record.classList.add('btn-success');
                 buttons.record.innerText = 'Start Record';
+                document.querySelector('.recordingActions').classList.remove('hide');
             }
 
             if (state.file_streaming) {
