@@ -285,6 +285,16 @@ def reinitialize_device():
     except subprocess.CalledProcessError as e:
         logging.error(f"Failed to reload uvcvideo module: {e}")
 
+def convert_size(size_bytes):
+    if size_bytes == 0:
+        return '0 B'
+    size_name = ('B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB')
+    i = 0
+    while size_bytes >= 1024 and i < len(size_name) - 1:
+        size_bytes /= 1024
+        i += 1
+    return f'{size_bytes:.2f} {size_name[i]}'
+
 def list_recordings():
     ensure_recordings_directory()
 
@@ -303,10 +313,13 @@ def list_recordings():
                 
                 # Convert modification date to readable format
                 modification_date_str = datetime.utcfromtimestamp(modification_date).strftime("%Y-%m-%d %H:%M:%S")
+
+                # Convert size to human-readable format
+                size_str = convert_size(size)
                 
                 files.append({
                     'filename': filename,
-                    'size': size,
+                    'size': size_str,
                     'modified': modification_date_str
                 })
         
