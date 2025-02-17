@@ -308,7 +308,7 @@ def disk_space():
             "disk_filesystem": filesystem,
             "disk_size": size,
             "disk_used": used,
-            "disk_available": available
+            "disk_available": use_percentage
         }
 
         return jsonify(disk_usage_data)

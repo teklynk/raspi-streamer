@@ -485,6 +485,7 @@
                     document.getElementById('disk_size').innerText = `Disk Size: ${data.disk_size}%`;
                     document.getElementById('disk_used').innerText = `Disk Used: ${data.disk_used}%`;
                     document.getElementById('disk_available').innerText = `Disk Available: ${data.disk_available}%`;
+                    console.log(data);
                 })
                 .catch(error => console.error('Error fetching stats:', error));
         }
@@ -495,6 +496,7 @@
                 .then(data => {
                     document.getElementById('cpu_usage').innerText = `CPU Usage: ${data.cpu_usage}%`;
                     document.getElementById('memory_usage_percent').innerText = `Memory Usage: ${data.memory_usage_percent}%`;
+                    console.log(data);
                 })
                 .catch(error => console.error('Error fetching stats:', error));
         }
