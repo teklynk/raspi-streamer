@@ -239,7 +239,7 @@ def disk_usage():
                 mounted_on = parts[5]
                 
                 # Check if the filesystem matches /dev/mmcblk0p2
-                if filesystem == '/dev/mmcblk0p2':
+                if filesystem == '/dev/mmcblk0p2' or filesystem == '/dev/sda':
                     return {
                         "filesystem": filesystem,
                         "size": size,
