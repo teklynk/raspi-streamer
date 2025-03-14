@@ -187,6 +187,9 @@ def get_latest_ffmpeg_log(directory):
     
     return latest_file
 
+# Remove old ffmpeg log files
+remove_ffmpeg_logs(current_directory)
+
 def get_last_n_lines(file_path, n):
     with open(file_path, 'r') as file:
         lines = file.readlines()
