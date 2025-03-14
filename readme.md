@@ -165,6 +165,10 @@ Here is a more compact setup using a cheap [($14) USB capture device](https://a.
 <div style="text-align:center;margin:4px;display:block;">
 <img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer-3.png?raw=true" style="width:400px;" />
 </div>
+NEW: Manage and view your recordings right from the web UI.
+<div style="text-align:center;margin:4px;display:block;">
+<img src="https://github.com/teklynk/raspi-streamer/blob/main/screenshots/raspi-streamer-4.png?raw=true" style="width:400px;" />
+</div>
 
 # Future Plans
 This project is ongoing, with exciting future enhancements in the pipeline:

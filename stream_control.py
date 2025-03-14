@@ -219,6 +219,45 @@ def display_usage():
     usage_json = json.dumps(usage_data, indent=4)
     return usage_json
 
+def disk_usage():
+    try:
+        # Run df -h and capture the output
+        result = subprocess.run(['df', '-h'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        
+        if result.returncode != 0:
+            raise Exception("Error getting disk usage: " + result.stderr.decode())
+            
+        output = result.stdout.decode()
+        
+        # Parse the output (assuming you want the second partition)
+        lines = output.split('\n')
+        for i in range(1, len(lines)):
+            parts = lines[i].split()
+            if len(parts) > 5:
+                filesystem = parts[0]
+                size = parts[1]
+                used = parts[2]
+                available = parts[3]
+                use_percentage = parts[4]
+                mounted_on = parts[5]
+                
+                # Check if the filesystem matches /dev/mmcblk0p2
+                if filesystem == '/dev/mmcblk0p2' or filesystem == '/dev/sda':
+                    return {
+                        "filesystem": filesystem,
+                        "size": size,
+                        "used": used,
+                        "available": available,
+                        "use_percentage": use_percentage + "%",
+                        "mounted_on": mounted_on
+                    }
+        
+    except Exception as e:
+        return {'error': str(e)}
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 def remux(input_file, output_file):
     try:
         remux_command = [
@@ -885,21 +924,30 @@ def restart_route():
     restart_service()
     return jsonify({"message": "Restarting service..."}), 200
 
-@app.route('/get_log')
-def get_log():
-    try:
-        last_100_lines = get_last_n_lines(log_file_path, 100)
-        log_content = ''.join(last_100_lines)
-        return jsonify({'log': log_content})
-    except Exception as e:
-        return jsonify({'error': str(e)})
-
 @app.route('/get_sys_info')
 def get_sys_info():
     try:
         with open(sys_info_file_path, 'r') as file:
             sys_info_content = file.read()
         return jsonify({'info': sys_info_content})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/get_disk_usage')
+def get_disk_usage():
+    usage_data = disk_usage()
+    # Check if the result is an error message
+    if 'error' in usage_data:
+        return jsonify(usage_data), 500
+    else:
+        return jsonify(usage_data), 200
+
+@app.route('/get_log')
+def get_log():
+    try:
+        last_100_lines = get_last_n_lines(log_file_path, 100)
+        log_content = ''.join(last_100_lines)
+        return jsonify({'log': log_content})
     except Exception as e:
         return jsonify({'error': str(e)})
 
