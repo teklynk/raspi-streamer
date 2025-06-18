@@ -338,6 +338,7 @@
             const recordButton = document.getElementById('record_button');
             const recordStreamButton = document.getElementById('stream_record_button');
             const buttons = document.querySelectorAll('button');
+            const inputs = document.querySelectorAll('input');
             
             recordButton.addEventListener("click", function() {
                 if (recordButton.textContent === 'Stop Record') {
@@ -348,6 +349,13 @@
                 // Disable ALL buttons
                 buttons.forEach(button => {
                     button.disabled = true;
+                    button.classList.add('disabled');
+                });
+                // Disable ALL inputs
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.readonly = true;
+                    input.classList.add('disabled');
                 });
             });
 
@@ -360,6 +368,12 @@
                 // Disable ALL buttons
                 buttons.forEach(button => {
                     button.disabled = true;
+                });
+                // Disable ALL inputs
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.readonly = true;
+                    input.classList.add('disabled');
                 });
             });
         });
@@ -427,6 +441,12 @@
                 } else {
                     buttons[buttonKey].disabled = false;
                     recordingActions.forEach(action => action.classList.remove('hide'));
+                    // Remove disabled class from ALL inputs
+                    inputs.forEach(input => {
+                        input.disabled = false;
+                        input.readonly = false;
+                        input.classList.remove('disabled');
+                    });
                 }
             }
         }
