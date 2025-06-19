@@ -339,7 +339,6 @@
             const recordButton = document.getElementById('record_button');
             const recordStreamButton = document.getElementById('stream_record_button');
             const buttons = document.querySelectorAll('button');
-            let inputs = document.querySelectorAll('input');
             
             recordButton.addEventListener("click", function() {
                 if (recordButton.textContent === 'Stop Record') {
@@ -375,6 +374,7 @@
                 record: document.getElementById('record_button'),
                 file_stream: document.getElementById('file_stream_button')
             };
+            let inputs = document.querySelectorAll('input');
 
             if (state.streaming) {
                 buttons.stream.classList.remove('btn-success');
