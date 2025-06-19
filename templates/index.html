@@ -30,7 +30,7 @@
         }
         .disabled {
             cursor: not-allowed;
-            color:#817f7f !important;
+            color:#eee !important;
         }
     </style>
 </head>
@@ -365,6 +365,7 @@
                 // Disable ALL buttons
                 buttons.forEach(button => {
                     button.disabled = true;
+                    button.classList.add('disabled');
                 });
             });
         });
@@ -446,8 +447,10 @@
 
                 } else if (buttonKey !== 'file_stream' && state.file_streaming) {
                     buttons[buttonKey].disabled = true;
+                    buttons[buttonKey].classList.add('disabled');
                 } else {
                     buttons[buttonKey].disabled = false;
+                    buttons[buttonKey].classList.remove('disabled');
                     recordingActions.forEach(action => action.classList.remove('hide'));
                     // Remove disabled class from ALL inputs
                     inputs.forEach(input => {
