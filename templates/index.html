@@ -28,6 +28,10 @@
         .row-active {
             background-color: #2e2eb526;
         }
+        .disabled {
+            cursor: not-allowed;
+            color:#ccc !important;
+        }
     </style>
 </head>
 <body>
@@ -429,17 +433,14 @@
                     // Add disabled class to ALL inputs
                     inputs.forEach(input => {
                         input.disabled = true;
-                        input.readonly = true;
                         input.classList.add('disabled');
                     });
                     updateButton.forEach(button => {
                         button.disabled = true;
-                        button.readonly = true;
                         button.classList.add('disabled');
                     });
                     selects.forEach(select => {
                         select.disabled = true;
-                        select.readonly = true;
                         select.classList.add('disabled');
                     });
 
@@ -451,17 +452,14 @@
                     // Remove disabled class from ALL inputs
                     inputs.forEach(input => {
                         input.disabled = false;
-                        input.readonly = false;
                         input.classList.remove('disabled');
                     });
                     updateButton.forEach(button => {
                         button.disabled = false;
-                        button.readonly = false;
                         button.classList.remove('disabled');
                     });
                     selects.forEach(select => {
                         select.disabled = false;
-                        select.readonly = false;
                         select.classList.remove('disabled');
                     });
                 }
