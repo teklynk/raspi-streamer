@@ -251,7 +251,7 @@
 
         // adds tab id to url so that we can deep link to it with redirects and reloads.
         $(document).ready(() => {
-            const inputs = document.querySelectorAll('input');
+            let inputs = document.querySelectorAll('input');
             let tabUrl = location.href.replace(/\/$/, "");
             if (location.hash) {
                 const hash = tabUrl.split("#");
