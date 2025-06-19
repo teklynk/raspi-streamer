@@ -251,6 +251,7 @@
 
         // adds tab id to url so that we can deep link to it with redirects and reloads.
         $(document).ready(() => {
+            const inputs = document.querySelectorAll('input');
             let tabUrl = location.href.replace(/\/$/, "");
             if (location.hash) {
                 const hash = tabUrl.split("#");
@@ -367,7 +368,6 @@
         
         function updateButtons(state) {
             const recordingActions = document.querySelectorAll('.recordingActions');
-            const inputs = document.querySelectorAll('input');
             const buttons = {
                 stream: document.getElementById('stream_button'),
                 stream_record: document.getElementById('stream_record_button'),
