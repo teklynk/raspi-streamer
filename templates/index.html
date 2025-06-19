@@ -338,7 +338,6 @@
             const recordButton = document.getElementById('record_button');
             const recordStreamButton = document.getElementById('stream_record_button');
             const buttons = document.querySelectorAll('button');
-            const inputs = document.querySelectorAll('input');
             
             recordButton.addEventListener("click", function() {
                 if (recordButton.textContent === 'Stop Record') {
@@ -351,12 +350,6 @@
                     button.disabled = true;
                     button.classList.add('disabled');
                 });
-                // Disable ALL inputs
-                inputs.forEach(input => {
-                    input.disabled = true;
-                    input.readonly = true;
-                    input.classList.add('disabled');
-                });
             });
 
             recordStreamButton.addEventListener("click", function() {
@@ -368,12 +361,6 @@
                 // Disable ALL buttons
                 buttons.forEach(button => {
                     button.disabled = true;
-                });
-                // Disable ALL inputs
-                inputs.forEach(input => {
-                    input.disabled = true;
-                    input.readonly = true;
-                    input.classList.add('disabled');
                 });
             });
         });
@@ -392,40 +379,88 @@
                 buttons.stream.classList.remove('btn-success');
                 buttons.stream.classList.add('btn-danger');
                 buttons.stream.innerText = 'Stop Stream';
+                // Add disabled class from ALL inputs
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.readonly = true;
+                    input.classList.add('disabled');
+                });
             } else {
                 buttons.stream.classList.remove('btn-danger');
                 buttons.stream.classList.add('btn-success');
                 buttons.stream.innerText = 'Start Stream';
+                // Remove disabled class from ALL inputs
+                inputs.forEach(input => {
+                    input.disabled = false;
+                    input.readonly = false;
+                    input.classList.remove('disabled');
+                });
             }
 
             if (state.streaming_and_recording) {
                 buttons.stream_record.classList.remove('btn-success');
                 buttons.stream_record.classList.add('btn-danger');
                 buttons.stream_record.innerText = 'Stop Stream & Record';
+                // Add disabled class from ALL inputs
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.readonly = true;
+                    input.classList.add('disabled');
+                });
             } else {
                 buttons.stream_record.classList.remove('btn-danger');
                 buttons.stream_record.classList.add('btn-success');
                 buttons.stream_record.innerText = 'Start Stream & Record';
+                // Remove disabled class from ALL inputs
+                inputs.forEach(input => {
+                    input.disabled = false;
+                    input.readonly = false;
+                    input.classList.remove('disabled');
+                });
             }
 
             if (state.recording) {
                 buttons.record.classList.remove('btn-success');
                 buttons.record.classList.add('btn-danger');
                 buttons.record.innerText = 'Stop Record';
+                // Add disabled class from ALL inputs
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.readonly = true;
+                    input.classList.add('disabled');
+                });
             } else {
                 buttons.record.classList.remove('btn-danger');
                 buttons.record.classList.add('btn-success');
                 buttons.record.innerText = 'Start Record';
+                // Remove disabled class from ALL inputs
+                inputs.forEach(input => {
+                    input.disabled = false;
+                    input.readonly = false;
+                    input.classList.remove('disabled');
+                });
             }
 
             if (state.file_streaming) {
                 buttons.file_stream.classList.remove('btn-success');
                 buttons.file_stream.classList.add('btn-danger');
                 buttons.file_stream.innerText = 'Stop File Stream';
+                // Add disabled class from ALL inputs
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.readonly = true;
+                    input.classList.add('disabled');
+                });
             } else {
                 buttons.file_stream.classList.remove('btn-danger');
                 buttons.file_stream.classList.add('btn-success');
                 buttons.file_stream.innerText = 'Start File Stream';
+                // Remove disabled class from ALL inputs
+                inputs.forEach(input => {
+                    input.disabled = false;
+                    input.readonly = false;
+                    input.classList.remove('disabled');
+                });
             }
 
             for (const buttonKey in buttons) {
@@ -442,12 +477,6 @@
                 } else {
                     buttons[buttonKey].disabled = false;
                     recordingActions.forEach(action => action.classList.remove('hide'));
-                    // Remove disabled class from ALL inputs
-                    inputs.forEach(input => {
-                        input.disabled = false;
-                        input.readonly = false;
-                        input.classList.remove('disabled');
-                    });
                 }
             }
         }
