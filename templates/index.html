@@ -251,7 +251,6 @@
 
         // adds tab id to url so that we can deep link to it with redirects and reloads.
         $(document).ready(() => {
-            let inputs = document.querySelectorAll('input');
             let tabUrl = location.href.replace(/\/$/, "");
             if (location.hash) {
                 const hash = tabUrl.split("#");
@@ -339,6 +338,7 @@
             const recordButton = document.getElementById('record_button');
             const recordStreamButton = document.getElementById('stream_record_button');
             const buttons = document.querySelectorAll('button');
+            const inputs = document.querySelectorAll('input');
             
             recordButton.addEventListener("click", function() {
                 if (recordButton.textContent === 'Stop Record') {
@@ -358,6 +358,12 @@
                     recordStreamButton.textContent = 'Finalizing Recording...';
                 } else {
                     recordStreamButton.textContent = 'Starting...';
+                    // Add disabled class from ALL inputs
+                    inputs.forEach(input => {
+                        input.disabled = true;
+                        input.readonly = true;
+                        input.classList.add('disabled');
+                    });
                 }
                 // Disable ALL buttons
                 buttons.forEach(button => {
@@ -374,6 +380,7 @@
                 record: document.getElementById('record_button'),
                 file_stream: document.getElementById('file_stream_button')
             };
+            const inputs = document.querySelectorAll('input');
 
             if (state.streaming) {
                 buttons.stream.classList.remove('btn-success');
