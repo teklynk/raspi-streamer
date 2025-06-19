@@ -251,7 +251,6 @@
 
         // adds tab id to url so that we can deep link to it with redirects and reloads.
         $(document).ready(() => {
-            const inputs = document.querySelectorAll('input');
             let tabUrl = location.href.replace(/\/$/, "");
             if (location.hash) {
                 const hash = tabUrl.split("#");
@@ -374,7 +373,7 @@
                 record: document.getElementById('record_button'),
                 file_stream: document.getElementById('file_stream_button')
             };
-            let inputs = document.querySelectorAll('input');
+            const inputs = document.querySelectorAll('input');
 
             if (state.streaming) {
                 buttons.stream.classList.remove('btn-success');
@@ -482,6 +481,13 @@
                     recordingActions.forEach(action => action.classList.remove('hide'));
                 }
             }
+
+            // Add disabled class from ALL inputs
+            inputs.forEach(input => {
+                input.disabled = true;
+                input.readonly = true;
+                input.classList.add('disabled');
+            });
         }
 
         function updateLog() {
