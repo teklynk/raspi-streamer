@@ -367,102 +367,52 @@
         
         function updateButtons(state) {
             const recordingActions = document.querySelectorAll('.recordingActions');
+            const inputs = document.querySelectorAll('input');
             const buttons = {
                 stream: document.getElementById('stream_button'),
                 stream_record: document.getElementById('stream_record_button'),
                 record: document.getElementById('record_button'),
                 file_stream: document.getElementById('file_stream_button')
             };
-            const inputs = document.querySelectorAll('input');
 
             if (state.streaming) {
                 buttons.stream.classList.remove('btn-success');
                 buttons.stream.classList.add('btn-danger');
                 buttons.stream.innerText = 'Stop Stream';
-                // Add disabled class from ALL inputs
-                inputs.forEach(input => {
-                    input.disabled = true;
-                    input.readonly = true;
-                    input.classList.add('disabled');
-                });
-                console.log('inputs are disabled');
             } else {
                 buttons.stream.classList.remove('btn-danger');
                 buttons.stream.classList.add('btn-success');
                 buttons.stream.innerText = 'Start Stream';
-                // Remove disabled class from ALL inputs
-                inputs.forEach(input => {
-                    input.disabled = false;
-                    input.readonly = false;
-                    input.classList.remove('disabled');
-                });
             }
 
             if (state.streaming_and_recording) {
                 buttons.stream_record.classList.remove('btn-success');
                 buttons.stream_record.classList.add('btn-danger');
                 buttons.stream_record.innerText = 'Stop Stream & Record';
-                // Add disabled class from ALL inputs
-                inputs.forEach(input => {
-                    input.disabled = true;
-                    input.readonly = true;
-                    input.classList.add('disabled');
-                });
             } else {
                 buttons.stream_record.classList.remove('btn-danger');
                 buttons.stream_record.classList.add('btn-success');
                 buttons.stream_record.innerText = 'Start Stream & Record';
-                // Remove disabled class from ALL inputs
-                inputs.forEach(input => {
-                    input.disabled = false;
-                    input.readonly = false;
-                    input.classList.remove('disabled');
-                });
             }
 
             if (state.recording) {
                 buttons.record.classList.remove('btn-success');
                 buttons.record.classList.add('btn-danger');
                 buttons.record.innerText = 'Stop Record';
-                // Add disabled class from ALL inputs
-                inputs.forEach(input => {
-                    input.disabled = true;
-                    input.readonly = true;
-                    input.classList.add('disabled');
-                });
-                console.log('inputs are disabled');
             } else {
                 buttons.record.classList.remove('btn-danger');
                 buttons.record.classList.add('btn-success');
                 buttons.record.innerText = 'Start Record';
-                // Remove disabled class from ALL inputs
-                inputs.forEach(input => {
-                    input.disabled = false;
-                    input.readonly = false;
-                    input.classList.remove('disabled');
-                });
             }
 
             if (state.file_streaming) {
                 buttons.file_stream.classList.remove('btn-success');
                 buttons.file_stream.classList.add('btn-danger');
                 buttons.file_stream.innerText = 'Stop File Stream';
-                // Add disabled class from ALL inputs
-                inputs.forEach(input => {
-                    input.disabled = true;
-                    input.readonly = true;
-                    input.classList.add('disabled');
-                });
             } else {
                 buttons.file_stream.classList.remove('btn-danger');
                 buttons.file_stream.classList.add('btn-success');
                 buttons.file_stream.innerText = 'Start File Stream';
-                // Remove disabled class from ALL inputs
-                inputs.forEach(input => {
-                    input.disabled = false;
-                    input.readonly = false;
-                    input.classList.remove('disabled');
-                });
             }
 
             for (const buttonKey in buttons) {
@@ -474,20 +424,25 @@
                 } else if (buttonKey !== 'record' && state.recording) {
                     buttons[buttonKey].disabled = true;
                     recordingActions.forEach(action => action.classList.add('hide'));
+                    // Add disabled class to ALL inputs
+                    inputs.forEach(input => {
+                        input.disabled = true;
+                        input.readonly = true;
+                        input.classList.add('disabled');
+                    });
                 } else if (buttonKey !== 'file_stream' && state.file_streaming) {
                     buttons[buttonKey].disabled = true;
                 } else {
                     buttons[buttonKey].disabled = false;
                     recordingActions.forEach(action => action.classList.remove('hide'));
+                    // Remove disabled class from ALL inputs
+                    inputs.forEach(input => {
+                        input.disabled = false;
+                        input.readonly = false;
+                        input.classList.remove('disabled');
+                    });
                 }
             }
-
-            // Add disabled class from ALL inputs
-            inputs.forEach(input => {
-                input.disabled = true;
-                input.readonly = true;
-                input.classList.add('disabled');
-            });
         }
 
         function updateLog() {
