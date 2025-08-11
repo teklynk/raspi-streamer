@@ -1,5 +1,24 @@
 #!/bin/bash
 
+# Function to confirm installation with the user
+confirm_installation() {
+    echo "This script will install and configure the Raspi-Streamer application."
+    echo "It will perform the following actions:"
+    echo " - Update and upgrade system packages."
+    echo " - Install required software: ffmpeg, alsa-utils, python3-venv, pip, samba, git."
+    echo " - Set up a Python virtual environment and install dependencies."
+    echo " - Configure a Samba share for network access to recordings."
+    echo " - Create and enable a systemd service to run the application on boot."
+    echo " - Prompt you for a username/password for the web UI."
+    echo " - Prompt you to select an audio capture device."
+    echo ""
+    read -rp "Do you wish to continue? (y/n) " choice
+    case "$choice" in
+      y|Y ) echo "Starting installation...";;
+      * ) echo "Installation cancelled."; exit 1;;
+    esac
+}
+
 # Function to prompt for and save basic auth credentials
 set_basic_auth_credentials() {
     read -rp "Enter the Basic Auth username: " username
@@ -51,6 +70,9 @@ select_audio_device() {
 # Get the current working directory and current user
 WORK_DIR=$(pwd)
 CURRENT_USER=$(whoami)
+
+# Confirm with the user before starting
+confirm_installation
 
 # Update and upgrade system packages
 sudo apt update && sudo apt upgrade -y
