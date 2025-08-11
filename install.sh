@@ -56,16 +56,19 @@ CURRENT_USER=$(whoami)
 sudo apt update && sudo apt upgrade -y
 
 # Install necessary packages
-sudo apt install -y ffmpeg alsa-tools alsa-utils python3-dotenv python3-flask python3-flask-basicauth python3-psutil v4l-utils samba samba-common-bin nodejs npm git
+sudo apt install -y ffmpeg alsa-tools alsa-utils python3-venv python3-pip v4l-utils samba samba-common-bin git
 
 # Change to the working directory
 cd "$WORK_DIR"
 
+# Create python virtual environment and install dependencies
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+deactivate
+
 # Update the code base
 git pull
-
-# Install node packages
-npm install
 
 # Rename sample.env to .env if it exists
 if [ -f "sample.env" ]; then
@@ -123,7 +126,7 @@ After=network.target sound.target
 
 [Service]
 StartDelaySec=3
-ExecStart=/usr/bin/sudo -E /usr/bin/python3 $WORK_DIR/stream_control.py
+ExecStart=/usr/bin/sudo -E $WORK_DIR/.venv/bin/python $WORK_DIR/stream_control.py
 WorkingDirectory=$WORK_DIR
 StandardOutput=inherit
 StandardError=inherit

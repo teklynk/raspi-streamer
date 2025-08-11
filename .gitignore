@@ -1,6 +1,21 @@
-*.log
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.venv/
+
+# Node
+node_modules/
+
+# User-specific files
 .env
 .auth
-/node_modules
-.idea/
-.idea
+*.log
+system_info.txt
+audio_device.txt
+
+# Media and Recordings
+/recordings/*
+!/recordings/.gitkeep
+/media/*
+!/media/.gitkeep
