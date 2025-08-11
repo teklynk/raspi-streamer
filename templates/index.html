@@ -28,6 +28,10 @@
         .row-active {
             background-color: #2e2eb526;
         }
+        .disabled {
+            cursor: not-allowed;
+            color:#eee !important;
+        }
     </style>
 </head>
 <body>
@@ -348,6 +352,7 @@
                 // Disable ALL buttons
                 buttons.forEach(button => {
                     button.disabled = true;
+                    button.classList.add('disabled');
                 });
             });
 
@@ -360,12 +365,16 @@
                 // Disable ALL buttons
                 buttons.forEach(button => {
                     button.disabled = true;
+                    button.classList.add('disabled');
                 });
             });
         });
         
         function updateButtons(state) {
             const recordingActions = document.querySelectorAll('.recordingActions');
+            const updateButton = document.querySelectorAll('.btn-primary');
+            const inputs = document.querySelectorAll('input');
+            const selects = document.querySelectorAll('select');
             const buttons = {
                 stream: document.getElementById('stream_button'),
                 stream_record: document.getElementById('stream_record_button'),
@@ -422,11 +431,40 @@
                 } else if (buttonKey !== 'record' && state.recording) {
                     buttons[buttonKey].disabled = true;
                     recordingActions.forEach(action => action.classList.add('hide'));
+                    // Add disabled class to ALL inputs
+                    inputs.forEach(input => {
+                        input.disabled = true;
+                        input.classList.add('disabled');
+                    });
+                    updateButton.forEach(button => {
+                        button.disabled = true;
+                        button.classList.add('disabled');
+                    });
+                    selects.forEach(select => {
+                        select.disabled = true;
+                        select.classList.add('disabled');
+                    });
+
                 } else if (buttonKey !== 'file_stream' && state.file_streaming) {
                     buttons[buttonKey].disabled = true;
+                    buttons[buttonKey].classList.add('disabled');
                 } else {
                     buttons[buttonKey].disabled = false;
+                    buttons[buttonKey].classList.remove('disabled');
                     recordingActions.forEach(action => action.classList.remove('hide'));
+                    // Remove disabled class from ALL inputs
+                    inputs.forEach(input => {
+                        input.disabled = false;
+                        input.classList.remove('disabled');
+                    });
+                    updateButton.forEach(button => {
+                        button.disabled = false;
+                        button.classList.remove('disabled');
+                    });
+                    selects.forEach(select => {
+                        select.disabled = false;
+                        select.classList.remove('disabled');
+                    });
                 }
             }
         }

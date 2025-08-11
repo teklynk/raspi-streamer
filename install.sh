@@ -1,5 +1,24 @@
 #!/bin/bash
 
+# Function to confirm installation with the user
+confirm_installation() {
+    echo "This script will install and configure the Raspi-Streamer application."
+    echo "It will perform the following actions:"
+    echo " - Update and upgrade system packages."
+    echo " - Install required software: ffmpeg, alsa-utils, python3-venv, pip, samba, git."
+    echo " - Set up a Python virtual environment and install dependencies."
+    echo " - Configure a Samba share for network access to recordings."
+    echo " - Create and enable a systemd service to run the application on boot."
+    echo " - Prompt you for a username/password for the web UI."
+    echo " - Prompt you to select an audio capture device."
+    echo ""
+    read -rp "Do you wish to continue? (y/n) " choice
+    case "$choice" in
+      y|Y ) echo "Starting installation...";;
+      * ) echo "Installation cancelled."; exit 1;;
+    esac
+}
+
 # Function to prompt for and save basic auth credentials
 set_basic_auth_credentials() {
     read -rp "Enter the Basic Auth username: " username
@@ -52,20 +71,26 @@ select_audio_device() {
 WORK_DIR=$(pwd)
 CURRENT_USER=$(whoami)
 
+# Confirm with the user before starting
+confirm_installation
+
 # Update and upgrade system packages
 sudo apt update && sudo apt upgrade -y
 
 # Install necessary packages
-sudo apt install -y ffmpeg alsa-tools alsa-utils python3-dotenv python3-flask python3-flask-basicauth python3-psutil v4l-utils samba samba-common-bin nodejs npm git
+sudo apt install -y ffmpeg alsa-tools alsa-utils python3-venv python3-pip v4l-utils samba samba-common-bin git
 
 # Change to the working directory
 cd "$WORK_DIR"
 
+# Create python virtual environment and install dependencies
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+deactivate
+
 # Update the code base
 git pull
-
-# Install node packages
-npm install
 
 # Rename sample.env to .env if it exists
 if [ -f "sample.env" ]; then
@@ -123,7 +148,7 @@ After=network.target sound.target
 
 [Service]
 StartDelaySec=3
-ExecStart=/usr/bin/sudo -E /usr/bin/python3 $WORK_DIR/stream_control.py
+ExecStart=/usr/bin/sudo -E $WORK_DIR/.venv/bin/python $WORK_DIR/stream_control.py
 WorkingDirectory=$WORK_DIR
 StandardOutput=inherit
 StandardError=inherit

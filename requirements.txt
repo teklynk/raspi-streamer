@@ -1,0 +1,4 @@
+Flask
+python-dotenv
+Flask-BasicAuth
+psutil
