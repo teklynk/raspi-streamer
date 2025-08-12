@@ -133,8 +133,8 @@
                     <div class="form-group">
                         <label for="KEYFRAME_INTERVAL">Keyframe Interval:</label>
                         <select class="form-control form-control-lg" id="KEYFRAME_INTERVAL" name="KEYFRAME_INTERVAL">
-                            <option value="60" {% if config['KEYFRAME_INTERVAL'] == '60' %}selected{% endif %}>60</option>
-                            <option value="30" {% if config['KEYFRAME_INTERVAL'] == '30' %}selected{% endif %}>30</option>
+                            <option value="60" {% if config['KEYFRAME_INTERVAL'] == '60' %}selected{% endif %}>3</option>
+                            <option value="30" {% if config['KEYFRAME_INTERVAL'] == '30' %}selected{% endif %}>2</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -151,7 +151,7 @@
                         <small>*.mp4 OR playlist.txt</small>
                     </div>
                     <div class="form-group">
-                        <label for="KEYFRAME_INTERVAL">Enable FFMPEG log output:</label>
+                        <label for="REPORT">Enable FFMPEG log output:</label>
                         <select class="form-control form-control-lg" id="REPORT" name="REPORT">
                             <option value="true" {% if config['REPORT'] == 'true' %}selected{% endif %}>On</option>
                             <option value="" {% if config['REPORT'] == '' %}selected{% endif %}>Off</option>
