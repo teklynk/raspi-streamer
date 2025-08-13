@@ -8,7 +8,7 @@ import logging
 import glob
 import psutil
 from dotenv import load_dotenv
-from flask import Flask, request, render_template, jsonify, send_file
+from flask import Flask, request, render_template, jsonify, send_file, abort
 from flask_basicauth import BasicAuth
 from threading import Thread, Event
 from datetime import datetime
@@ -870,7 +870,7 @@ def serve_recording(filename):
     if os.path.exists(file_path):
         return send_file(file_path, mimetype='video/mp4')
     else:
-        abort(404)
+        return abort(404)
 
 @app.route('/start_stream', methods=['POST'])
 def start_stream_route():
