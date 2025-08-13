@@ -30,7 +30,7 @@
         }
         .disabled {
             cursor: not-allowed;
-            color:#eee !important;
+            color:#ccc !important;
         }
     </style>
 </head>
@@ -294,12 +294,8 @@
         });
 
         function sendRequest(endpoint) {
-            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
             fetch(endpoint, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken
-                }
+                method: 'POST'
             })
             .then(response => response.json())
             .then(data => {
@@ -312,12 +308,8 @@
         }
 
         function toggle(action) {
-            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
             fetch('/toggle_' + action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRFToken': csrfToken
-                }
+                method: 'POST'
             })
             .then(response => {
                 if (!response.ok) {
@@ -551,13 +543,11 @@
         }
 
         function confirmDelete(directory, filename) {
-            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
             if (confirm(`Are you sure you want to delete the file '${filename}' from '${directory}'?`)) {
                 fetch('/delete_file', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                        'X-CSRFToken': csrfToken
+                        'Content-Type': 'application/x-www-form-urlencoded'
                     },
                     body: `directory=${directory}&filename=${filename}`
                 })
