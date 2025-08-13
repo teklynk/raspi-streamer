@@ -1,6 +1,4 @@
 Flask
 python-dotenv
 Flask-BasicAuth
-Jinja2==3.0.3
-Flask-WTF==1.1.1
 psutil

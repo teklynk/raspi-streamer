@@ -9,14 +9,11 @@ import psutil
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify, send_file, abort
 from flask_basicauth import BasicAuth
-from flask_wtf.csrf import CSRFProtect
 from threading import Thread, Event
 from datetime import datetime
 
 # Flask application
 app = Flask(__name__)
-
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # Determine the current working directory
 current_directory = os.path.dirname(os.path.abspath(__file__))
