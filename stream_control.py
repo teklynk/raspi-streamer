@@ -9,19 +9,14 @@ import psutil
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify, send_file, abort
 from flask_basicauth import BasicAuth
-from flask_wtf.csrf import CSRFProtect
+from flask_wtf import FlaskForm
 from threading import Thread, Event
 from datetime import datetime
 
 # Flask application
 app = Flask(__name__)
 
-# It's crucial to set a secret key for CSRF protection.
-# You can set a permanent SECRET_KEY in your .env file for session persistence across restarts.
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', os.urandom(24))
-
-# Initialize CSRF protection
-csrf = CSRFProtect(app)
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 
 # Determine the current working directory
 current_directory = os.path.dirname(os.path.abspath(__file__))
