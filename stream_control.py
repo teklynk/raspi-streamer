@@ -413,24 +413,14 @@ def start_stream():
 
     if REPORT:
         stream_command.insert(1, "-report")  # Insert the -report flag at index 1 in the command list if REPORT is true in the .env file
-        
-    try:
-        stream_process = subprocess.Popen(stream_command)
 
-        logging.debug("Stream started!")
-        streaming = True
-        state["streaming_and_recording"] = False
-        state["recording"] = False
-        state["streaming"] = True
-        save_state(state)
-    except Exception as e:
-        logging.error(f"Failed to start stream process: {e}")
-        stream_process = None
-        streaming = False
-        state["streaming_and_recording"] = False
-        state["recording"] = False
-        state["streaming"] = False
-        save_state(state)
+    stream_process = subprocess.Popen(stream_command)
+    logging.debug("Stream started!")
+    streaming = True
+    state["streaming_and_recording"] = False
+    state["recording"] = False
+    state["streaming"] = True
+    save_state(state)
 
 def stop_stream():
     global stream_process, streaming
@@ -483,21 +473,14 @@ def start_recording():
     if REPORT:
         record_command.insert(1, "-report")  # Insert the -report flag at index 1 in the command list if REPORT is true in the .env file
 
-    try:
-        record_process = subprocess.Popen(record_command)
+    record_process = subprocess.Popen(record_command)
 
-        logging.debug("Recording started!")
-        recording = True
-        state["streaming"] = False
-        state["streaming_and_recording"] = False
-        state["recording"] = True
-        save_state(state)
-    except Exception as e:
-        logging.error(f"Failed to start recording process: {e}")
-        record_process = None
-        recording = False
-        state["recording"] = False
-        save_state(state)
+    logging.debug("Recording started!")
+    recording = True
+    state["streaming"] = False
+    state["streaming_and_recording"] = False
+    state["recording"] = True
+    save_state(state)
 
 def stop_recording():
     global record_process, recording, remux
