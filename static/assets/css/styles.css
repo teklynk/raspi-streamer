@@ -1,0 +1,19 @@
+.form-control[readonly] {
+    background-color: transparent !important;
+}
+.btn-group-lg>.btn, .btn-lg {
+    font-size: 1.75rem !important;
+}
+.cursor-pointer {
+    cursor: pointer;
+}
+.hide {
+    display: none !important;
+}
+.row-active {
+    background-color: #2e2eb526;
+}
+.disabled {
+    cursor: not-Aallowed;
+    color:#ccc !important;
+}

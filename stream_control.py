@@ -3,7 +3,6 @@ import json
 import re
 import subprocess
 import os
-import signal
 import logging
 import glob
 import psutil
