@@ -128,6 +128,7 @@ audio_device = get_audio_device(device_value)
 if device_value and audio_device:
     update_env_file(audio_device)
     logging.debug(f"Updated .env file with ALSA_AUDIO_SOURCE={audio_device}")
+    ALSA_AUDIO_SOURCE = audio_device
 else:
     logging.debug("No suitable audio device found")
 
