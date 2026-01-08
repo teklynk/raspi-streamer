@@ -31,6 +31,29 @@
 - A user has been created.
 - Your capture device is currently plugged into the Raspberry Pi.
 
+## Important Notes
+
+If you used the official Raspberry Pi Imager app to flash the latest version of Raspberry Pi OS (Trixie) to your SD Card:
+
+The custom config settings do not always transfer over. You will need to connect a keyboard and monitor and run `sudo raspi-config`.
+
+- Set ALL of the localization settings. Set your hostname, wifi region, wifi creds.
+- You will also not be able to install updates because the timesync is not set.
+
+```bash
+sudo nano /etc/systemd/timesyncd.conf
+```
+Set the NTP server: NTP=time.cloudflare.com
+
+```bash
+sudo systemctl restart systemd-timesyncd
+```
+```bash
+timedatectl
+```
+
+After this, you can run `sudo apt update` without errors.
+
 # Install necessary packages
 ```bash
 sudo apt install git
