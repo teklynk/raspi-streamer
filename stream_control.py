@@ -87,8 +87,8 @@ def get_audio_device(device_value):
     arecord_output = subprocess.run(['arecord', '-l'], capture_output=True, text=True).stdout
     for line in arecord_output.splitlines():
         if device_value in line:
-            card_match = re.search(r'card (\d+):', line)
-            device_match = re.search(r'device (\d+)', line)
+            card_match = re.search(r'card\s+(\d+):', line)
+            device_match = re.search(r'device\s+(\d+):', line)
             
             if card_match and device_match:
                 card = card_match.group(1)
@@ -125,7 +125,7 @@ def update_env_file(audio_device):
 # Update audio device
 device_value = get_device_value()
 audio_device = get_audio_device(device_value)
-if device_value:
+if device_value and audio_device:
     update_env_file(audio_device)
     logging.debug(f"Updated .env file with ALSA_AUDIO_SOURCE={audio_device}")
 else:
