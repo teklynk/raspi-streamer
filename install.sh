@@ -79,7 +79,8 @@ sudo apt update && sudo apt upgrade -y
 
 # Install necessary packages
 sudo apt install -y ffmpeg alsa-tools alsa-utils python3-venv python3-pip v4l-utils samba samba-common-bin git
-
+# Update the Raspberry Pi Firmware
+sudo rpi-update
 # Change to the working directory
 cd "$WORK_DIR"
 
