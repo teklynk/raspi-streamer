@@ -362,8 +362,11 @@ def list_recordings():
                 files.append({
                     'filename': filename,
                     'size': size_str,
-                    'modified': modification_date_str
+                    'modified': modification_date_str,
+                    'timestamp': modification_date
                 })
+        
+        files.sort(key=lambda x: x['timestamp'], reverse=True)
         
         return files
 
