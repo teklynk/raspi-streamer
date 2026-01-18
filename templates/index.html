@@ -157,6 +157,10 @@
                             <option value="" {% if config['REPORT'] == '' %}selected{% endif %}>Off</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="MAX_TIME">Max Time:</label>
+                        <input type="time" class="form-control form-control-lg" id="MAX_TIME" name="MAX_TIME" value="{{ config['MAX_TIME'] }}" placeholder="hh:mm">
+                    </div>
                     <div class="text-center mt-4 mb-5">
                         <button class="btn btn-lg btn-block btn-primary" type="submit">Update</button>
                     </div>

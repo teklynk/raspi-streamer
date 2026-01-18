@@ -403,14 +403,23 @@ def start_max_timer():
     
     if MAX_TIME:
         try:
-            h, m, s = map(int, MAX_TIME.split(':'))
+            parts = list(map(int, MAX_TIME.split(':')))
+            if len(parts) == 2:
+                h, m = parts
+                s = 0
+            elif len(parts) == 3:
+                h, m, s = parts
+            else:
+                raise ValueError
+
             seconds = h * 3600 + m * 60 + s
+
             if seconds > 0:
                 logging.info(f"Starting max time timer for {seconds} seconds.")
                 stop_timer = Timer(seconds, stop_all_actions)
                 stop_timer.start()
         except ValueError:
-            logging.error(f"Invalid MAX_TIME format: {MAX_TIME}. Expected HH:MM:SS")
+            logging.error(f"Invalid MAX_TIME format: {MAX_TIME}. Expected HH:MM:SS or HH:MM")
 
 def start_stream():
     global stream_process, streaming
