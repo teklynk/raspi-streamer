@@ -9,7 +9,7 @@ import psutil
 from dotenv import load_dotenv
 from flask import Flask, request, render_template, jsonify, send_file, abort
 from flask_basicauth import BasicAuth
-from threading import Thread, Event
+from threading import Thread, Event, Timer
 from datetime import datetime
 
 # Flask application
@@ -69,6 +69,7 @@ STREAM_FILE = os.getenv('STREAM_FILE')  # Add STREAM_FILE variable
 FORMAT = os.getenv('FORMAT')
 PRESET = os.getenv('PRESET')
 REPORT = os.getenv('REPORT')
+MAX_TIME = os.getenv('MAX_TIME')
 
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
@@ -385,6 +386,32 @@ def delete_file(directory, filename):
     except Exception as e:
         return jsonify({"error": f"Error deleting file: {e}"}), 500
 
+# Global timer variable
+stop_timer = None
+
+def stop_all_actions():
+    logging.info("Max time reached. Stopping all actions.")
+    stop_stream()
+    stop_recording()
+    stop_file_stream()
+    stop_stream_recording()
+
+def start_max_timer():
+    global stop_timer
+    if stop_timer:
+        stop_timer.cancel()
+    
+    if MAX_TIME:
+        try:
+            h, m, s = map(int, MAX_TIME.split(':'))
+            seconds = h * 3600 + m * 60 + s
+            if seconds > 0:
+                logging.info(f"Starting max time timer for {seconds} seconds.")
+                stop_timer = Timer(seconds, stop_all_actions)
+                stop_timer.start()
+        except ValueError:
+            logging.error(f"Invalid MAX_TIME format: {MAX_TIME}. Expected HH:MM:SS")
+
 def start_stream():
     global stream_process, streaming
 
@@ -394,6 +421,8 @@ def start_stream():
         return
 
     logging.debug("Starting stream...")
+
+    start_max_timer()
 
     # Reinitialize the video device before starting the recording
     reinitialize_device()
@@ -455,6 +484,8 @@ def start_recording():
 
     ensure_recordings_directory()
     logging.debug("Starting recording...")
+
+    start_max_timer()
 
     # Reinitialize the video device before starting the recording
     reinitialize_device()
@@ -546,6 +577,8 @@ def start_stream_recording():
 
     ensure_recordings_directory()
     logging.debug("Starting stream recording...")
+
+    start_max_timer()
 
     stream_recording = True
     state["recording"] = False
@@ -647,6 +680,8 @@ def start_file_stream():
     if REPORT:
         file_stream_command.insert(1, "-report")  # Insert the -report flag at index 1 in the command list if REPORT is true in the .env file
 
+    start_max_timer()
+
     file_stream_process = subprocess.Popen(file_stream_command)
     logging.debug("File stream started!")
     file_streaming = True
@@ -728,7 +763,7 @@ def update_env_file(data):
     load_dotenv()
     
     # Update global variables with new values
-    global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL, STREAM_FILE, FORMAT, PRESET, REPORT
+    global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL, STREAM_FILE, FORMAT, PRESET, REPORT, MAX_TIME
     STREAM_KEY = os.getenv('STREAM_KEY')
     RTMP_SERVER = os.getenv('RTMP_SERVER')
     ALSA_AUDIO_SOURCE = os.getenv('ALSA_AUDIO_SOURCE')
@@ -743,6 +778,7 @@ def update_env_file(data):
     FORMAT = os.getenv('FORMAT')
     PRESET = os.getenv('PRESET')
     REPORT = os.getenv('REPORT')
+    MAX_TIME = os.getenv('MAX_TIME')
 
 @app.route('/')
 def index():
@@ -759,7 +795,8 @@ def index():
         'STREAM_FILE': os.getenv('STREAM_FILE'),  # Add STREAM_FILE to config
         'FORMAT': os.getenv('FORMAT'),
         'PRESET': os.getenv('PRESET'),
-        'REPORT': os.getenv('REPORT')
+        'REPORT': os.getenv('REPORT'),
+        'MAX_TIME': os.getenv('MAX_TIME')
     }
     state = load_state()
     recordings = list_recordings()
