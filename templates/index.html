@@ -158,8 +158,13 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="MAX_TIME">Max Time:</label>
-                        <input type="time" class="form-control form-control-lg" id="MAX_TIME" name="MAX_TIME" value="{{ config['MAX_TIME'] }}" placeholder="hh:mm">
+                        <label>Max Time (Hours : Minutes):</label>
+                        <div class="d-flex align-items-center">
+                            <input type="number" class="form-control form-control-lg mr-2" id="MAX_TIME_HOURS" min="0" placeholder="HH">
+                            <span class="font-weight-bold mr-2">:</span>
+                            <input type="number" class="form-control form-control-lg" id="MAX_TIME_MINUTES" min="0" max="59" placeholder="MM">
+                        </div>
+                        <input type="hidden" id="MAX_TIME" name="MAX_TIME" value="{{ config['MAX_TIME'] }}">
                     </div>
                     <div class="text-center mt-4 mb-5">
                         <button class="btn btn-lg btn-block btn-primary" type="submit">Update</button>
@@ -252,6 +257,16 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             pollState();
+
+            // Initialize Max Time inputs
+            const maxTimeVal = document.getElementById('MAX_TIME').value;
+            if (maxTimeVal) {
+                const parts = maxTimeVal.split(':');
+                if (parts.length >= 2) {
+                    document.getElementById('MAX_TIME_HOURS').value = parts[0];
+                    document.getElementById('MAX_TIME_MINUTES').value = parts[1];
+                }
+            }
         });
 
         // adds tab id to url so that we can deep link to it with redirects and reloads.
@@ -273,6 +288,12 @@
 
         document.getElementById('configForm').addEventListener('submit', function(event) {
             event.preventDefault();
+
+            // Combine hours and minutes for MAX_TIME
+            const hours = document.getElementById('MAX_TIME_HOURS').value.padStart(2, '0') || '00';
+            const minutes = document.getElementById('MAX_TIME_MINUTES').value.padStart(2, '0') || '00';
+            document.getElementById('MAX_TIME').value = `${hours}:${minutes}`;
+
             const formData = new FormData(event.target);
             const data = {};
             formData.forEach((value, key) => {
