@@ -247,10 +247,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            fetch('/load_state')
-                .then(response => response.json())
-                .then(data => updateButtons(data))
-                .catch(error => console.error('Error loading state:', error));
+            pollState();
         });
 
         // adds tab id to url so that we can deep link to it with redirects and reloads.
@@ -370,6 +367,13 @@
             });
         });
         
+        function pollState() {
+            fetch('/load_state')
+                .then(response => response.json())
+                .then(data => updateButtons(data))
+                .catch(error => console.error('Error polling state:', error));
+        }
+
         function updateButtons(state) {
             const recordingActions = document.querySelectorAll('.recordingActions');
             const updateButton = document.querySelectorAll('.btn-primary');
@@ -593,6 +597,8 @@
 
         setInterval(fetchDiskUsage, 5000);
         fetchDiskUsage(); // Initial call
+
+        setInterval(pollState, 5000);
 
         document.addEventListener('DOMContentLoaded', function() {
             // Load log data
