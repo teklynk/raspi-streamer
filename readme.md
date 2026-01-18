@@ -18,6 +18,7 @@
 - __Web UI:__ Control and configure Raspi-Streamer from any web browser. Just visit http://<ip_address_of_pi>:5000 from your mobile device connected to the same network.
 - __Versatile Use Cases:__ Ideal for streaming and recording gameplay, live events, concerts, GoPro cameras, and any other HDMI output devices.
 - __Compact and Convenient:__ The small form factor of the Raspberry Pi makes it easy to integrate into any setup, offering a simple and portable solution for streaming and recording.
+- __Stream and Recording Timer:__ Set how long (HH:MM) to stream or record. Raspi-Streamer will automatically end when your timer runs out.
 
 ## Components Used
 - __Raspberry Pi 5:__ The core of the setup, handling all processing and control logic.
@@ -86,7 +87,7 @@ sudo apt install git
 - __File Stream:__
   - File streaming can stream a mp4 or playlist.txt file. The stream will loop the file or playlist. File streaming does not re-encoded the file (I tried but the Pi could not handle it. CPU=100%). Use files that are properly converted and able to stream. If streaming a playlist.txt of files, be sure that all of the files are a consistent format, bitrate, resolution... Do not try to stream a 4k or Bluray quality file. Convert the file down to 1280x720 with a program like HandBrake. 
   - PLAYLIST: Place files inside a folder called `media` and run the `create_playlist.sh` script. This will generate a `playlist.txt` file inside the `/home/<user>/raspi-streamer/` directory. In the web UI you can set the File Stream Path to: `/home/<user>/raspi-streamer/playlist.txt`
-  __Stream/Recording Timer:__
+- __Stream/Recording Timer:__
   - Set the max hours and minutes for the recording or stream to run for. Once the timer runs out, the stream or recording will automatically stop.
 
 # Troubleshooting
