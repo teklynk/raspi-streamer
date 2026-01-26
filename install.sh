@@ -10,6 +10,7 @@ confirm_installation() {
     echo " - Configure a Samba share for network access to recordings."
     echo " - Create and enable a systemd service to run the application on boot."
     echo " - Prompt you for a username/password for the web UI."
+    echo " - Prompt you to specify a custom recordings directory."
     echo " - Prompt you to select an audio capture device."
     echo ""
     read -rp "Do you wish to continue? (y/n) " choice
@@ -32,6 +33,58 @@ set_basic_auth_credentials() {
     echo "BASIC_AUTH_FORCE=True" >> "$auth_file"
 
     echo "Basic Auth credentials have been saved to $auth_file"
+}
+
+# Function to prompt for and configure recordings directory
+setup_recordings_directory() {
+    DEFAULT_RECORDINGS_DIR="$WORK_DIR/recordings"
+    
+    echo ""
+    echo "By default, recordings are saved to: $DEFAULT_RECORDINGS_DIR"
+    read -rp "Do you want to use a custom directory for recordings? (y/n) " choice
+    
+    case "$choice" in 
+        y|Y )
+            read -rp "Enter the full path for the recordings directory: " custom_dir
+            
+            # Remove trailing slash
+            custom_dir="${custom_dir%/}"
+
+            if [ "$custom_dir" == "$DEFAULT_RECORDINGS_DIR" ]; then
+                echo "Custom directory is the same as default. No changes made."
+                return
+            fi
+
+            # Create custom directory if it doesn't exist
+            if [ ! -d "$custom_dir" ]; then
+                echo "Directory $custom_dir does not exist. Creating it..."
+                if ! mkdir -p "$custom_dir" 2>/dev/null; then
+                     echo "Failed to create directory as current user, trying sudo..."
+                     sudo mkdir -p "$custom_dir"
+                     sudo chown "$CURRENT_USER":"$CURRENT_USER" "$custom_dir"
+                fi
+            fi
+            
+            # Handle existing recordings directory
+            if [ -d "$DEFAULT_RECORDINGS_DIR" ] && [ ! -L "$DEFAULT_RECORDINGS_DIR" ]; then
+                echo "Moving existing recordings from $DEFAULT_RECORDINGS_DIR to $custom_dir..."
+                mv "$DEFAULT_RECORDINGS_DIR"/* "$custom_dir/" 2>/dev/null
+                rm -rf "$DEFAULT_RECORDINGS_DIR"
+            elif [ -L "$DEFAULT_RECORDINGS_DIR" ]; then
+                rm "$DEFAULT_RECORDINGS_DIR"
+            fi
+            
+            # Create symlink
+            ln -s "$custom_dir" "$DEFAULT_RECORDINGS_DIR"
+            echo "Symlink created: $DEFAULT_RECORDINGS_DIR -> $custom_dir"
+            ;;
+        * )
+            echo "Using default recordings directory."
+            if [ ! -d "$DEFAULT_RECORDINGS_DIR" ]; then
+                mkdir -p "$DEFAULT_RECORDINGS_DIR"
+            fi
+            ;;
+    esac
 }
 
 # Function to list audio devices and prompt user for selection
@@ -111,6 +164,9 @@ fi
 
 # Prompt for and save basic auth credentials
 set_basic_auth_credentials
+
+# Setup recordings directory
+setup_recordings_directory
 
 # Setup Samba share configuration
 SAMBA_CONF="/etc/samba/smb.conf"
