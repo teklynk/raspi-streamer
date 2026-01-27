@@ -131,7 +131,24 @@ confirm_installation
 sudo apt update && sudo apt upgrade -y
 
 # Install necessary packages
-sudo apt install -y ffmpeg alsa-tools alsa-utils python3-venv python3-pip v4l-utils samba samba-common-bin git
+sudo apt install -y ffmpeg alsa-tools alsa-utils python3-venv python3-pip v4l-utils samba samba-common-bin git wget
+
+# Install USB Automount Utility
+echo "Installing USB Automount Utility..."
+wget -O pi-usb-automount.deb https://github.com/fasteddy516/pi-usb-automount/releases/latest/download/pi-usb-automount.deb
+sudo dpkg -i pi-usb-automount.deb
+rm pi-usb-automount.deb
+
+# Set permissions for USB mount point
+if mountpoint -q /media/usb0; then
+    echo "usb drive detected and mounted on: /media/usb0"
+    echo "Setting permissions on /media/usb0"
+    sudo chown -R "$CURRENT_USER":"$CURRENT_USER" /media/usb0
+    sudo chmod -R 777 /media/usb0
+else
+    echo "No USB drive found. Skipping automount."
+fi
+
 # Update the Raspberry Pi Firmware
 sudo rpi-update
 # Change to the working directory
