@@ -340,7 +340,7 @@
                 return response.json();
             })
             .then(() => {
-                window.location.reload(); // Refresh the browser window
+                // The poller will take care of updating the UI
             })
             .catch(error => {
                 console.error('Error:', error);
@@ -358,40 +358,6 @@
             }
         }, false);
 
-        // Disable buttons until recording has finished remux process. 
-        // When the page reloads it will supdateButtons() and et the state to 'Start Recording'
-        document.addEventListener("DOMContentLoaded", function() {
-            const recordButton = document.getElementById('record_button');
-            const recordStreamButton = document.getElementById('stream_record_button');
-            const buttons = document.querySelectorAll('button');
-            
-            recordButton.addEventListener("click", function() {
-                if (recordButton.textContent === 'Stop Record') {
-                    recordButton.textContent = 'Finalizing Recording...';
-                } else {
-                    recordButton.textContent = 'Starting...';
-                }
-                // Disable ALL buttons
-                buttons.forEach(button => {
-                    button.disabled = true;
-                    button.classList.add('disabled');
-                });
-            });
-
-            recordStreamButton.addEventListener("click", function() {
-                if (recordStreamButton.textContent === 'Stop Stream & Record') {
-                    recordStreamButton.textContent = 'Finalizing Recording...';
-                } else {
-                    recordStreamButton.textContent = 'Starting...';
-                }
-                // Disable ALL buttons
-                buttons.forEach(button => {
-                    button.disabled = true;
-                    button.classList.add('disabled');
-                });
-            });
-        });
-        
         function pollState() {
             fetch('/load_state')
                 .then(response => response.json())
@@ -410,6 +376,32 @@
                 record: document.getElementById('record_button'),
                 file_stream: document.getElementById('file_stream_button')
             };
+
+            if (state.remux) {
+                // Disable all control buttons and inputs during remux
+                Object.values(buttons).forEach(button => {
+                    button.disabled = true;
+                    button.classList.add('disabled');
+                });
+                buttons.record.innerText = 'Finalizing Recording...';
+                buttons.stream_record.innerText = 'Finalizing Recording...';
+
+                recordingActions.forEach(action => action.classList.add('hide'));
+                inputs.forEach(input => {
+                    input.disabled = true;
+                    input.classList.add('disabled');
+                });
+                updateButton.forEach(button => {
+                    button.disabled = true;
+                    button.classList.add('disabled');
+                });
+                selects.forEach(select => {
+                    select.disabled = true;
+                    select.classList.add('disabled');
+                });
+                return; // Exit early, as remux is an exclusive state
+            }
+
 
             if (state.streaming) {
                 buttons.stream.classList.remove('btn-success');

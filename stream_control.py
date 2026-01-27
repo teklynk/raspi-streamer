@@ -276,6 +276,25 @@ def remux(input_file, output_file):
     except subprocess.CalledProcessError as e:
         logging.error(f"Remuxing failed for {input_file}: {e}")
 
+def remux_and_finalize(recording_file):
+    """Remuxes the recording file and updates the state when done."""
+    try:
+        logging.debug(f"Remuxing {recording_file} in background...")
+        remux_file = recording_file.replace('.mp4', '_remuxed.mp4')
+        remux(recording_file, remux_file)
+        os.remove(recording_file)
+        os.rename(remux_file, recording_file)
+        logging.debug(f"Successfully remuxed and replaced: {recording_file}")
+    except Exception as e:
+        logging.error(f"Error during remux and finalize: {e}")
+    finally:
+        # Update state to indicate remuxing is complete
+        state = load_state()
+        state["remux"] = False
+        save_state(state)
+        logging.debug("Remuxing finished, state updated.")
+
+
 # Initialize variables
 streaming = False
 recording = False
@@ -292,7 +311,7 @@ file_streaming = False
 
 state_file = 'state.json'
 
-default_state = {"streaming": False, "recording": False, "file_streaming": False, "streaming_and_recording": False}
+default_state = {"streaming": False, "recording": False, "file_streaming": False, "streaming_and_recording": False, "remux": False}
 
 # Sets the default state on startup
 def load_default_state():    
@@ -528,6 +547,7 @@ def start_recording():
 
 def stop_recording():
     global record_process, recording, remux
+    global record_process, recording
 
     state = load_state()
 
@@ -540,22 +560,26 @@ def stop_recording():
         record_process.wait()
         record_process = None
 
-        # Remux the recording
-        recording_file = sorted(glob.glob('recordings/recording_*.mp4'))[-1]  # Get the latest recording file
-        logging.debug("Remuxing recording...")
-        remux_file = f"recordings/recording_{int(time.time())}_remuxed.mp4"
-        remux(recording_file, remux_file)
-        # Delete the original recording file
-        os.remove(recording_file)
-        # Rename the remuxed file to the original file name
-        os.rename(remux_file, recording_file)
-        logging.debug(f"Successfully remuxed and replaced: {recording_file}")
+        try:
+            # Get the latest recording file
+            recording_file = sorted(glob.glob('recordings/recording_*.mp4'))[-1]
+            
+            # Update state to show remuxing is in progress
+            state["remux"] = True
+            state["recording"] = False # The recording process is stopped
+            save_state(state)
 
-    logging.debug("Recording stopped!")
-    
+            # Start remuxing in a background thread
+            Thread(target=remux_and_finalize, args=(recording_file,)).start()
+
+        except IndexError:
+            logging.error("Could not find a recording file to remux. Finalizing state.")
+            state["recording"] = False
+            state["remux"] = False
+            save_state(state)
+
     recording = False
-    state["recording"] = False
-    save_state(state)
+    logging.debug("Recording process stopped, remuxing in background.")
 
 def delayed_start_recording():
     for _ in range(30):
@@ -618,21 +642,26 @@ def stop_stream_recording():
         stream_record_process.wait()
         stream_record_process = None
 
-        # Remux the recording
-        recording_file = sorted(glob.glob('recordings/stream_*.mp4'))[-1]  # Get the latest recording file
-        logging.debug("Remuxing recording...")
-        remux_file = f"recordings/stream_{int(time.time())}_remuxed.mp4"
-        remux(recording_file, remux_file)
-        # Delete the original recording file
-        os.remove(recording_file)
-        # Rename the remuxed file to the original file name
-        os.rename(remux_file, recording_file)
-        logging.debug(f"Successfully remuxed and replaced: {recording_file}")
+        try:
+            # Get the latest recording file
+            recording_file = sorted(glob.glob('recordings/stream_*.mp4'))[-1]
+            
+            # Update state to show remuxing is in progress
+            state["remux"] = True
+            state["streaming_and_recording"] = False
+            save_state(state)
 
-    logging.debug("Stream and Recording stopped!")
+            # Start remuxing in a background thread
+            Thread(target=remux_and_finalize, args=(recording_file,)).start()
+
+        except IndexError:
+            logging.error("Could not find a stream recording file to remux. Finalizing state.")
+            state["streaming_and_recording"] = False
+            state["remux"] = False
+            save_state(state)
+
     stream_recording = False
-    state["streaming_and_recording"] = False
-    save_state(state)
+    logging.debug("Stream and Recording process stopped, remuxing in background.")
 
 def start_file_stream():
     global file_stream_process, file_streaming
