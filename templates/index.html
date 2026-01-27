@@ -339,8 +339,11 @@
                 }
                 return response.json();
             })
-            .then(() => {
-                // The poller will take care of updating the UI
+            .then(data => {
+                updateButtons(data);
+                if (data.remux) {
+                    previousRemuxState = true;
+                }
             })
             .catch(error => {
                 console.error('Error:', error);
