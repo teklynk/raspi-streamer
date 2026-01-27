@@ -45,7 +45,17 @@ setup_recordings_directory() {
     
     case "$choice" in 
         y|Y )
-            read -rp "Enter the full path for the recordings directory: " custom_dir
+            custom_dir=""
+            if mountpoint -q /media/usb0; then
+                read -rp "A USB storage device has been detected and is mounted on: /media/usb0. Do you want to use this device to store recordings? (y/n) " usb_choice
+                case "$usb_choice" in
+                    y|Y ) custom_dir="/media/usb0";;
+                esac
+            fi
+
+            if [ -z "$custom_dir" ]; then
+                read -rp "Enter the full path for the recordings directory: " custom_dir
+            fi
             
             # Remove trailing slash
             custom_dir="${custom_dir%/}"
