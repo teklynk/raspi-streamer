@@ -888,6 +888,12 @@ def toggle_action(action):
                 stop_stream()
                 stop_stream_recording()
 
+        # If we are stopping an action, the state on disk might have been
+        # modified by the stop function (e.g., for remuxing). We need to
+        # reload it to avoid overwriting the changes.
+        if not new_state:
+            state = load_state()
+
         # Update the state
         state[action] = new_state
         logging.debug(f"Toggled '{action}' to {state[action]}")
