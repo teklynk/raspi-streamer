@@ -19,6 +19,7 @@
 - __Versatile Use Cases:__ Ideal for streaming and recording gameplay, live events, concerts, GoPro cameras, and any other HDMI output devices.
 - __Compact and Convenient:__ The small form factor of the Raspberry Pi makes it easy to integrate into any setup, offering a simple and portable solution for streaming and recording.
 - __Stream and Recording Timer:__ Set how long (HH:MM) to stream or record. Raspi-Streamer will automatically end when your timer runs out.
+- __USB Storage Auto Mount:__ USB mass storage devices automatically mount on /media/usb0 when pluged in.
 
 ## Components Used
 - __Raspberry Pi 5:__ The core of the setup, handling all processing and control logic.
@@ -31,6 +32,7 @@
 - You have already installed the Lite version of Raspberry Pi OS.
 - A user has been created.
 - Your capture device is currently plugged into the Raspberry Pi.
+- Your USB mass storage device is pluged in (If you want to save recordings to a usb drive)
 
 ## Important Notes
 
@@ -89,7 +91,9 @@ sudo apt install git
   - PLAYLIST: Place files inside a folder called `media` and run the `create_playlist.sh` script. This will generate a `playlist.txt` file inside the `/home/<user>/raspi-streamer/` directory. In the web UI you can set the File Stream Path to: `/home/<user>/raspi-streamer/playlist.txt`
 - __Stream/Recording Timer:__
   - Set the max hours and minutes for the recording or stream to run for. Once the timer runs out, the stream or recording will automatically stop.
-
+- __USB Mass Storage:__
+  - By default, Raspi-Streamer saves recordings to the `recordings/` directory. You can change this to save to a usb storage device. USB drives will automatically mount on `/media/usb0`. The installer will create a symlink from `recordings/` to your custom path.
+  
 # Troubleshooting
 
 ## Test recording before doing a stream
