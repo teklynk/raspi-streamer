@@ -55,7 +55,7 @@ setup_recordings_directory() {
             if mountpoint -q /media/usb0; then
                 read -rp "A USB storage device has been detected and is mounted on: /media/usb0. Do you want to use this device to store recordings? (y/n) " usb_choice
                 case "$usb_choice" in
-                    y|Y ) custom_dir="/media/usb0";;
+                    y|Y ) custom_dir="/media/usb0/recordings";;
                 esac
             fi
 
