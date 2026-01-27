@@ -358,10 +358,18 @@
             }
         }, false);
 
+        let previousRemuxState = false;
+
         function pollState() {
             fetch('/load_state')
                 .then(response => response.json())
-                .then(data => updateButtons(data))
+                .then(data => {
+                    if (previousRemuxState && !data.remux) {
+                        window.location.reload();
+                    }
+                    previousRemuxState = data.remux;
+                    updateButtons(data);
+                })
                 .catch(error => console.error('Error polling state:', error));
         }
 
