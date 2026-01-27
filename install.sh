@@ -2,6 +2,12 @@
 
 # Function to confirm installation with the user
 confirm_installation() {
+    if [ "$EUID" -eq 0 ]; then
+        echo "Please do not run this script as root (sudo). Run it as a regular user."
+        echo "The script will ask for your sudo password when necessary."
+        exit 1
+    fi
+
     echo "This script will install and configure the Raspi-Streamer application."
     echo "It will perform the following actions:"
     echo " - Update and upgrade system packages."
@@ -78,10 +84,10 @@ setup_recordings_directory() {
             # Handle existing recordings directory
             if [ -d "$DEFAULT_RECORDINGS_DIR" ] && [ ! -L "$DEFAULT_RECORDINGS_DIR" ]; then
                 echo "Moving existing recordings from $DEFAULT_RECORDINGS_DIR to $custom_dir..."
-                mv "$DEFAULT_RECORDINGS_DIR"/* "$custom_dir/" 2>/dev/null
-                rm -rf "$DEFAULT_RECORDINGS_DIR"
+                sudo mv "$DEFAULT_RECORDINGS_DIR"/* "$custom_dir/" 2>/dev/null
+                sudo rm -rf "$DEFAULT_RECORDINGS_DIR"
             elif [ -L "$DEFAULT_RECORDINGS_DIR" ]; then
-                rm "$DEFAULT_RECORDINGS_DIR"
+                sudo rm "$DEFAULT_RECORDINGS_DIR"
             fi
             
             # Create symlink
