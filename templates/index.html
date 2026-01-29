@@ -256,8 +256,11 @@
     <script src="{{ url_for('static', filename='assets/js/fontawesome.min.js') }}"></script>
 
     <script>
+        let currentStartTime = null;
+
         document.addEventListener('DOMContentLoaded', function() {
             pollState();
+            setInterval(updateTimer, 1000);
 
             // Initialize Max Time inputs
             const maxTimeVal = document.getElementById('MAX_TIME').value;
@@ -373,7 +376,8 @@
                     }
                     previousRemuxState = data.remux;
                     updateButtons(data);
-                    updateTimer(data);
+                    currentStartTime = data.start_time;
+                    updateTimer();
                 })
                 .catch(error => console.error('Error polling state:', error));
         }
@@ -503,11 +507,11 @@
             }
         }
 
-        function updateTimer(state) {
+        function updateTimer() {
             const timerElement = document.getElementById('time_elapsed');
-            if (state.start_time) {
+            if (currentStartTime) {
                 const now = Date.now() / 1000;
-                const elapsed = Math.floor(now - state.start_time);
+                const elapsed = Math.floor(now - currentStartTime);
                 
                 const hours = Math.floor(elapsed / 3600);
                 const minutes = Math.floor((elapsed % 3600) / 60);
