@@ -178,6 +178,7 @@
                 <div class="stats font-weight-bold" id="disk_size">Disk Size: --</div>
                 <div class="stats font-weight-bold" id="disk_used">Disk Used: --</div>
                 <div class="stats font-weight-bold" id="disk_available">Disk Available: --</div>
+                <div class="stats font-weight-bold" id="time_elapsed">Time Elapsed: --:--:--</div>
                 <div class="form-group mt-4">
                     <label for="ffmpeglogTextarea">Log:</label>
                     <textarea class="form-control" id="logTextarea" name="logTextarea" rows="10" cols="80" readonly></textarea>
@@ -372,6 +373,7 @@
                     }
                     previousRemuxState = data.remux;
                     updateButtons(data);
+                    updateTimer(data);
                 })
                 .catch(error => console.error('Error polling state:', error));
         }
@@ -498,6 +500,27 @@
                         select.classList.remove('disabled');
                     });
                 }
+            }
+        }
+
+        function updateTimer(state) {
+            const timerElement = document.getElementById('time_elapsed');
+            if (state.start_time) {
+                const now = Date.now() / 1000;
+                const elapsed = Math.floor(now - state.start_time);
+                
+                const hours = Math.floor(elapsed / 3600);
+                const minutes = Math.floor((elapsed % 3600) / 60);
+                const seconds = elapsed % 60;
+
+                const formattedTime = 
+                    String(hours).padStart(2, '0') + ':' + 
+                    String(minutes).padStart(2, '0') + ':' + 
+                    String(seconds).padStart(2, '0');
+                
+                timerElement.innerText = `Time Elapsed: ${formattedTime}`;
+            } else {
+                timerElement.innerText = 'Time Elapsed: --:--:--';
             }
         }
 

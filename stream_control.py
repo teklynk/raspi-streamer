@@ -311,7 +311,7 @@ file_streaming = False
 
 state_file = 'state.json'
 
-default_state = {"streaming": False, "recording": False, "file_streaming": False, "streaming_and_recording": False, "remux": False}
+default_state = {"streaming": False, "recording": False, "file_streaming": False, "streaming_and_recording": False, "remux": False, "start_time": None}
 
 # Sets the default state on startup
 def load_default_state():    
@@ -481,6 +481,7 @@ def start_stream():
     state["streaming_and_recording"] = False
     state["recording"] = False
     state["streaming"] = True
+    state["start_time"] = time.time()
     save_state(state)
 
 def stop_stream():
@@ -500,6 +501,7 @@ def stop_stream():
     logging.debug("Stream stopped!")
     streaming = False
     state["streaming"] = False
+    state["start_time"] = None
     save_state(state)
 
 def start_recording():
@@ -543,11 +545,11 @@ def start_recording():
     state["streaming"] = False
     state["streaming_and_recording"] = False
     state["recording"] = True
+    state["start_time"] = time.time()
     save_state(state)
 
 def stop_recording():
     global record_process, recording, remux
-    global record_process, recording
 
     state = load_state()
 
@@ -567,6 +569,7 @@ def stop_recording():
             # Update state to show remuxing is in progress
             state["remux"] = True
             state["recording"] = False # The recording process is stopped
+            state["start_time"] = None
             save_state(state)
 
             # Start remuxing in a background thread
@@ -576,6 +579,7 @@ def stop_recording():
             logging.error("Could not find a recording file to remux. Finalizing state.")
             state["recording"] = False
             state["remux"] = False
+            state["start_time"] = None
             save_state(state)
 
     recording = False
@@ -617,6 +621,7 @@ def start_stream_recording():
     state["recording"] = False
     state["streaming"] = False
     state["streaming_and_recording"] = True
+    state["start_time"] = time.time()
     save_state(state)
 
     stop_event.clear()  # Clear the stop event before starting the thread
@@ -649,6 +654,7 @@ def stop_stream_recording():
             # Update state to show remuxing is in progress
             state["remux"] = True
             state["streaming_and_recording"] = False
+            state["start_time"] = None
             save_state(state)
 
             # Start remuxing in a background thread
@@ -658,6 +664,7 @@ def stop_stream_recording():
             logging.error("Could not find a stream recording file to remux. Finalizing state.")
             state["streaming_and_recording"] = False
             state["remux"] = False
+            state["start_time"] = None
             save_state(state)
 
     stream_recording = False
@@ -726,6 +733,7 @@ def start_file_stream():
     state["recording"] = False
     state["streaming"] = False
     state["file_streaming"] = True
+    state["start_time"] = time.time()
     save_state(state)
 
 def stop_file_stream():
@@ -743,6 +751,7 @@ def stop_file_stream():
     logging.debug("File stream stopped!")
     file_streaming = False
     state["file_streaming"] = False
+    state["start_time"] = None
     save_state(state)
 
 def shutdown_pi():
