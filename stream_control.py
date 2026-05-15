@@ -44,10 +44,23 @@ load_dotenv('.auth')
 # Configure BasicAuth using environment variables
 app.config['BASIC_AUTH_USERNAME'] = os.getenv('BASIC_AUTH_USERNAME')
 app.config['BASIC_AUTH_PASSWORD'] = os.getenv('BASIC_AUTH_PASSWORD')
-app.config['BASIC_AUTH_FORCE'] = os.getenv('BASIC_AUTH_FORCE')
+# Disable automatic force to allow exclusion of PWA resources
+app.config['BASIC_AUTH_FORCE'] = False
 
 # Basic auth enabled
 basic_auth = BasicAuth(app)
+
+@app.before_request
+def force_basic_auth():
+    """Enforce basic auth globally except for PWA manifest, service worker, and icons."""
+    if os.getenv('BASIC_AUTH_FORCE') == 'True':
+        # List of paths that should be public
+        if request.path.endswith('manifest.json') or \
+           request.path.endswith('sw.js') or \
+           '/static/assets/icons/' in request.path:
+            return
+        if not basic_auth.authenticate():
+            return basic_auth.challenge()
 
 stop_event = Event()
 
