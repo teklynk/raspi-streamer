@@ -1073,6 +1073,15 @@ def get_cpu_stats():
     usage_json = display_usage()
     return jsonify(json.loads(usage_json))
 
+# PWA Support
+@app.route('/manifest.json')
+def serve_manifest():
+    return send_file(os.path.join(app.static_folder, 'manifest.json'), mimetype='application/manifest+json')
+
+@app.route('/sw.js')
+def serve_sw():
+    return send_file(os.path.join(app.static_folder, 'sw.js'), mimetype='application/javascript')
+
 # Function to run the Flask app in a separate thread
 def run_flask_app():
     app.run(host='0.0.0.0', port=5000)
