@@ -234,15 +234,17 @@ fi
 sudo tee "$SERVICE_FILE" > /dev/null <<EOL
 [Unit]
 Description=Stream Control Service
+Wants=network-online.target
 After=network.target sound.target
 
 [Service]
-StartDelaySec=3
-ExecStart=/usr/bin/sudo -E $WORK_DIR/.venv/bin/python $WORK_DIR/stream_control.py
+ExecStartPre=/bin/sleep 5
+ExecStart=$WORK_DIR/.venv/bin/python $WORK_DIR/stream_control.py
 WorkingDirectory=$WORK_DIR
 StandardOutput=inherit
 StandardError=inherit
 Restart=always
+RestartSec=5
 User=$CURRENT_USER
 Group=$CURRENT_USER
 Environment="PYTHONUNBUFFERED=1"
