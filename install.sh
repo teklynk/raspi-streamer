@@ -230,6 +230,27 @@ if [ -f "$SERVICE_FILE" ]; then
     echo "Existing stream_control.service deleted"
 fi
 
+# Set user to sudoers and set NOPASSWD
+TARGET_USER=${SUDO_USER:-$USER}
+
+echo "Creating sudoers rule for $TARGET_USER..."
+sudo tee /etc/sudoers.d/010_${TARGET_USER}-nopasswd > /dev/null << EOF
+# Allow $TARGET_USER to run any command without a password
+# Required for stream_control.service to load kernel modules
+$TARGET_USER ALL=(ALL) NOPASSWD: ALL
+EOF
+
+# Secure the file (permissions must be 440 or 400)
+sudo chmod 440 /etc/sudoers.d/010_${TARGET_USER}-nopasswd
+
+# Verify syntax (optional but recommended)
+if sudo visudo -c -f /etc/sudoers.d/010_${TARGET_USER}-nopasswd; then
+    echo "Sudoers rule added successfully."
+else
+    echo "Error: Invalid sudoers syntax. Check /etc/sudoers.d/010_${TARGET_USER}-nopasswd"
+    exit 1
+fi
+
 # Create the new service file
 sudo tee "$SERVICE_FILE" > /dev/null <<EOL
 [Unit]
