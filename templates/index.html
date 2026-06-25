@@ -172,7 +172,7 @@
                         <input type="hidden" id="MAX_TIME" name="MAX_TIME" value="{{ config['MAX_TIME'] }}">
                     </div>
                     <div class="text-center mt-4 mb-5">
-                        <button class="btn btn-lg btn-block btn-primary" type="submit">Update</button>
+                        <button class="btn btn-lg btn-block btn-primary updateConfig" type="submit">Update</button>
                     </div>
                 </form>
             </div>
@@ -398,7 +398,7 @@
 
         function updateButtons(state) {
             const recordingActions = document.querySelectorAll('.recordingActions');
-            const updateButton = document.querySelectorAll('.btn-primary');
+            const updateButton = document.querySelectorAll('.updateConfig');
             const inputs = document.querySelectorAll('input');
             const selects = document.querySelectorAll('select');
             const buttons = {
@@ -423,8 +423,7 @@
                     input.classList.add('disabled');
                 });
                 updateButton.forEach(button => {
-                    button.disabled = true;
-                    button.classList.add('disabled');
+                    button.classList.add('hide');
                 });
                 selects.forEach(select => {
                     select.disabled = true;
@@ -478,8 +477,32 @@
                 if (buttonKey !== 'stream_record' && state.streaming_and_recording) {
                     buttons[buttonKey].disabled = true;
                     recordingActions.forEach(action => action.classList.add('hide'));
+                    // Add disabled class to ALL inputs
+                    inputs.forEach(input => {
+                        input.disabled = true;
+                        input.classList.add('disabled');
+                    });
+                    updateButton.forEach(button => {
+                        button.classList.add('hide');
+                    });
+                    selects.forEach(select => {
+                        select.disabled = true;
+                        select.classList.add('disabled');
+                    });
                 } else if (buttonKey !== 'stream' && state.streaming) {
                     buttons[buttonKey].disabled = true;
+                    // Add disabled class to ALL inputs
+                    inputs.forEach(input => {
+                        input.disabled = true;
+                        input.classList.add('disabled');
+                    });
+                    updateButton.forEach(button => {
+                        button.classList.add('hide');
+                    });
+                    selects.forEach(select => {
+                        select.disabled = true;
+                        select.classList.add('disabled');
+                    });
                 } else if (buttonKey !== 'record' && state.recording) {
                     buttons[buttonKey].disabled = true;
                     recordingActions.forEach(action => action.classList.add('hide'));
@@ -489,8 +512,7 @@
                         input.classList.add('disabled');
                     });
                     updateButton.forEach(button => {
-                        button.disabled = true;
-                        button.classList.add('disabled');
+                        button.classList.add('hide');
                     });
                     selects.forEach(select => {
                         select.disabled = true;
@@ -512,6 +534,7 @@
                     updateButton.forEach(button => {
                         button.disabled = false;
                         button.classList.remove('disabled');
+                        button.classList.remove('hide');
                     });
                     selects.forEach(select => {
                         select.disabled = false;

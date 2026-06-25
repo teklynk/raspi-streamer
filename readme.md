@@ -115,6 +115,15 @@ In my case with the EVGA XR1 Lite usb capture device, I had to update its firmwa
 ## USB 3.0 Devices
 Make sure that your capture device is connected to the (blue) USB 3.0 port and that you are using a USB 3.0 cable.
 
+## Hardware compatibility
+USB capture card performance is highly dependent on the specific controller chip (e.g., Realtek, MacroSilicon, Genesys Logic) and the USB bus bandwidth available, making a "one-size-fits-all" setting impossible. You will need to experiment and try different formats to find settings that work best for your specific device.
+
+- **If video is choppy/slow:** Switch to mjpeg if your capture device supports it (reduces USB load).
+- **If video looks washed out or blocky:** Switch to yuyv422 or nv12 (requires USB 3.0).
+- **Check USB Port:** Ensure high-bandwidth formats are only used on USB 3.0 (Blue) ports or higher.
+
+In the Web UI go to Settings and check the `System` section. Look for: `List of CAPTURE Hardware Devices` to see which formats and resolutions your capture device supports.
+
 ## Service status
 Check the status of stream_control for errors.
 ```bash
@@ -139,6 +148,21 @@ sudo nmcli connection down "Wired connection 1" && sudo nmcli connection up "Wir
 ```
 ```bash
 nmcli connection show "Wired connection 1"
+```
+
+## Disable Bluetooth and WiFi (optional)
+On the Raspberry Pi, open `/boot/firmware/config.txt` and add:
+
+**Raspberry Pi 5**
+```bash
+dtoverlay=disable-bt-pi5
+dtoverlay=disable-wifi-pi5
+```
+
+**Raspberry Pi 4**
+```bash
+dtoverlay=disable-bt
+dtoverlay=disable-wifi
 ```
 
 ## Re-install to re-configure
