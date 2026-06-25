@@ -3,7 +3,7 @@ __pycache__/
 *.py[cod]
 *.so
 .venv/
-
+venv/
 # Node
 node_modules/
 
@@ -13,6 +13,7 @@ node_modules/
 *.log
 system_info.txt
 audio_device.txt
+system_info.txt
 
 # Media and Recordings
 /recordings/*

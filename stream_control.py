@@ -170,6 +170,39 @@ append_command_output(["v4l2-ctl", "--list-formats-ext"], "v4l2-ctl --list-forma
 
 logging.debug(f"System information saved to {SYS_INFO_FILE}")
 
+def parse_v4l2_data_from_file(file_path):
+    formats = []
+    resolutions = []
+
+    with open(file_path, "r") as file:
+        content = file.read()
+
+    # Find the v4l2-ctl section
+    v4l2_start = content.find("Output of v4l2-ctl --list-formats-ext:")
+    if v4l2_start == -1:
+        return formats, resolutions
+
+    v4l2_content = content[v4l2_start:]
+
+    # Extract formats using regex
+    format_pattern = r"\[\d+\]:\s+'([^']+)'"
+    matches = re.findall(format_pattern, v4l2_content)
+    for i, match in enumerate(matches):
+        match_name = match.lower()
+        if match_name == "yuyv":
+            match_name = "yuyv422"
+        formats.append(match_name)
+
+    # Extract resolutions using regex
+    resolution_pattern = r"Size:\s+Discrete\s+([0-9x]+)"
+    matches = re.findall(resolution_pattern, v4l2_content)
+    resolutions = [match.lower() for match in matches]
+
+    # Remove duplicates from resolutions and sort
+    resolutions = sorted(set(resolutions))
+
+    return formats, resolutions
+
 # Remove old ffmpeg logs
 def remove_ffmpeg_logs(directory):
     # Create a pattern to match the ffmpeg log files
@@ -862,7 +895,8 @@ def index():
     }
     state = load_state()
     recordings = list_recordings()
-    return render_template('index.html', config=config, state=state, recordings=recordings)
+    formats, resolutions = parse_v4l2_data_from_file(SYS_INFO_FILE)
+    return render_template('index.html', config=config, state=state, recordings=recordings, formats=formats, resolutions=resolutions)
 
 @app.route('/delete_file', methods=['POST'])
 def delete_file_route():

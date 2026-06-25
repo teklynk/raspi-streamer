@@ -1,1 +1,8 @@
-{"streaming": false, "recording": false, "file_streaming": false, "stream_recording": false, "streaming_and_recording": false}
+{
+    "streaming": false,
+    "recording": false,
+    "file_streaming": false,
+    "streaming_and_recording": false,
+    "remux": false,
+    "start_time": null
+}
