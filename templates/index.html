@@ -199,14 +199,16 @@
                     <label for="logTextarea">System:</label>
                     <textarea class="form-control" id="systemTextarea" name="systemTextarea" rows="10" cols="80" readonly></textarea>
                 </div>
-                <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/restart')">Restart Service</button>
-                </div>
-                <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/reboot')">Reboot System</button>
-                </div>
-                <div class="text-center mt-4">
-                    <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
+                <div class="updateSystem">
+                    <div class="text-center mt-4">
+                        <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/restart')">Restart Service</button>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/reboot')">Reboot System</button>
+                    </div>
+                    <div class="text-center mt-4">
+                        <button class="btn btn-lg btn-block btn-danger" onclick="sendRequest('/poweroff')">Power Off</button>
+                    </div>
                 </div>
             </div>
             <div class="tab-pane fade mb-4" id="Recordings" role="tabpanel" aria-labelledby="recordings-tab">
@@ -399,6 +401,7 @@
         function updateButtons(state) {
             const recordingActions = document.querySelectorAll('.recordingActions');
             const updateButton = document.querySelectorAll('.updateConfig');
+            const updateSystem = document.querySelectorAll('.updateSystem');
             const inputs = document.querySelectorAll('input');
             const selects = document.querySelectorAll('select');
             const buttons = {
@@ -423,6 +426,9 @@
                     input.classList.add('disabled');
                 });
                 updateButton.forEach(button => {
+                    button.classList.add('hide');
+                });
+                updateSystem.forEach(button => {
                     button.classList.add('hide');
                 });
                 selects.forEach(select => {
@@ -485,6 +491,9 @@
                     updateButton.forEach(button => {
                         button.classList.add('hide');
                     });
+                    updateSystem.forEach(button => {
+                        button.classList.add('hide');
+                    });
                     selects.forEach(select => {
                         select.disabled = true;
                         select.classList.add('disabled');
@@ -497,6 +506,9 @@
                         input.classList.add('disabled');
                     });
                     updateButton.forEach(button => {
+                        button.classList.add('hide');
+                    });
+                    updateSystem.forEach(button => {
                         button.classList.add('hide');
                     });
                     selects.forEach(select => {
@@ -512,6 +524,9 @@
                         input.classList.add('disabled');
                     });
                     updateButton.forEach(button => {
+                        button.classList.add('hide');
+                    });
+                    updateSystem.forEach(button => {
                         button.classList.add('hide');
                     });
                     selects.forEach(select => {
@@ -532,6 +547,11 @@
                         input.classList.remove('disabled');
                     });
                     updateButton.forEach(button => {
+                        button.disabled = false;
+                        button.classList.remove('disabled');
+                        button.classList.remove('hide');
+                    });
+                    updateSystem.forEach(button => {
                         button.disabled = false;
                         button.classList.remove('disabled');
                         button.classList.remove('hide');
