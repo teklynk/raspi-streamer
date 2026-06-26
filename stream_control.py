@@ -643,8 +643,13 @@ def delayed_start_recording():
     if not stop_event.is_set():
         stream_record_command = [
             "ffmpeg",
-            "-re", "-i", str(STREAM_M3U8_URL),
-            "-c", "copy", f"recordings/stream_{int(time.time())}.mp4"
+            "-y",  # Automatically overwrite output file if it exists
+            "-re",
+            "-i", str(STREAM_M3U8_URL),
+            "-c:v", "copy",
+            "-c:a", "copy",
+            "-f", "mp4",
+            f"recordings/stream_{int(time.time())}.mp4"
         ]
 
         global stream_record_process
