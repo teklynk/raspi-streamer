@@ -97,6 +97,7 @@ setup_recordings_directory() {
         * )
             echo "Using default recordings directory."
             if [ ! -d "$DEFAULT_RECORDINGS_DIR" ]; then
+                unlink "$DEFAULT_RECORDINGS_DIR"
                 mkdir -p "$DEFAULT_RECORDINGS_DIR"
             fi
             ;;
