@@ -191,6 +191,8 @@ def parse_v4l2_data_from_file(file_path):
         match_name = match.lower()
         if match_name == "yuyv":
             match_name = "yuyv422"
+        if match_name == "mjpg":
+            match_name = "mjpeg"
         formats.append(match_name)
 
     # Extract resolutions using regex
