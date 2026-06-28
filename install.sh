@@ -59,6 +59,13 @@ setup_recordings_directory() {
                 esac
             fi
 
+            if mountpoint -q /media/usb1; then
+                read -rp "A USB storage device has been detected and is mounted on: /media/usb1. Do you want to use this device to store recordings? (y/n) " usb_choice
+                case "$usb_choice" in
+                    y|Y ) custom_dir="/media/usb1/recordings";;
+                esac
+            fi
+
             if [ -z "$custom_dir" ]; then
                 read -rp "Enter the full path for the recordings directory: " custom_dir
             fi
@@ -162,6 +169,15 @@ if mountpoint -q /media/usb0; then
     echo "Setting permissions on /media/usb0"
     sudo chown -R "$CURRENT_USER":"$CURRENT_USER" /media/usb0
     sudo chmod -R 777 /media/usb0
+else
+    echo "No USB drive found. Skipping automount."
+fi
+
+if mountpoint -q /media/usb1; then
+    echo "usb drive detected and mounted on: /media/usb1"
+    echo "Setting permissions on /media/usb1"
+    sudo chown -R "$CURRENT_USER":"$CURRENT_USER" /media/usb1
+    sudo chmod -R 777 /media/usb1
 else
     echo "No USB drive found. Skipping automount."
 fi
