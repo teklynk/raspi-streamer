@@ -170,7 +170,7 @@ if mountpoint -q /media/usb0; then
     sudo chown -R "$CURRENT_USER":"$CURRENT_USER" /media/usb0
     sudo chmod -R 777 /media/usb0
 else
-    echo "No USB drive found. Skipping automount."
+    echo "No USB drive found on /media/usb0. Skipping automount."
 fi
 
 if mountpoint -q /media/usb1; then
@@ -179,7 +179,7 @@ if mountpoint -q /media/usb1; then
     sudo chown -R "$CURRENT_USER":"$CURRENT_USER" /media/usb1
     sudo chmod -R 777 /media/usb1
 else
-    echo "No USB drive found. Skipping automount."
+    echo "No USB drive found on /media/usb1. Skipping automount."
 fi
 
 # Update the Raspberry Pi Firmware
