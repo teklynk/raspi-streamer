@@ -1,5 +1,44 @@
 #!/bin/bash
 
+set -e
+
+# Install runtime packages using the host distribution's package manager.
+install_system_packages() {
+    if [ ! -r /etc/os-release ]; then
+        echo "Cannot identify this Linux distribution (/etc/os-release is missing)."
+        exit 1
+    fi
+
+    . /etc/os-release
+    DISTRO_NAME=${PRETTY_NAME:-${ID:-Linux}}
+
+    if command -v apt-get >/dev/null 2>&1; then
+        sudo apt-get update
+        sudo apt-get install -y ffmpeg alsa-tools alsa-utils python3-venv python3-pip v4l-utils samba git kmod
+    elif command -v dnf >/dev/null 2>&1; then
+        sudo dnf install -y ffmpeg alsa-utils python3 python3-pip v4l-utils samba git kmod
+    elif command -v yum >/dev/null 2>&1; then
+        sudo yum install -y ffmpeg alsa-utils python3 python3-pip v4l-utils samba git kmod
+    elif command -v pacman >/dev/null 2>&1; then
+        sudo pacman -Sy --needed --noconfirm ffmpeg alsa-utils alsa-tools python python-pip v4l-utils samba git kmod
+    elif command -v zypper >/dev/null 2>&1; then
+        sudo zypper --non-interactive refresh
+        sudo zypper --non-interactive install ffmpeg alsa-utils alsa-tools python3 python3-pip v4l-utils samba git kmod
+    elif command -v apk >/dev/null 2>&1; then
+        sudo apk add ffmpeg alsa-utils python3 py3-pip py3-virtualenv v4l-utils samba git kmod
+    else
+        echo "No supported package manager found. Install ffmpeg, ALSA utilities, Python 3 with venv/pip, v4l-utils, Samba, git, and kmod manually."
+        exit 1
+    fi
+
+    if ! command -v ffmpeg >/dev/null 2>&1; then
+        echo "ffmpeg was not installed. Enable your distribution's repository that provides FFmpeg, then rerun this installer."
+        exit 1
+    fi
+
+    echo "Installed runtime packages for $DISTRO_NAME."
+}
+
 # Function to confirm installation with the user
 confirm_installation() {
     if [ "$EUID" -eq 0 ]; then
@@ -8,16 +47,16 @@ confirm_installation() {
         exit 1
     fi
 
-    echo "This script will install and configure the Raspi-Streamer application."
+    echo "This script will install and configure the Stream Control application."
     echo "It will perform the following actions:"
-    echo " - Update and upgrade system packages."
-    echo " - Install required software: ffmpeg, alsa-utils, python3-venv, pip, samba, git."
+    echo " - Install required software using your Linux distribution's package manager."
     echo " - Set up a Python virtual environment and install dependencies."
     echo " - Configure a Samba share for network access to recordings."
     echo " - Create and enable a systemd service to run the application on boot."
     echo " - Prompt you for a username/password for the web UI."
     echo " - Prompt you to specify a custom recordings directory."
-    echo " - Prompt you to select an audio capture device."
+    echo " - Prompt you to select an audio capture device, if one is available."
+    echo "USB storage mounting is managed by your Linux distribution; mounted drives can be selected for recordings."
     echo ""
     read -rp "Do you wish to continue? (y/n) " choice
     case "$choice" in
@@ -52,18 +91,22 @@ setup_recordings_directory() {
     case "$choice" in 
         y|Y )
             custom_dir=""
-            if mountpoint -q /media/usb0; then
-                read -rp "A USB storage device has been detected and is mounted on: /media/usb0. Do you want to use this device to store recordings? (y/n) " usb_choice
-                case "$usb_choice" in
-                    y|Y ) custom_dir="/media/usb0/recordings";;
-                esac
-            fi
+            mounted_drives=()
+            for mount_dir in /media/usb* "/run/media/$CURRENT_USER"/* /media/"$CURRENT_USER"/*; do
+                if [ -d "$mount_dir" ] && mountpoint -q "$mount_dir"; then
+                    mounted_drives+=("$mount_dir")
+                fi
+            done
 
-            if mountpoint -q /media/usb1; then
-                read -rp "A USB storage device has been detected and is mounted on: /media/usb1. Do you want to use this device to store recordings? (y/n) " usb_choice
-                case "$usb_choice" in
-                    y|Y ) custom_dir="/media/usb1/recordings";;
-                esac
+            if [ ${#mounted_drives[@]} -gt 0 ]; then
+                echo "Mounted storage devices:"
+                for i in "${!mounted_drives[@]}"; do
+                    echo "$((i + 1)): ${mounted_drives[$i]}"
+                done
+                read -rp "Enter a device number to store recordings there, or press Enter to enter a path: " drive_number
+                if [[ "$drive_number" =~ ^[0-9]+$ ]] && [ "$drive_number" -ge 1 ] && [ "$drive_number" -le ${#mounted_drives[@]} ]; then
+                    custom_dir="${mounted_drives[$((drive_number - 1))]}/recordings"
+                fi
             fi
 
             if [ -z "$custom_dir" ]; then
@@ -78,20 +121,20 @@ setup_recordings_directory() {
                 return
             fi
 
-            # Create custom directory if it doesn't exist
-            if [ ! -d "$custom_dir" ]; then
-                echo "Directory $custom_dir does not exist. Creating it..."
-                if ! mkdir -p "$custom_dir" 2>/dev/null; then
-                     echo "Failed to create directory as current user, trying sudo..."
-                     sudo mkdir -p "$custom_dir"
-                     sudo chown "$CURRENT_USER":"$CURRENT_USER" "$custom_dir"
-                fi
+            if [ -z "$custom_dir" ]; then
+                echo "No recordings path was provided. Keeping the default directory."
+                return
             fi
+
+            mkdir -p "$custom_dir" 2>/dev/null || {
+                sudo mkdir -p "$custom_dir"
+                sudo chown "$CURRENT_USER":"$CURRENT_GROUP" "$custom_dir"
+            }
             
             # Handle existing recordings directory
             if [ -d "$DEFAULT_RECORDINGS_DIR" ] && [ ! -L "$DEFAULT_RECORDINGS_DIR" ]; then
                 echo "Moving existing recordings from $DEFAULT_RECORDINGS_DIR to $custom_dir..."
-                sudo mv "$DEFAULT_RECORDINGS_DIR"/* "$custom_dir/" 2>/dev/null
+                sudo cp -a "$DEFAULT_RECORDINGS_DIR/." "$custom_dir/"
                 sudo rm -rf "$DEFAULT_RECORDINGS_DIR"
             elif [ -L "$DEFAULT_RECORDINGS_DIR" ]; then
                 sudo rm "$DEFAULT_RECORDINGS_DIR"
@@ -103,17 +146,14 @@ setup_recordings_directory() {
             ;;
         * )
             echo "Using default recordings directory."
-            if [ ! -d "$DEFAULT_RECORDINGS_DIR" ]; then
-                unlink "$DEFAULT_RECORDINGS_DIR"
-                mkdir -p "$DEFAULT_RECORDINGS_DIR"
-            fi
+            mkdir -p "$DEFAULT_RECORDINGS_DIR"
             ;;
     esac
 }
 
 # Function to list audio devices and prompt user for selection
 select_audio_device() {
-    arecord_output=$(arecord -l)
+    arecord_output=$(arecord -l 2>/dev/null || true)
     device_list=()
     echo "Available audio devices:"
     while IFS= read -r line; do
@@ -124,8 +164,8 @@ select_audio_device() {
     done <<< "$arecord_output"
 
     if [ ${#device_list[@]} -eq 0 ]; then
-        echo "No audio devices found. Exiting."
-        exit 1
+        echo "No audio devices found. Skipping selection; configure ALSA_AUDIO_SOURCE when an audio device is available."
+        return
     fi
 
     echo -n "Enter the number of the audio device you want to use: "
@@ -147,43 +187,18 @@ select_audio_device() {
 # Get the current working directory and current user
 WORK_DIR=$(pwd)
 CURRENT_USER=$(whoami)
+CURRENT_GROUP=$(id -gn "$CURRENT_USER")
 
 # Confirm with the user before starting
 confirm_installation
 
-# Update and upgrade system packages
-sudo apt update && sudo apt upgrade -y
-
-# Install necessary packages
-sudo apt install -y ffmpeg alsa-tools alsa-utils python3-venv python3-pip v4l-utils samba samba-common-bin git wget
-
-# Install USB Automount Utility
-echo "Installing USB Automount Utility..."
-wget -O pi-usb-automount.deb https://github.com/fasteddy516/pi-usb-automount/releases/latest/download/pi-usb-automount.deb
-sudo dpkg -i pi-usb-automount.deb
-rm pi-usb-automount.deb
-
-# Set permissions for USB mount point
-if mountpoint -q /media/usb0; then
-    echo "usb drive detected and mounted on: /media/usb0"
-    echo "Setting permissions on /media/usb0"
-    sudo chown -R "$CURRENT_USER":"$CURRENT_USER" /media/usb0
-    sudo chmod -R 777 /media/usb0
-else
-    echo "No USB drive found on /media/usb0. Skipping automount."
+if [ ! -d /run/systemd/system ] || ! command -v systemctl >/dev/null 2>&1; then
+    echo "This installer requires a running systemd system to install the application service."
+    exit 1
 fi
 
-if mountpoint -q /media/usb1; then
-    echo "usb drive detected and mounted on: /media/usb1"
-    echo "Setting permissions on /media/usb1"
-    sudo chown -R "$CURRENT_USER":"$CURRENT_USER" /media/usb1
-    sudo chmod -R 777 /media/usb1
-else
-    echo "No USB drive found on /media/usb1. Skipping automount."
-fi
-
-# Update the Raspberry Pi Firmware
-sudo rpi-update
+# Install required packages without upgrading the whole operating system.
+install_system_packages
 # Change to the working directory
 cd "$WORK_DIR"
 
@@ -218,59 +233,58 @@ set_basic_auth_credentials
 # Setup recordings directory
 setup_recordings_directory
 
-# Setup Samba share configuration
+# Setup a Samba share for recordings only; the application directory contains credentials.
 SAMBA_CONF="/etc/samba/smb.conf"
-SHARE_CONF="[raspi-streamer]
-   path = $WORK_DIR
+SHARE_CONF="[stream-control-recordings]
+   path = $WORK_DIR/recordings
    browseable = yes
    writable = yes
-   only guest = no
-   create mask = 0777
-   directory mask = 0777
-   public = yes"
+   guest ok = no
+   valid users = $CURRENT_USER
+   create mask = 0660
+   directory mask = 0770"
 
-# Remove any existing raspi-streamer configuration
-sudo sed -i '/\[raspi-streamer\]/,/^$/d' "$SAMBA_CONF"
+# Remove any existing stream-control share configuration.
+sudo sed -i '/^\[raspi-streamer\]/,/^$/d; /^\[stream-control-recordings\]/,/^$/d' "$SAMBA_CONF"
 
 # Add the new configuration
 echo "$SHARE_CONF" | sudo tee -a "$SAMBA_CONF"
-sudo smbpasswd -a $CURRENT_USER
-sudo systemctl restart smbd
-echo "Samba share configured"
+sudo smbpasswd -a "$CURRENT_USER"
+if sudo systemctl enable --now smbd 2>/dev/null; then
+    sudo systemctl restart smbd
+elif sudo systemctl enable --now smb 2>/dev/null; then
+    sudo systemctl restart smb
+else
+    echo "Samba was installed, but its service unit was not found. Start the Samba service using your distribution's unit name."
+fi
+echo "Samba recordings share configured"
 
 # Create stream_control service file
 SERVICE_FILE="/etc/systemd/system/stream_control.service"
 
-# Remove existing service file if it exists
-if [ -f "$SERVICE_FILE" ]; then
-    sudo rm "$SERVICE_FILE"
-    echo "Existing stream_control.service deleted"
-fi
-
-# Set user to sudoers and set NOPASSWD
-TARGET_USER=${SUDO_USER:-$USER}
-
-echo "Creating sudoers rule for $TARGET_USER..."
-sudo tee /etc/sudoers.d/010_${TARGET_USER}-nopasswd > /dev/null << EOF
-# Allow $TARGET_USER to run any command without a password
-# Required for stream_control.service to load kernel modules
-$TARGET_USER ALL=(ALL) NOPASSWD: ALL
+MODPROBE_PATH=$(command -v modprobe)
+SUDOERS_FILE="/etc/sudoers.d/010_${CURRENT_USER}-uvcvideo"
+echo "Allowing only the video-driver reload commands required by the app..."
+sudo tee "$SUDOERS_FILE" > /dev/null <<EOF
+$CURRENT_USER ALL=(root) NOPASSWD: $MODPROBE_PATH -r uvcvideo, $MODPROBE_PATH uvcvideo
 EOF
+sudo chmod 440 "$SUDOERS_FILE"
 
-# Secure the file (permissions must be 440 or 400)
-sudo chmod 440 /etc/sudoers.d/010_${TARGET_USER}-nopasswd
-
-# Verify syntax (optional but recommended)
-if sudo visudo -c -f /etc/sudoers.d/010_${TARGET_USER}-nopasswd; then
-    echo "Sudoers rule added successfully."
+if sudo visudo -c -f "$SUDOERS_FILE"; then
+    echo "Restricted uvcvideo sudo rule added."
 else
-    echo "Error: Invalid sudoers syntax. Check /etc/sudoers.d/010_${TARGET_USER}-nopasswd"
+    echo "Error: Invalid sudoers syntax in $SUDOERS_FILE"
     exit 1
 fi
 
 # Create the new service file
 sudo tee "$SERVICE_FILE" > /dev/null <<EOL
 [Unit]
+LEGACY_SUDOERS_FILE="/etc/sudoers.d/010_${CURRENT_USER}-nopasswd"
+if [ -f "$LEGACY_SUDOERS_FILE" ] && sudo grep -Fxq "$CURRENT_USER ALL=(ALL) NOPASSWD: ALL" "$LEGACY_SUDOERS_FILE"; then
+    sudo rm "$LEGACY_SUDOERS_FILE"
+    echo "Removed the legacy passwordless sudo-all rule."
+fi
 Description=Stream Control Service
 Wants=network-online.target
 After=network.target sound.target
@@ -284,7 +298,7 @@ StandardError=inherit
 Restart=always
 RestartSec=5
 User=$CURRENT_USER
-Group=$CURRENT_USER
+Group=$CURRENT_GROUP
 Environment="PYTHONUNBUFFERED=1"
 
 [Install]
@@ -292,6 +306,9 @@ WantedBy=multi-user.target
 EOL
 
 echo "stream_control.service created"
+
+# Select audio before starting the service so the saved device is used on startup.
+select_audio_device
 
 # Reload systemd daemon and enable/start the stream_control service
 sudo systemctl daemon-reload
@@ -301,8 +318,5 @@ sudo systemctl restart stream_control.service
 # Get the IP address of the Raspberry Pi
 IP_ADDRESS=$(hostname -I | awk '{print $1}')
 
-# Select audio device
-select_audio_device
-
 echo "Installation complete"
-echo "Please reboot the Raspberry Pi and then visit http://$IP_ADDRESS:5000 to access the Web UI."
+echo "Visit http://$IP_ADDRESS:5000 to access the Web UI."

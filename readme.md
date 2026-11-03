@@ -2,8 +2,8 @@
 <img src="https://github.com/teklynk/raspi-streamer/blob/main/static/assets/icons/android-chrome-256x256.png?raw=true" />
 </div>
 
-# Project Overview: Raspberry Pi Streaming and Recording Setup
-- The project aims to provide easy streaming to a rtmp endpoint using a Raspberry Pi, USB capture card, and Web UI.
+# Project Overview: Linux Streaming and Recording Setup
+- The project provides streaming to an RTMP endpoint using a Linux computer, a USB capture card, and a Web UI. Raspberry Pi is one supported hardware option.
 - Seamless streaming to platforms like Twitch, Owncast, PeerTube, YouTube, with video and audio recording capabilities.
 - Simple setup: connect to the internet, plug in HDMI source from any device, and control with Start Stream and Stop Stream buttons.
 - Web UI for remote control from any web browser, allowing management of streams and recordings.
@@ -13,9 +13,9 @@
 ## Key Features
 - __Streaming:__ Capture video via a USB capture device and stream it in real-time to an RTMP server, ensuring smooth and reliable video output.
 - __Audio Synchronization:__ Achieve perfect sync between audio and video using ALSA for audio input.
-- __Automated Control:__ A Python script runs as a system service, enabling the device to handle streaming and recording commands autonomously.
+- __Automated Control:__ A Python script runs as a systemd service, enabling the device to handle streaming and recording commands autonomously.
 - __Network Accessibility:__ With Samba configured, easily access and manage your recordings over the network from any device.
-- __Web UI:__ Control and configure Raspi-Streamer from any web browser. Just visit http://<ip_address_of_pi>:5000 from your mobile device connected to the same network.
+- __Web UI:__ Control and configure Raspi-Streamer from any web browser. Visit `http://<server-ip-address>:5000` from a device on the same network.
 - __Versatile Use Cases:__ Ideal for streaming and recording gameplay, live events, concerts, GoPro cameras, and any other HDMI output devices.
 - __Compact and Convenient:__ The small form factor of the Raspberry Pi makes it easy to integrate into any setup, offering a simple and portable solution for streaming and recording.
 - __Stream and Recording Timer:__ Set how long (HH:MM) to stream or record. Raspi-Streamer will automatically end when your timer runs out.
@@ -29,14 +29,15 @@
 # Setup guide
 
 ## Prerequisites before installing
-- You have already installed the Lite version of Raspberry Pi OS.
-- A user has been created.
-- Your capture device is currently plugged into the Raspberry Pi.
-- Your USB mass storage device is pluged in (If you want to save recordings to a usb drive)
+- A supported Linux distribution using systemd and one of the package managers recognized by `install.sh` (APT, DNF, YUM, Pacman, Zypper, or APK).
+- A regular user account with `sudo` access. Do not run the installer as root.
+- Python 3, FFmpeg, ALSA utilities, V4L2 utilities, Samba, and `git` are installed by the installer. Some distributions require enabling an additional repository for FFmpeg.
+- Connect the capture device before installation if you want to select its audio input during setup.
+- Mount USB storage using your distribution's normal storage tools before installation to select it as the recordings directory. The installer does not install a Raspberry Pi-specific automounter.
 
 ## Important Notes
 
-If you used the official Raspberry Pi Imager app to flash the latest version of Raspberry Pi OS (Trixie) to your SD Card:
+The following note applies only to Raspberry Pi OS. If you used Raspberry Pi Imager to flash Raspberry Pi OS (Trixie) to an SD card:
 
 The custom config settings do not always transfer over. You will need to connect a keyboard and monitor and run `sudo raspi-config`.
 
@@ -57,17 +58,13 @@ timedatectl
 
 After this, you can run `sudo apt update` without errors.
 
-# Install necessary packages
-```bash
-sudo apt install git
-```
-
 # Installer script
-- Clone this repo to your Raspberry Pi. 
+- Install `git` using your distribution's package manager if it is not already installed.
+- Clone this repo to your Linux host.
 - `git clone https://github.com/teklynk/raspi-streamer`
 - `cd raspi-streamer`
 - `./install.sh`
-- That's it. No need to manually install.
+- The installer adds the systemd service and configures a Samba share for the recordings directory.
 - Review the `install.sh` script if you would like to see what it installs and how.
 
 # Additional Notes
@@ -92,7 +89,7 @@ sudo apt install git
 - __Stream/Recording Timer:__
   - Set the max hours and minutes for the recording or stream to run for. Once the timer runs out, the stream or recording will automatically stop.
 - __USB Mass Storage:__
-  - By default, Raspi-Streamer saves recordings to the `recordings/` directory. You can change this to save to a usb storage device. USB drives will automatically mount on `/media/usb0`. The installer will create a symlink from `recordings/` to your custom path.
+  - By default, Raspi-Streamer saves recordings to the `recordings/` directory. You can change this to a currently mounted storage directory during installation. The installer creates a symlink from `recordings/` to your chosen path; mounting and mount permissions are managed by the host operating system.
   
 # Troubleshooting
 
