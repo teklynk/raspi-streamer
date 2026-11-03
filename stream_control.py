@@ -81,11 +81,50 @@ STREAM_M3U8_URL = os.getenv('STREAM_M3U8_URL')
 STREAM_FILE = os.getenv('STREAM_FILE')  # Add STREAM_FILE variable
 FORMAT = os.getenv('FORMAT')
 PRESET = os.getenv('PRESET')
+VIDEO_ENCODER = os.getenv('VIDEO_ENCODER', 'libx264')
 REPORT = os.getenv('REPORT')
 MAX_TIME = os.getenv('MAX_TIME')
 
+VIDEO_ENCODER_PRESETS = {
+    'libx264': ['ultrafast', 'veryfast', 'fast'],
+    'h264_nvenc': ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'],
+    'av1_nvenc': ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'],
+}
+VIDEO_ENCODER_LABELS = {
+    'libx264': 'H.264 (CPU)',
+    'h264_nvenc': 'H.264 (NVIDIA NVENC)',
+    'av1_nvenc': 'AV1 (NVIDIA NVENC)',
+}
+
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
+
+def get_available_video_encoders():
+    result = subprocess.run(
+        ['ffmpeg', '-hide_banner', '-encoders'],
+        capture_output=True,
+        text=True,
+        check=False
+    )
+    output = result.stdout + result.stderr
+    return [
+        encoder for encoder in VIDEO_ENCODER_PRESETS
+        if any(encoder in line.split() for line in output.splitlines())
+    ]
+
+def video_encoder_options():
+    tune = 'zerolatency' if VIDEO_ENCODER == 'libx264' else 'll'
+    return [
+        '-c:v', VIDEO_ENCODER,
+        '-preset', str(PRESET),
+        '-tune', tune,
+        '-b:v', f'{BITRATE}k',
+        '-maxrate', f'{BITRATE}k',
+        '-bufsize', f'{BUFFER_SIZE}k',
+    ]
+
+def video_profile_options():
+    return [] if VIDEO_ENCODER == 'av1_nvenc' else ['-profile:v', 'high']
 
 def get_device_value():
     device_file = "audio_device.txt"
@@ -538,10 +577,10 @@ def start_stream():
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", str(FORMAT), "-i", "/dev/video0",  # Video input settings
         "-probesize", "32", "-analyzeduration", "0",  # Lower probing size and analysis duration for reduced latency
-        "-c:v", "libx264", "-preset", str(PRESET), "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k",  # Video encoding settings
+        *video_encoder_options(),
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
         "-color_range", "tv",
-        "-profile:v", "high",
+        *video_profile_options(),
         "-c:a", "aac", "-b:a", "96k", "-ar", "44100",  # Audio encoding settings
         "-use_wallclock_as_timestamps", "1",  # Use wallclock timestamps
         "-flush_packets", "1",  # Flush packets
@@ -603,7 +642,7 @@ def start_recording():
         "-thread_queue_size", "1024",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", str(FORMAT), "-i", "/dev/video0",  # Video input settings
-        "-c:v", "libx264", "-preset", str(PRESET), "-tune", "zerolatency", "-b:v", f"{BITRATE}k", "-maxrate", f"{BITRATE}k", "-bufsize", f"{BUFFER_SIZE}k",  # Video encoding settings
+        *video_encoder_options(),
         "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
         "-color_range", "tv",
         "-c:a", "aac", "-b:a", "96k", "-ar", "44100",  # Audio encoding settings
@@ -893,7 +932,7 @@ def update_env_file(data):
     load_dotenv()
     
     # Update global variables with new values
-    global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL, STREAM_FILE, FORMAT, PRESET, REPORT, MAX_TIME
+    global STREAM_KEY, RTMP_SERVER, ALSA_AUDIO_SOURCE, VIDEO_SIZE, FRAME_RATE, BITRATE, KEYFRAME_INTERVAL, AUDIO_OFFSET, BUFFER_SIZE, STREAM_M3U8_URL, STREAM_FILE, FORMAT, PRESET, VIDEO_ENCODER, REPORT, MAX_TIME
     STREAM_KEY = os.getenv('STREAM_KEY')
     RTMP_SERVER = os.getenv('RTMP_SERVER')
     ALSA_AUDIO_SOURCE = os.getenv('ALSA_AUDIO_SOURCE')
@@ -907,6 +946,7 @@ def update_env_file(data):
     BUFFER_SIZE = BITRATE * 2
     FORMAT = os.getenv('FORMAT')
     PRESET = os.getenv('PRESET')
+    VIDEO_ENCODER = os.getenv('VIDEO_ENCODER', 'libx264')
     REPORT = os.getenv('REPORT')
     MAX_TIME = os.getenv('MAX_TIME')
 
@@ -924,14 +964,23 @@ def index():
         'STREAM_M3U8_URL': os.getenv('STREAM_M3U8_URL'),
         'STREAM_FILE': os.getenv('STREAM_FILE'),  # Add STREAM_FILE to config
         'FORMAT': os.getenv('FORMAT'),
-        'PRESET': os.getenv('PRESET'),
+        'VIDEO_ENCODER': VIDEO_ENCODER,
+        'PRESET': PRESET,
         'REPORT': os.getenv('REPORT'),
         'MAX_TIME': os.getenv('MAX_TIME')
     }
     state = load_state()
     recordings = list_recordings()
     formats, resolutions = parse_v4l2_data_from_file(SYS_INFO_FILE)
-    return render_template('index.html', config=config, state=state, recordings=recordings, formats=formats, resolutions=resolutions)
+    available_encoders = get_available_video_encoders()
+    if not available_encoders:
+        available_encoders = ['libx264']
+    if config['VIDEO_ENCODER'] not in available_encoders:
+        config['VIDEO_ENCODER'] = available_encoders[0]
+    presets = VIDEO_ENCODER_PRESETS[config['VIDEO_ENCODER']]
+    if config['PRESET'] not in presets:
+        config['PRESET'] = 'p4' if config['VIDEO_ENCODER'] in ('h264_nvenc', 'av1_nvenc') else presets[0]
+    return render_template('index.html', config=config, state=state, recordings=recordings, formats=formats, resolutions=resolutions, video_encoders=available_encoders, encoder_presets=VIDEO_ENCODER_PRESETS, encoder_labels=VIDEO_ENCODER_LABELS)
 
 @app.route('/delete_file', methods=['POST'])
 def delete_file_route():

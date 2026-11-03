@@ -99,11 +99,19 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="PRESET">Preset (higher = less CPU & lower quality):</label>                      
+                        <label for="VIDEO_ENCODER">Video Encoder:</label>
+                        <select class="form-control form-control-lg" id="VIDEO_ENCODER" name="VIDEO_ENCODER">
+                            {% for encoder in video_encoders %}
+                            <option value="{{ encoder }}" {% if config['VIDEO_ENCODER'] == encoder %}selected{% endif %}>{{ encoder_labels[encoder] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="PRESET">Preset:</label>
                         <select class="form-control form-control-lg" id="PRESET" name="PRESET">
-                            <option value="ultrafast" {% if config['PRESET'] == 'ultrafast' %}selected{% endif %}>ultrafast</option>
-                            <option value="veryfast" {% if config['PRESET'] == 'veryfast' %}selected{% endif %}>veryfast</option>
-                            <option value="fast" {% if config['PRESET'] == 'fast' %}selected{% endif %}>fast</option>
+                            {% for preset in encoder_presets[config['VIDEO_ENCODER']] %}
+                            <option value="{{ preset }}" {% if config['PRESET'] == preset %}selected{% endif %}>{{ preset }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                     <div class="form-group">
@@ -323,6 +331,21 @@
                 },500);
             })
             .catch(error => console.error('Error:', error));
+        });
+
+        const videoEncoderPresets = {{ encoder_presets | tojson }};
+        const videoEncoderSelect = document.getElementById('VIDEO_ENCODER');
+        const presetSelect = document.getElementById('PRESET');
+        videoEncoderSelect.addEventListener('change', function() {
+            const presets = videoEncoderPresets[this.value];
+            const selectedPreset = presets.includes('p4') ? 'p4' : presets[0];
+            presetSelect.replaceChildren(...presets.map(function(preset) {
+                const option = document.createElement('option');
+                option.value = preset;
+                option.textContent = preset;
+                option.selected = preset === selectedPreset;
+                return option;
+            }));
         });
 
         function sendRequest(endpoint) {
