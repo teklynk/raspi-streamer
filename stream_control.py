@@ -403,8 +403,8 @@ def disk_usage():
                 use_percentage = parts[4]
                 mounted_on = parts[5]
                 
-                # Check if the filesystem matches /dev/sda1
-                if filesystem == '/dev/sda1':
+                # Check if the filesystem matches /dev/sda2
+                if filesystem == '/dev/sda2':
                     return {
                         "filesystem": filesystem,
                         "size": size,
