@@ -380,63 +380,27 @@ def display_usage():
 
 def disk_usage():
     try:
-        # Run df -h and capture the output
-        result = subprocess.run(['df', '-h'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        # Query the filesystem mounted at /, regardless of its device name.
+        result = subprocess.run(['df', '-hP', '/'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         
         if result.returncode != 0:
             raise Exception("Error getting disk usage: " + result.stderr.decode())
             
-        output = result.stdout.decode()
-        
-        # Parse the output (assuming you want the second partition)
-        lines = output.split('\n')
-        usb_device = range(8, len(lines))
-        sd_card = range(1, len(lines))
-        
-        for i in usb_device:
-            parts = lines[i].split()
-            if len(parts) > 5:
-                filesystem = parts[0]
-                size = parts[1]
-                used = parts[2]
-                available = parts[3]
-                use_percentage = parts[4]
-                mounted_on = parts[5]
-                
-                # Check if the filesystem matches /dev/sda2
-                if filesystem == '/dev/sda2':
-                    return {
-                        "filesystem": filesystem,
-                        "size": size,
-                        "used": used,
-                        "available": available,
-                        "use_percentage": use_percentage + "%",
-                        "mounted_on": mounted_on
-                    }
-        
-        for i in sd_card:
-            parts = lines[i].split()
-            if len(parts) > 5:
-                filesystem = parts[0]
-                size = parts[1]
-                used = parts[2]
-                available = parts[3]
-                use_percentage = parts[4]
-                mounted_on = parts[5]
-                
-                # Check if the filesystem matches /dev/mmcblk0p2
-                if filesystem == '/dev/mmcblk0p2':
-                    return {
-                        "filesystem": filesystem,
-                        "size": size,
-                        "used": used,
-                        "available": available,
-                        "use_percentage": use_percentage + "%",
-                        "mounted_on": mounted_on
-                    }
-        
+        lines = result.stdout.decode().splitlines()
+        if len(lines) < 2:
+            return {"error": "No filesystem data found for /"}
+
+        parts = lines[1].split()
+        if len(parts) < 6:
+            return {"error": "Could not parse filesystem data for /"}
+
         return {
-            "error": "No matching filesystem found"
+            "filesystem": parts[0],
+            "size": parts[1],
+            "used": parts[2],
+            "available": parts[3],
+            "use_percentage": parts[4],
+            "mounted_on": parts[5]
         }
     
     except Exception as e:
