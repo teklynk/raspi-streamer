@@ -110,7 +110,7 @@
                         <label for="PRESET">Preset:</label>
                         <select class="form-control form-control-lg" id="PRESET" name="PRESET">
                             {% for preset in encoder_presets[config['VIDEO_ENCODER']] %}
-                            <option value="{{ preset }}" {% if config['PRESET'] == preset %}selected{% endif %}>{{ preset }}</option>
+                            <option value="{{ preset }}" {% if config['PRESET'] == preset %}selected{% endif %}>{{ 'Driver default' if preset == 'default' else preset }}</option>
                             {% endfor %}
                         </select>
                     </div>

@@ -89,30 +89,97 @@ VIDEO_ENCODER_PRESETS = {
     'libx264': ['ultrafast', 'veryfast', 'fast'],
     'h264_nvenc': ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'],
     'av1_nvenc': ['p1', 'p2', 'p3', 'p4', 'p5', 'p6', 'p7'],
+    'h264_vaapi': ['default'],
+    'hevc_vaapi': ['default'],
+    'av1_vaapi': ['default'],
 }
 VIDEO_ENCODER_LABELS = {
     'libx264': 'H.264 (CPU)',
     'h264_nvenc': 'H.264 (NVIDIA NVENC)',
     'av1_nvenc': 'AV1 (NVIDIA NVENC)',
+    'h264_vaapi': 'H.264 (VAAPI)',
+    'hevc_vaapi': 'HEVC (VAAPI)',
+    'av1_vaapi': 'AV1 (VAAPI)',
 }
 
 # Calculate buffer size and keyframe interval
 BUFFER_SIZE = BITRATE * 2  # in kbps
 
 def get_available_video_encoders():
-    result = subprocess.run(
-        ['ffmpeg', '-hide_banner', '-encoders'],
-        capture_output=True,
-        text=True,
-        check=False
-    )
+    try:
+        result = subprocess.run(
+            ['ffmpeg', '-hide_banner', '-encoders'],
+            capture_output=True,
+            text=True,
+            check=False
+        )
+    except OSError:
+        return []
     output = result.stdout + result.stderr
-    return [
+    encoders = [
         encoder for encoder in VIDEO_ENCODER_PRESETS
         if any(encoder in line.split() for line in output.splitlines())
     ]
+    vaapi_encoders = get_available_vaapi_encoders()
+    encoders = [
+        encoder for encoder in encoders
+        if not encoder.endswith('_vaapi') or encoder in vaapi_encoders
+    ]
+    return encoders
+
+def get_vaapi_device():
+    configured_device = os.getenv('VAAPI_DEVICE')
+    if configured_device:
+        return configured_device if os.path.exists(configured_device) else None
+    render_devices = sorted(glob.glob('/dev/dri/renderD*'))
+    return render_devices[0] if render_devices else None
+
+def get_available_vaapi_encoders():
+    device = get_vaapi_device()
+    if not device:
+        return []
+    try:
+        result = subprocess.run(
+            ['vainfo', '--display', 'drm', '--device', device],
+            capture_output=True,
+            text=True,
+            check=False
+        )
+    except OSError:
+        return ['h264_vaapi']
+    if result.returncode != 0:
+        return ['h264_vaapi']
+    encode_profiles = {
+        line.split(':', 1)[0].strip()
+        for line in (result.stdout + result.stderr).splitlines()
+        if ':' in line and 'VAEntrypointEnc' in line
+    }
+    encoder_profiles = {
+        'h264_vaapi': {'VAProfileH264Main', 'VAProfileH264High', 'VAProfileH264ConstrainedBaseline'},
+        'hevc_vaapi': {'VAProfileHEVCMain', 'VAProfileHEVCMain10'},
+        'av1_vaapi': {'VAProfileAV1Profile0'},
+    }
+    return [
+        encoder for encoder, profiles in encoder_profiles.items()
+        if profiles.intersection(encode_profiles)
+    ]
+
+def video_hardware_options():
+    if VIDEO_ENCODER.endswith('_vaapi'):
+        device = get_vaapi_device()
+        if not device:
+            raise RuntimeError('No VAAPI render device is available.')
+        return ['-vaapi_device', device]
+    return []
 
 def video_encoder_options():
+    if VIDEO_ENCODER.endswith('_vaapi'):
+        return [
+            '-c:v', VIDEO_ENCODER,
+            '-b:v', f'{BITRATE}k',
+            '-maxrate', f'{BITRATE}k',
+            '-bufsize', f'{BUFFER_SIZE}k',
+        ]
     tune = 'zerolatency' if VIDEO_ENCODER == 'libx264' else 'll'
     return [
         '-c:v', VIDEO_ENCODER,
@@ -123,8 +190,12 @@ def video_encoder_options():
         '-bufsize', f'{BUFFER_SIZE}k',
     ]
 
+def video_filter_options():
+    pixel_format = 'nv12,hwupload' if VIDEO_ENCODER.endswith('_vaapi') else 'yuv420p'
+    return ['-vf', f'format={pixel_format}', '-g', str(KEYFRAME_INTERVAL)]
+
 def video_profile_options():
-    return [] if VIDEO_ENCODER == 'av1_nvenc' else ['-profile:v', 'high']
+    return [] if VIDEO_ENCODER.startswith('av1_') or VIDEO_ENCODER.endswith('_vaapi') else ['-profile:v', 'high']
 
 def get_device_value():
     device_file = "audio_device.txt"
@@ -572,13 +643,14 @@ def start_stream():
 
     stream_command = [
         "ffmpeg",
+        *video_hardware_options(),
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
         "-thread_queue_size", "1024",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", str(FORMAT), "-i", "/dev/video0",  # Video input settings
         "-probesize", "32", "-analyzeduration", "0",  # Lower probing size and analysis duration for reduced latency
         *video_encoder_options(),
-        "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
+        *video_filter_options(),
         "-color_range", "tv",
         *video_profile_options(),
         "-c:a", "aac", "-b:a", "96k", "-ar", "44100",  # Audio encoding settings
@@ -638,12 +710,13 @@ def start_recording():
 
     record_command = [
         "ffmpeg",
+        *video_hardware_options(),
         "-itsoffset", str(AUDIO_OFFSET),  # Adjust the offset value for audio sync
         "-thread_queue_size", "1024",
         "-f", "alsa", "-ac", "2", "-i", str(ALSA_AUDIO_SOURCE),  # Input from ALSA
         "-f", "v4l2", "-framerate", str(FRAME_RATE), "-video_size", str(VIDEO_SIZE), "-input_format", str(FORMAT), "-i", "/dev/video0",  # Video input settings
         *video_encoder_options(),
-        "-vf", "format=yuv420p", "-g", str(KEYFRAME_INTERVAL),  # Keyframe interval
+        *video_filter_options(),
         "-color_range", "tv",
         "-c:a", "aac", "-b:a", "96k", "-ar", "44100",  # Audio encoding settings
         "-use_wallclock_as_timestamps", "1",  # Use wallclock timestamps
